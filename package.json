@@ -10,7 +10,10 @@
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force && prisma generate && prisma db seed",
+    "db:migrate": "prisma migrate dev && prisma generate"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -39,6 +42,7 @@
     "prettier": "^3.9.9",
     "prisma": "^7.10.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

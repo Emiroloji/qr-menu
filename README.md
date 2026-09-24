@@ -10,21 +10,31 @@ Gerekenler: Node.js 20.9+, Docker.
 cp .env.example .env          # BETTER_AUTH_SECRET için: openssl rand -base64 32
 docker compose up -d          # PostgreSQL
 npm install                   # Prisma istemcisi de üretilir
-npx prisma migrate dev        # tabloları oluşturur
+npm run db:reset              # tabloları kurar + örnek veri (seed)
 npm run dev                   # http://localhost:3000
 ```
 
 ## Komutlar
 
-| Komut                    | Ne yapar                     |
-| ------------------------ | ---------------------------- |
-| `npm run dev`            | Geliştirme sunucusu          |
-| `npm run build`          | Canlı derleme                |
-| `npm start`              | Derlenmiş uygulamayı açar    |
-| `npm run typecheck`      | Tip kontrolü                 |
-| `npm run lint`           | ESLint                       |
-| `npm run format`         | Prettier ile biçimlendir     |
-| `npx prisma migrate dev` | Şema değişikliği → migration |
+| Komut                | Ne yapar                                       |
+| -------------------- | ---------------------------------------------- |
+| `npm run dev`        | Geliştirme sunucusu                            |
+| `npm run build`      | Canlı derleme                                  |
+| `npm start`          | Derlenmiş uygulamayı açar                      |
+| `npm run typecheck`  | Tip kontrolü                                   |
+| `npm run lint`       | ESLint                                         |
+| `npm run format`     | Prettier ile biçimlendir                       |
+| `npm run db:migrate` | Şema değişikliği → migration + istemci         |
+| `npm run db:seed`    | Örnek verileri ekler                           |
+| `npm run db:reset`   | Yerel veritabanını sıfırlar ve seed çalıştırır |
+
+## Örnek hesaplar (yalnızca yerel)
+
+Şifre: `.env` içindeki `SEED_PASSWORD`.
+
+- Süper admin: `admin@qrmenu.local`
+- İşletme sahibi: `sahip@limonkafe.test`
+- Çalışan: `calisan@limonkafe.test` (yalnızca tükendi işaretleme)
 
 ## Klasörler
 

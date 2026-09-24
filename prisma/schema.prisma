@@ -7,19 +7,266 @@ datasource db {
   provider = "postgresql"
 }
 
-// Better Auth çekirdek tabloları. İş modelleri (Plan, Business, Branch ...) ve
-// User'ın role / businessId alanları Faz 1.1'de eklenir.
+// Fiyatlar kuruş cinsinden Int tutulur (45,50 TL → 4550).
+// Çeviriler `translations` JSON alanındadır: { "en": { "name": "...", "description": "..." } }.
+// Türkçe metin ana alanlardadır (name, description).
+// Business, Branch, Category ve Product yumuşak silinir (deletedAt).
 
-model User {
-  id            String    @id
+// ---------- Enum'lar ----------
+
+enum Role {
+  SUPER_ADMIN
+  OWNER
+  STAFF
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  SUSPENDED
+}
+
+enum AllergenLevel {
+  CONTAINS
+  MAY_CONTAIN
+}
+
+enum Badge {
+  CHEFS_CHOICE
+  NEW
+  POPULAR
+}
+
+enum Permission {
+  PRODUCT_TOGGLE_AVAILABILITY
+  PRODUCT_EDIT_PRICE
+  PRODUCT_EDIT
+  CATEGORY_EDIT
+}
+
+// ---------- Paket ve abonelik ----------
+
+model Plan {
+  id           String         @id @default(cuid())
+  name         String         @unique
+  price        Int // kuruş
+  // null = sınırsız
+  maxBranches  Int?
+  maxProducts  Int?
+  maxStaff     Int?
+  maxLanguages Int?
+  features     Json           @default("{}")
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id         String             @id @default(cuid())
+  businessId String
+  business   Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  planId     String
+  plan       Plan               @relation(fields: [planId], references: [id])
+  startsAt   DateTime
+  endsAt     DateTime
+  status     SubscriptionStatus @default(ACTIVE)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@index([businessId, endsAt])
+}
+
+// ---------- İşletme ve şube ----------
+
+model Business {
+  id            String         @id @default(cuid())
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  image         String?
+  slug          String         @unique
+  logoUrl       String?
+  // Tema kodu (components/menu/themes/ altındaki dosya adı). Yeni tema eklemek
+  // migration gerektirmesin diye enum değil.
+  theme         String         @default("minimal")
+  primaryColor  String         @default("#2F5D50")
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  branches      Branch[]
+  subscriptions Subscription[]
+  users         User[]
+}
+
+model Branch {
+  id           String     @id @default(cuid())
+  businessId   String
+  business     Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name         String
+  slug         String
+  address      String?
+  phone        String?
+  wifi         String?
+  socials      Json       @default("{}") // { "instagram": "...", ... }
+  openingHours Json       @default("{}") // { "mon": [["08:00", "23:00"]], ... }
+  languages    String[]   @default(["tr"])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  categories   Category[]
+  scanLogs     ScanLog[]
+
+  @@unique([businessId, slug])
+}
+
+// ---------- Menü ----------
+
+model Category {
+  id            String    @id @default(cuid())
+  branchId      String
+  branch        Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  sortOrder     Int       @default(0)
+  isVisible     Boolean   @default(true)
+  availableFrom String? // "HH:mm", saate göre menü (Faz 2.4)
+  availableTo   String? // "HH:mm"
+  translations  Json      @default("{}")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  products      Product[]
+
+  @@index([branchId, sortOrder])
+}
+
+model Product {
+  id           String            @id @default(cuid())
+  categoryId   String
+  category     Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  ingredients  String?
+  portion      String?
+  spiceLevel   Int               @default(0) // 0 = acı değil, 1–3
+  prepTime     Int? // dakika
+  origin       String?
+  isAvailable  Boolean           @default(true)
+  isVisible    Boolean           @default(true)
+  badges       Badge[]
+  sortOrder    Int               @default(0)
+  translations Json              @default("{}")
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  deletedAt    DateTime?
+  variants     ProductVariant[]
+  images       ProductImage[]
+  nutrition    Nutrition?
+  allergens    ProductAllergen[]
+  tags         ProductTag[]
+
+  @@index([categoryId, sortOrder])
+}
+
+// Her ürünün en az bir varyantı olur; tek fiyatlı ürünlerde name boştur.
+model ProductVariant {
+  id           String  @id @default(cuid())
+  productId    String
+  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name         String?
+  price        Int // kuruş
+  sortOrder    Int     @default(0)
+  translations Json    @default("{}")
+
+  @@index([productId, sortOrder])
+}
+
+model ProductImage {
+  id          String  @id @default(cuid())
+  productId   String
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url         String
+  blurDataUrl String?
+  sortOrder   Int     @default(0)
+
+  @@index([productId, sortOrder])
+}
+
+model Nutrition {
+  productId String  @id
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  calories  Int? // kcal
+  protein   Float? // g
+  carbs     Float? // g
+  fat       Float? // g
+  sugar     Float? // g
+  salt      Float? // g
+}
+
+// ---------- Alerjen ve etiket (seed ile gelir) ----------
+
+model Allergen {
+  id           String            @id @default(cuid())
+  code         String            @unique
+  name         String
+  icon         String
+  translations Json              @default("{}")
+  products     ProductAllergen[]
+}
+
+model ProductAllergen {
+  productId  String
+  product    Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  allergenId String
+  allergen   Allergen      @relation(fields: [allergenId], references: [id], onDelete: Cascade)
+  level      AllergenLevel
+
+  @@id([productId, allergenId])
+}
+
+model Tag {
+  id           String       @id @default(cuid())
+  code         String       @unique
+  name         String
+  icon         String
+  translations Json         @default("{}")
+  products     ProductTag[]
+}
+
+model ProductTag {
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tagId     String
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([productId, tagId])
+}
+
+// ---------- Kullanıcı (Better Auth) ve yetki ----------
+
+model User {
+  id            String            @id
+  name          String
+  email         String            @unique
+  emailVerified Boolean           @default(false)
+  image         String?
+  role          Role              @default(STAFF)
+  businessId    String?
+  business      Business?         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
   sessions      Session[]
   accounts      Account[]
+  permissions   StaffPermission[]
+
+  @@index([businessId])
+}
+
+model StaffPermission {
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission
+
+  @@id([userId, permission])
 }
 
 model Session {
@@ -64,4 +311,18 @@ model Verification {
   updatedAt  DateTime @updatedAt
 
   @@index([identifier])
+}
+
+// ---------- İstatistik ----------
+
+// IP adresi veya kişisel veri tutulmaz.
+model ScanLog {
+  id        String   @id @default(cuid())
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  language  String
+  device    String? // "mobile" | "tablet" | "desktop"
+
+  @@index([branchId, createdAt])
 }
