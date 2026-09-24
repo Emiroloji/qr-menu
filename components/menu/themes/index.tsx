@@ -1,4 +1,7 @@
+import { getLanguage } from "@/lib/languages";
 import type { MenuThemeCode } from "@/lib/menu-themes";
+import type { MenuClientData } from "../client-data";
+import { MenuProvider } from "../client/provider";
 import { menuFontVariables } from "../fonts";
 import type { MenuLabels } from "../labels";
 import { MenuStyle } from "../menu-style";
@@ -8,7 +11,7 @@ import { MinimalTheme } from "./minimal";
 import { VibrantTheme } from "./vibrant";
 import { WarmTheme } from "./warm";
 
-export type ThemeProps = { data: MenuData; labels?: MenuLabels };
+export type ThemeProps = { data: MenuData; labels: MenuLabels };
 
 const THEMES: Record<MenuThemeCode, (props: ThemeProps) => React.ReactNode> = {
   minimal: MinimalTheme,
@@ -17,28 +20,40 @@ const THEMES: Record<MenuThemeCode, (props: ThemeProps) => React.ReactNode> = {
   vibrant: VibrantTheme,
 };
 
-/** Seçili temayı, renk değişkenleri ve yazı tipleriyle birlikte çizer. */
+/**
+ * Seçili temayı renk değişkenleri, yazı tipleri ve etkileşimli parçalarla birlikte çizer.
+ * Dil ve yazı yönü (Arapça: sağdan sola) menü kapsayıcısına verilir.
+ */
 export function ThemedMenu({
   data,
+  labels,
+  client,
   scope,
   mode,
-  labels,
 }: {
   data: MenuData;
+  labels: MenuLabels;
+  client: MenuClientData;
   scope: string;
   mode?: "light" | "dark";
-  labels?: MenuLabels;
 }) {
   const Theme = THEMES[data.appearance.theme];
   return (
-    <div data-menu-scope={scope} className={`${menuFontVariables} h-full`}>
+    <div
+      data-menu-scope={scope}
+      lang={data.lang}
+      dir={getLanguage(data.lang).dir}
+      className={`${menuFontVariables} min-h-full`}
+    >
       <MenuStyle
         scope={scope}
         theme={data.appearance.theme}
         color={data.appearance.color}
         mode={mode}
       />
-      <Theme data={data} labels={labels} />
+      <MenuProvider data={client}>
+        <Theme data={data} labels={labels} />
+      </MenuProvider>
     </div>
   );
 }

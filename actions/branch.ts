@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { type ActionResult, type FormState, toActionError } from "@/lib/action";
-import { expireBranchMenu } from "@/lib/cache";
+import { expireBranchMenu, expireMenuLookup } from "@/lib/cache";
 import { db, isUniqueConstraintError } from "@/lib/db";
 import { assertBranchBelongsToBusiness } from "@/lib/ownership";
 import { assertOwner } from "@/lib/permissions";
@@ -45,6 +45,7 @@ export async function saveBranch(
 
     // 7. Önbellek
     expireBranchMenu(branch.id);
+    expireMenuLookup();
     refresh();
     return { ok: true, data: { id: branch.id } };
   } catch (error) {
@@ -75,6 +76,7 @@ export async function deleteBranch(
       },
     });
     expireBranchMenu(branch.id);
+    expireMenuLookup();
     refresh();
     return { ok: true, data: null };
   } catch (error) {

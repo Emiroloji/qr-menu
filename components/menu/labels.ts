@@ -1,17 +1,40 @@
-// Menüdeki sabit yazılar. Faz 1.10'da next-intl ile diğer dillere çevrilecek.
-export const MENU_LABELS = {
-  soldOut: "Tükendi",
-  from: "’den",
-  open: "Açık",
-  closedToday: "Bugün kapalı",
-  wifi: "Wi-Fi",
-  address: "Adres",
-  search: "Menüde ara",
-  language: "Dil",
-  badges: { CHEFS_CHOICE: "Şefin önerisi", NEW: "Yeni", POPULAR: "Popüler" },
-  spice: "Acı",
-  photoOf: (name: string) => `${name} fotoğrafı`,
-  logoOf: (name: string) => `${name} logosu`,
-  cover: "Kapak görseli",
-};
-export type MenuLabels = typeof MENU_LABELS;
+import { createTranslator } from "next-intl";
+import type { LanguageCode } from "@/lib/languages";
+import type messages from "@/messages/tr.json";
+
+export type MenuMessages = (typeof messages)["menu"];
+
+/** Menü yazıları (next-intl). Sunucu temaları ve panel önizlemesi kullanır. */
+export function createMenuLabels(
+  lang: LanguageCode,
+  menuMessages: MenuMessages,
+) {
+  const t = createTranslator({
+    locale: lang,
+    messages: { menu: menuMessages },
+    namespace: "menu",
+  });
+  return {
+    t,
+    soldOut: t("soldOut"),
+    from: (price: string) => t("from", { price }),
+    todayHours: (hours: string) => t("todayHours", { hours }),
+    closedToday: t("closedToday"),
+    wifi: t("wifi"),
+    address: t("address"),
+    info: t("info"),
+    search: t("search"),
+    language: t("language"),
+    categories: t("categories"),
+    cover: t("cover"),
+    badges: {
+      CHEFS_CHOICE: t("CHEFS_CHOICE"),
+      NEW: t("NEW"),
+      POPULAR: t("POPULAR"),
+    },
+    spice: t("spice"),
+    photoOf: (name: string) => t("photoOf", { name }),
+    logoOf: (name: string) => t("logoOf", { name }),
+  };
+}
+export type MenuLabels = ReturnType<typeof createMenuLabels>;

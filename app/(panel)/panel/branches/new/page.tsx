@@ -13,7 +13,7 @@ export default async function NewBranchPage() {
       <PageHeader title="Yeni şube" />
       <BranchForm
         businessSlug={business.slug}
-        maxLanguages={subscription?.plan.maxLanguages ?? 1}
+        maxLanguages={subscription ? subscription.plan.maxLanguages : 1}
       />
     </>
   );

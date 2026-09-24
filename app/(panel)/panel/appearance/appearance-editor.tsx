@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CheckIcon, MoonIcon, SunIcon } from "lucide-react";
 import { toast } from "sonner";
 import { saveAppearance } from "@/actions/appearance";
 import { ThemedMenu } from "@/components/menu/themes";
+import type { MenuClientData } from "@/components/menu/client-data";
+import { createMenuLabels, type MenuMessages } from "@/components/menu/labels";
 import type { MenuData } from "@/components/menu/types";
 import { FormError } from "@/components/panel/field";
 import { Button } from "@/components/ui/button";
@@ -38,12 +40,17 @@ const SWATCHES = [
 
 export function AppearanceEditor({
   preview,
+  client,
+  messages,
   savedTheme,
   savedColor,
   branding,
   children,
 }: {
   preview: MenuData;
+  /** Önizlemedeki etkileşimli parçalar (detay kartı, bilgiler) için */
+  client: MenuClientData;
+  messages: MenuMessages;
   savedTheme: MenuThemeCode;
   savedColor: string;
   /** Paket "Logo ve renkler" içeriyor mu */
@@ -61,6 +68,7 @@ export function AppearanceEditor({
   );
 
   const effectiveColor = branding ? color : MENU_THEMES[theme].defaultColor;
+  const labels = useMemo(() => createMenuLabels("tr", messages), [messages]);
   const data: MenuData = {
     ...preview,
     appearance: { ...preview.appearance, theme, color: effectiveColor },
@@ -249,7 +257,13 @@ export function AppearanceEditor({
         </div>
         <div className="h-180 w-96 max-w-full overflow-hidden rounded-[2.5rem] border-8 border-foreground bg-foreground shadow-xl">
           <div className="h-full overflow-y-auto rounded-[2rem]">
-            <ThemedMenu data={data} scope="preview" mode={mode} />
+            <ThemedMenu
+              data={data}
+              labels={labels}
+              client={client}
+              scope="preview"
+              mode={mode}
+            />
           </div>
         </div>
         <p className="text-xs text-muted-foreground">

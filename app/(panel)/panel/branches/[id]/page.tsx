@@ -42,7 +42,7 @@ export default async function BranchPage({
       <BranchForm
         key={branch.updatedAt.toISOString()}
         businessSlug={business.slug}
-        maxLanguages={subscription?.plan.maxLanguages ?? 1}
+        maxLanguages={subscription ? subscription.plan.maxLanguages : 1}
         branch={{
           ...branch,
           openingHours: branch.openingHours as OpeningHours,

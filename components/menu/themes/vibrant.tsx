@@ -1,51 +1,61 @@
-import { MENU_LABELS } from "../labels";
+import {
+  CategoryNav,
+  InfoButton,
+  MenuToolbar,
+  ProductLink,
+} from "../client/islands";
 import { priceLabel, ProductPhoto } from "../parts";
 import type { ThemeProps } from "./index";
 
 /** Canlı: renkli başlık bloğu, büyük yazı, kalın çerçeveli kartlar (Faz 0.1). */
-export function VibrantTheme({ data, labels = MENU_LABELS }: ThemeProps) {
+export function VibrantTheme({ data, labels }: ThemeProps) {
   const { business, branch, categories } = data;
   return (
     <div className="min-h-full bg-menu-bg font-menu-body text-menu-ink">
-      <header className="flex flex-col gap-3 bg-menu-accent px-5 pt-5 pb-5 text-menu-on-accent">
-        <p className="text-sm font-medium">
-          {branch.name}
-          {branch.todayHours && ` · ${branch.todayHours}`}
-        </p>
-        <h1 className="font-menu-display text-5xl leading-none font-extrabold tracking-tight uppercase">
+      <header className="flex flex-col gap-3 bg-menu-accent px-5 pt-4 pb-5 text-menu-on-accent">
+        <div className="flex items-center justify-between gap-3">
+          <InfoButton className="min-h-11 text-start text-sm font-medium underline-offset-4 hover:underline">
+            {branch.name} ·{" "}
+            {branch.todayHours ? branch.todayHours : labels.closedToday}
+          </InfoButton>
+          <MenuToolbar
+            className="flex gap-2"
+            buttonClassName="flex h-11 min-w-11 items-center justify-center gap-1 rounded-2xl bg-menu-highlight px-2.5 text-menu-on-highlight"
+          />
+        </div>
+        <h1
+          dir="auto"
+          className="font-menu-display text-5xl leading-none font-extrabold tracking-tight uppercase"
+        >
           {business.name}
         </h1>
       </header>
 
-      <nav className="flex gap-1.5 overflow-x-auto border-b-2 border-menu-line px-5 py-3.5">
-        {categories.map((category, i) => (
-          <a
-            key={category.id}
-            href={`#c-${category.id}`}
-            className={
-              i === 0
-                ? "flex h-10 shrink-0 items-center rounded-xl bg-menu-ink px-3.5 text-sm font-extrabold text-menu-bg uppercase"
-                : "flex h-10 shrink-0 items-center rounded-xl px-3.5 text-sm font-bold uppercase"
-            }
-          >
-            {category.name}
-          </a>
-        ))}
-      </nav>
+      <CategoryNav
+        categories={categories}
+        label={labels.categories}
+        className="sticky top-0 z-20 flex gap-1.5 overflow-x-auto border-b-2 border-menu-line bg-menu-bg px-5 py-3.5"
+        itemClassName="flex h-10 shrink-0 items-center rounded-xl px-3.5 text-sm font-bold uppercase"
+        activeItemClassName="flex h-10 shrink-0 items-center rounded-xl bg-menu-ink px-3.5 text-sm font-extrabold text-menu-bg uppercase"
+      />
 
       <main className="flex flex-col gap-6 px-5 py-4">
         {categories.map((category) => (
           <section
             key={category.id}
             id={`c-${category.id}`}
-            className="flex flex-col gap-3"
+            className="flex scroll-mt-20 flex-col gap-3"
           >
-            <h2 className="font-menu-display text-2xl font-extrabold uppercase">
+            <h2
+              dir="auto"
+              className="font-menu-display text-2xl font-extrabold uppercase"
+            >
               {category.name}
             </h2>
             {category.products.map((product) => (
-              <article
+              <ProductLink
                 key={product.id}
+                id={product.id}
                 className="flex overflow-hidden rounded-2xl border-2 border-menu-line"
               >
                 <ProductPhoto
@@ -60,7 +70,7 @@ export function VibrantTheme({ data, labels = MENU_LABELS }: ThemeProps) {
                       {labels.badges[product.badges[0]]}
                     </span>
                   )}
-                  <h3 className="text-lg leading-6 font-bold">
+                  <h3 dir="auto" className="text-lg leading-6 font-bold">
                     {product.name}
                   </h3>
                   <span
@@ -75,7 +85,7 @@ export function VibrantTheme({ data, labels = MENU_LABELS }: ThemeProps) {
                       : labels.soldOut}
                   </span>
                 </div>
-              </article>
+              </ProductLink>
             ))}
           </section>
         ))}

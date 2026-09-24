@@ -19,3 +19,26 @@ export function isLanguageCode(value: string): value is LanguageCode {
 export function getLanguage(code: LanguageCode) {
   return LANGUAGES.find((l) => l.code === code)!;
 }
+
+/**
+ * Menü dili: adresteki `?lang` şubede açıksa o; yoksa tarayıcı dili (Accept-Language)
+ * şubede açıksa o; hiçbiri değilse Türkçe.
+ */
+export function pickLanguage(
+  requested: string | null,
+  available: string[],
+  acceptLanguage: string | null,
+): LanguageCode {
+  const allowed = available.filter(isLanguageCode);
+  if (requested && isLanguageCode(requested) && allowed.includes(requested))
+    return requested;
+  const preferred = (acceptLanguage ?? "")
+    .split(",")
+    .map((part) => {
+      const [tag, q] = part.trim().split(";q=");
+      return { code: tag.slice(0, 2).toLowerCase(), q: q ? Number(q) : 1 };
+    })
+    .sort((a, b) => b.q - a.q)
+    .find((p) => isLanguageCode(p.code) && allowed.includes(p.code));
+  return (preferred?.code as LanguageCode | undefined) ?? DEFAULT_LANGUAGE;
+}

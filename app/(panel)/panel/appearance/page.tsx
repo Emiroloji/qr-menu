@@ -4,7 +4,10 @@ import type { MenuData } from "@/components/menu/types";
 import { ImageUploader } from "@/components/panel/image-uploader";
 import { PageHeader } from "@/components/panel/page-header";
 import { db } from "@/lib/db";
-import { getMenuData } from "@/lib/menu-data";
+import { buildClientData } from "@/components/menu/client-data";
+import { createMenuLabels } from "@/components/menu/labels";
+import { getMenuData, getMenuReference, withTodayHours } from "@/lib/menu-data";
+import { getMenuMessages } from "@/lib/menu-messages";
 import { effectiveAppearance } from "@/lib/menu-themes";
 import {
   canUseBranding,
@@ -27,8 +30,7 @@ export default async function AppearancePage() {
     where: { businessId, deletedAt: null },
     orderBy: { createdAt: "asc" },
   });
-  const preview: MenuData = (branch &&
-    (await getMenuData(branch.id, "tr"))) || {
+  const found = (branch && (await getMenuData(branch.id, "tr"))) || {
     lang: "tr",
     appearance,
     business: { name: business.name },
@@ -70,6 +72,19 @@ export default async function AppearancePage() {
     ],
   };
 
+  const preview: MenuData = withTodayHours(found);
+  const messages = getMenuMessages("tr");
+  const client = buildClientData(
+    preview,
+    createMenuLabels("tr", messages),
+    messages,
+    {
+      ...(await getMenuReference("tr")),
+      languages: ["tr"],
+      path: "#",
+    },
+  );
+
   return (
     <>
       <PageHeader
@@ -78,6 +93,8 @@ export default async function AppearancePage() {
       />
       <AppearanceEditor
         preview={{ ...preview, appearance }}
+        client={client}
+        messages={messages}
         savedTheme={appearance.theme}
         savedColor={business.primaryColor}
         branding={canUseBranding(features)}

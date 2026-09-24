@@ -1,6 +1,8 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import type { MenuData } from "@/components/menu/types";
 import { getCurrentSubscription } from "@/lib/business-status";
+import { branchTag, MENU_LOOKUP_TAG } from "@/lib/cache";
 import { db } from "@/lib/db";
 import type { LanguageCode } from "@/lib/languages";
 import { effectiveAppearance } from "@/lib/menu-themes";
@@ -28,7 +30,7 @@ function translate<T extends Translatable>(item: T, lang: LanguageCode) {
   };
 }
 
-function todayHours(hours: OpeningHours, now: Date) {
+export function todayHours(hours: OpeningHours, now: Date) {
   // Pazartesi = 0 (Türkiye saatiyle)
   const weekday = new Intl.DateTimeFormat("en-US", {
     weekday: "short",
@@ -88,7 +90,8 @@ export async function getMenuData(
       wifi: branch.wifi,
       socials: branch.socials as Socials,
       openingHours,
-      todayHours: todayHours(openingHours, new Date()),
+      // Güne bağlıdır; önbelleğe girmez, `withTodayHours` ile istek anında hesaplanır.
+      todayHours: null,
     },
     categories: branch.categories
       .map((category) => ({
@@ -138,3 +141,90 @@ export async function getMenuData(
       .filter((c) => c.products.length > 0),
   };
 }
+
+/** Bugünün çalışma saatini (Türkiye saatiyle) ekler. */
+export function withTodayHours(data: MenuData, now = new Date()): MenuData {
+  return {
+    ...data,
+    branch: {
+      ...data.branch,
+      todayHours: todayHours(data.branch.openingHours, now),
+    },
+  };
+}
+
+/**
+ * Önbellekli menü verisi (MIMARI §8): `branch:{id}` etiketiyle saklanır; paneldeki her
+ * değişiklik bu etiketi temizler. Güvenlik ağı olarak en geç bir saatte yenilenir.
+ */
+export function getCachedMenuData(branchId: string, lang: LanguageCode) {
+  return unstable_cache(
+    () => getMenuData(branchId, lang),
+    ["menu-data", branchId, lang],
+    {
+      tags: [branchTag(branchId)],
+      revalidate: 3600,
+    },
+  )();
+}
+
+/** Menü adresinden şube, işletme durumu ve diller. Abonelik tarihleri metin olarak saklanır. */
+export const getMenuLookup = unstable_cache(
+  async (businessSlug: string, branchSlug: string) => {
+    const branch = await db.branch.findFirst({
+      where: {
+        slug: branchSlug,
+        deletedAt: null,
+        business: { slug: businessSlug, deletedAt: null },
+      },
+      include: {
+        business: {
+          select: {
+            name: true,
+            isActive: true,
+            subscriptions: {
+              select: { status: true, startsAt: true, endsAt: true },
+            },
+          },
+        },
+      },
+    });
+    if (!branch) return null;
+    return {
+      branchId: branch.id,
+      branchName: branch.name,
+      businessName: branch.business.name,
+      languages: branch.languages,
+      isActive: branch.business.isActive,
+      subscriptions: branch.business.subscriptions.map((s) => ({
+        status: s.status,
+        startsAt: s.startsAt.toISOString(),
+        endsAt: s.endsAt.toISOString(),
+      })),
+    };
+  },
+  ["menu-lookup"],
+  { tags: [MENU_LOOKUP_TAG], revalidate: 3600 },
+);
+
+/** Arama filtresindeki 14 alerjen ve diyet etiketi (seçilen dilde). */
+export const getMenuReference = unstable_cache(
+  async (lang: LanguageCode) => {
+    const [allergens, tags] = await Promise.all([
+      db.allergen.findMany(),
+      db.tag.findMany(),
+    ]);
+    const sort = (a: { name: string }, b: { name: string }) =>
+      a.name.localeCompare(b.name, lang);
+    return {
+      allergens: allergens
+        .map((a) => ({ code: a.code, name: translate(a, lang).name }))
+        .sort(sort),
+      tags: tags
+        .map((t) => ({ code: t.code, name: translate(t, lang).name }))
+        .sort(sort),
+    };
+  },
+  ["menu-reference"],
+  { revalidate: 86400 },
+);

@@ -4,31 +4,18 @@ import {
   isLanguageCode,
   type LanguageCode,
 } from "@/lib/languages";
+import {
+  DAYS,
+  type Day,
+  type OpeningHours,
+  SOCIALS,
+  type SocialKey,
+  type Socials,
+} from "@/lib/branch-info";
 import { slug } from "@/lib/validations/business";
 
-export const DAYS = [
-  ["mon", "Pazartesi"],
-  ["tue", "Salı"],
-  ["wed", "Çarşamba"],
-  ["thu", "Perşembe"],
-  ["fri", "Cuma"],
-  ["sat", "Cumartesi"],
-  ["sun", "Pazar"],
-] as const;
-export type Day = (typeof DAYS)[number][0];
-
-/** { mon: [["08:00", "23:00"]], sun: [] } — boş dizi: kapalı. Kapanış açılıştan küçükse gece yarısını geçer. */
-export type OpeningHours = Partial<Record<Day, [string, string][]>>;
-
-export const SOCIALS = [
-  ["instagram", "Instagram", "https://instagram.com/"],
-  ["facebook", "Facebook", "https://facebook.com/"],
-  ["tiktok", "TikTok", "https://tiktok.com/@"],
-  ["x", "X (Twitter)", "https://x.com/"],
-  ["website", "Web sitesi", "https://"],
-] as const;
-export type SocialKey = (typeof SOCIALS)[number][0];
-export type Socials = Partial<Record<SocialKey, string>>;
+export { DAYS, SOCIALS };
+export type { Day, OpeningHours, SocialKey, Socials };
 
 /** "@limonkafe", "limonkafe" veya tam adres → tam adres. */
 export function normalizeSocial(key: SocialKey, value: string) {

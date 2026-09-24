@@ -1,19 +1,14 @@
 import Image from "next/image";
 import { FlameIcon, ImageIcon } from "lucide-react";
-import { formatPrice } from "@/lib/format";
 import { productImageSrc } from "@/lib/product-image";
 import { cn } from "@/lib/utils";
+import { priceText } from "./client-data";
 import type { MenuLabels } from "./labels";
 import type { MenuProduct } from "./types";
 
 /** "₺85,00" veya çok boylu üründe "₺85,00’den" */
 export function priceLabel(product: MenuProduct, labels: MenuLabels) {
-  const prices = product.variants.map((v) => v.price);
-  if (prices.length === 0) return "";
-  const min = Math.min(...prices);
-  return prices.length > 1
-    ? `${formatPrice(min)}${labels.from}`
-    : formatPrice(min);
+  return priceText(product, labels);
 }
 
 /** Ürün görseli: önceden üretilmiş 400/800/1200 px dosyadan (MIMARI §9). */
