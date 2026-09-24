@@ -3,7 +3,13 @@ import { unstable_cache } from "next/cache";
 import type { MenuData } from "@/components/menu/types";
 import { getCurrentSubscription } from "@/lib/business-status";
 import { branchTag, MENU_LOOKUP_TAG } from "@/lib/cache";
+import {
+  isCampaignLive,
+  specialDateFromKey,
+  specialDateKey,
+} from "@/lib/campaigns";
 import { db } from "@/lib/db";
+import { toDateInputValue } from "@/lib/format";
 import type { LanguageCode } from "@/lib/languages";
 import { effectiveAppearance } from "@/lib/menu-themes";
 import { readPlanFeatures } from "@/lib/plan-features";
@@ -48,10 +54,22 @@ export async function getMenuData(
   branchId: string,
   lang: LanguageCode,
 ): Promise<MenuData | null> {
+  const now = new Date();
+  // Dün de dahil: önbellek gece yarısını geçse de bugünün önerisi elde olur.
+  const yesterday = toDateInputValue(new Date(now.getTime() - 86_400_000));
   const branch = await db.branch.findUnique({
     where: { id: branchId, deletedAt: null },
     include: {
       business: { include: { subscriptions: { include: { plan: true } } } },
+      campaigns: {
+        where: { isActive: true, endsAt: { gt: now } },
+        orderBy: { startsAt: "asc" },
+      },
+      dailySpecials: {
+        where: { date: { gte: specialDateFromKey(yesterday) } },
+        orderBy: { date: "asc" },
+        take: 90,
+      },
       categories: {
         where: { deletedAt: null, isVisible: true },
         orderBy: { sortOrder: "asc" },
@@ -73,6 +91,53 @@ export async function getMenuData(
   });
   if (!branch) return null;
 
+  const categories = branch.categories
+    .map((category) => ({
+      id: category.id,
+      ...translate(category, lang),
+      products: category.products.map((p) => ({
+        id: p.id,
+        ...translate(p, lang),
+        image: p.images[0]
+          ? { url: p.images[0].url, blurDataUrl: p.images[0].blurDataUrl }
+          : null,
+        variants: p.variants.map((v) => ({
+          name: v.name
+            ? translate({ name: v.name, translations: v.translations }, lang)
+                .name
+            : null,
+          price: v.price,
+        })),
+        badges: p.badges,
+        isAvailable: p.isAvailable,
+        spiceLevel: p.spiceLevel,
+        allergens: p.allergens.map((a) => ({
+          code: a.allergen.code,
+          name: translate(a.allergen, lang).name,
+          level: a.level,
+        })),
+        tags: p.tags.map((t) => ({
+          code: t.tag.code,
+          name: translate(t.tag, lang).name,
+        })),
+        ingredients: p.ingredients,
+        portion: p.portion,
+        prepTime: p.prepTime,
+        origin: p.origin,
+        nutrition: p.nutrition
+          ? {
+              calories: p.nutrition.calories,
+              protein: p.nutrition.protein,
+              carbs: p.nutrition.carbs,
+              fat: p.nutrition.fat,
+              sugar: p.nutrition.sugar,
+              salt: p.nutrition.salt,
+            }
+          : null,
+      })),
+    }))
+    .filter((c) => c.products.length > 0);
+
   const plan = getCurrentSubscription(branch.business.subscriptions)?.plan;
   const openingHours = branch.openingHours as OpeningHours;
 
@@ -90,66 +155,71 @@ export async function getMenuData(
       wifi: branch.wifi,
       socials: branch.socials as Socials,
       openingHours,
-      // Güne bağlıdır; önbelleğe girmez, `withTodayHours` ile istek anında hesaplanır.
+      // Güne bağlıdır; önbelleğe girmez, `withToday` ile istek anında hesaplanır.
       todayHours: null,
     },
-    categories: branch.categories
-      .map((category) => ({
-        id: category.id,
-        ...translate(category, lang),
-        products: category.products.map((p) => ({
-          id: p.id,
-          ...translate(p, lang),
-          image: p.images[0]
-            ? { url: p.images[0].url, blurDataUrl: p.images[0].blurDataUrl }
-            : null,
-          variants: p.variants.map((v) => ({
-            name: v.name
-              ? translate({ name: v.name, translations: v.translations }, lang)
-                  .name
-              : null,
-            price: v.price,
-          })),
-          badges: p.badges,
-          isAvailable: p.isAvailable,
-          spiceLevel: p.spiceLevel,
-          allergens: p.allergens.map((a) => ({
-            code: a.allergen.code,
-            name: translate(a.allergen, lang).name,
-            level: a.level,
-          })),
-          tags: p.tags.map((t) => ({
-            code: t.tag.code,
-            name: translate(t.tag, lang).name,
-          })),
-          ingredients: p.ingredients,
-          portion: p.portion,
-          prepTime: p.prepTime,
-          origin: p.origin,
-          nutrition: p.nutrition
-            ? {
-                calories: p.nutrition.calories,
-                protein: p.nutrition.protein,
-                carbs: p.nutrition.carbs,
-                fat: p.nutrition.fat,
-                sugar: p.nutrition.sugar,
-                salt: p.nutrition.salt,
-              }
-            : null,
-        })),
-      }))
-      .filter((c) => c.products.length > 0),
+    categories,
+    campaigns: branch.campaigns.map((c) => {
+      // Kampanya çevirileri ortak yapıdadır: başlık `name` anahtarında.
+      const text = translate(
+        {
+          name: c.title,
+          description: c.description,
+          translations: c.translations,
+        },
+        lang,
+      );
+      return {
+        id: c.id,
+        title: text.name,
+        description: text.description,
+        image: c.imageUrl
+          ? { url: c.imageUrl, blurDataUrl: c.blurDataUrl }
+          : null,
+        startsAt: c.startsAt.toISOString(),
+        endsAt: c.endsAt.toISOString(),
+      };
+    }),
+    dailySpecials: branch.dailySpecials.map((d) => ({
+      date: specialDateKey(d.date),
+      productId: d.productId,
+    })),
+    dailyProductId: null,
+    featuredIds: branch.categories.flatMap((c) =>
+      c.products.filter((p) => p.isFeatured).map((p) => p.id),
+    ),
   };
 }
 
-/** Bugünün çalışma saatini (Türkiye saatiyle) ekler. */
-export function withTodayHours(data: MenuData, now = new Date()): MenuData {
+/**
+ * Güne ve saate bağlı alanları istek anında hesaplar (önbellek bir saate kadar eski
+ * olabilir): bugünün çalışma saati, yayındaki kampanyalar ve günün önerisi.
+ */
+export function withToday(data: MenuData, now = new Date()): MenuData {
+  const today = toDateInputValue(now);
+  const productIds = new Set(
+    data.categories.flatMap((c) => c.products.map((p) => p.id)),
+  );
+  const special = data.dailySpecials.find(
+    (d) => d.date === today && productIds.has(d.productId),
+  );
   return {
     ...data,
     branch: {
       ...data.branch,
       todayHours: todayHours(data.branch.openingHours, now),
     },
+    campaigns: data.campaigns.filter((c) =>
+      isCampaignLive(
+        {
+          isActive: true,
+          startsAt: new Date(c.startsAt),
+          endsAt: new Date(c.endsAt),
+        },
+        now,
+      ),
+    ),
+    dailyProductId: special?.productId ?? null,
   };
 }
 
@@ -157,10 +227,14 @@ export function withTodayHours(data: MenuData, now = new Date()): MenuData {
  * Önbellekli menü verisi (MIMARI §8): `branch:{id}` etiketiyle saklanır; paneldeki her
  * değişiklik bu etiketi temizler. Güvenlik ağı olarak en geç bir saatte yenilenir.
  */
+// Önbellekteki verinin yapısı (MenuData) değiştiğinde artırılır; yoksa yayına çıkıştan
+// sonra eski yapıdaki kayıtlar bir saate kadar okunur ve menü bozulur.
+const MENU_DATA_VERSION = 2;
+
 export function getCachedMenuData(branchId: string, lang: LanguageCode) {
   return unstable_cache(
     () => getMenuData(branchId, lang),
-    ["menu-data", branchId, lang],
+    ["menu-data", String(MENU_DATA_VERSION), branchId, lang],
     {
       tags: [branchTag(branchId)],
       revalidate: 3600,

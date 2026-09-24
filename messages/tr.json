@@ -70,6 +70,10 @@
     "allergenTableNote": "Bu belge, işletmenin sisteme girdiği bilgilere göre oluşturulmuştur. Emin değilseniz lütfen personele danışın.",
     "generatedOn": "Oluşturulma tarihi: {date}",
     "product": "Ürün",
-    "digitalMenu": "Dijital menü"
+    "digitalMenu": "Dijital menü",
+    "campaigns": "Kampanyalar",
+    "campaignUntil": "{date} tarihine kadar",
+    "dailySpecial": "Günün önerisi",
+    "featured": "Öne çıkanlar"
   }
 }

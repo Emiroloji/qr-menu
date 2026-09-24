@@ -6,6 +6,7 @@ import {
   ProductLink,
 } from "../client/islands";
 import { BusinessMark, priceLabel, ProductPhoto } from "../parts";
+import { Promotions } from "../promotions";
 import type { ThemeProps } from "./index";
 
 /** Sıcak: kapak görseli, üst üste binen logo, iki sütunlu kartlar (Faz 0.1). */
@@ -58,6 +59,7 @@ export function WarmTheme({ data, labels }: ThemeProps) {
       />
 
       <main className="flex flex-col gap-6 px-5 pb-6">
+        <Promotions data={data} labels={labels} />
         {categories.map((category) => (
           <section
             key={category.id}

@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { MENU_PERMISSIONS } from "@/lib/permissions";
+import { STAFF_PERMISSIONS } from "@/lib/permissions";
 
 export const staffSchema = z.object({
   name: z.string().trim().min(1, "Çalışanın adını girin.").max(100),
   permissions: z
-    .array(z.enum(MENU_PERMISSIONS as [string, ...string[]]))
+    .array(z.enum(STAFF_PERMISSIONS as [string, ...string[]]))
     .transform((p) => [...new Set(p)]),
 });
 

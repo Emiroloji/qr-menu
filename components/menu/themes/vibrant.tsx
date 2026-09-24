@@ -5,6 +5,7 @@ import {
   ProductLink,
 } from "../client/islands";
 import { priceLabel, ProductPhoto } from "../parts";
+import { Promotions } from "../promotions";
 import type { ThemeProps } from "./index";
 
 /** Canlı: renkli başlık bloğu, büyük yazı, kalın çerçeveli kartlar (Faz 0.1). */
@@ -40,6 +41,7 @@ export function VibrantTheme({ data, labels }: ThemeProps) {
       />
 
       <main className="flex flex-col gap-6 px-5 py-4">
+        <Promotions data={data} labels={labels} />
         {categories.map((category) => (
           <section
             key={category.id}

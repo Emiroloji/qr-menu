@@ -35,6 +35,10 @@ export function createMenuLabels(
     spice: t("spice"),
     photoOf: (name: string) => t("photoOf", { name }),
     logoOf: (name: string) => t("logoOf", { name }),
+    campaigns: t("campaigns"),
+    campaignUntil: (date: string) => t("campaignUntil", { date }),
+    dailySpecial: t("dailySpecial"),
+    featured: t("featured"),
   };
 }
 export type MenuLabels = ReturnType<typeof createMenuLabels>;

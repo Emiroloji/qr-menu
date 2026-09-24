@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useFormAction } from "@/hooks/use-form-action";
 import type { Permission } from "@/lib/generated/prisma/enums";
-import { MENU_PERMISSIONS, PERMISSION_LABELS } from "@/lib/permissions";
+import { STAFF_PERMISSIONS, PERMISSION_LABELS } from "@/lib/permissions";
 
 export type StaffValues = {
   id: string;
@@ -103,7 +103,7 @@ export function StaffForm({ staff }: { staff?: StaffValues }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          {MENU_PERMISSIONS.map((permission) => (
+          {STAFF_PERMISSIONS.map((permission) => (
             <div key={permission} className="flex items-start gap-3">
               <Checkbox
                 id={permission}

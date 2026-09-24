@@ -7,6 +7,7 @@ import {
   BarChart3Icon,
   BookOpenIcon,
   EllipsisIcon,
+  MegaphoneIcon,
   LayoutDashboardIcon,
   MapPinIcon,
   PaletteIcon,
@@ -25,6 +26,7 @@ import { cn } from "@/lib/utils";
 const ICONS = {
   dashboard: LayoutDashboardIcon,
   menu: BookOpenIcon,
+  campaigns: MegaphoneIcon,
   qr: QrCodeIcon,
   stats: BarChart3Icon,
   branches: MapPinIcon,

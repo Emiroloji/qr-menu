@@ -18,9 +18,10 @@ import {
 import type { ActionResult } from "@/lib/action";
 import { cn } from "@/lib/utils";
 
-/** Tek görsel yükleme kartı (logo, kapak). Dosya `/api/upload?kind=…` ile gönderilir. */
+/** Tek görsel yükleme kartı (logo, kapak, kampanya). Dosya `/api/upload?kind=…` ile gönderilir. */
 export function ImageUploader({
   kind,
+  params,
   title,
   description,
   imageUrl,
@@ -29,7 +30,9 @@ export function ImageUploader({
   unavailableMessage,
   onRemove,
 }: {
-  kind: "logo" | "cover";
+  kind: "logo" | "cover" | "campaign";
+  /** Yükleme adresine eklenecek parametreler, ör. `campaignId=…` */
+  params?: string;
   title: string;
   description: string;
   imageUrl: string | null;
@@ -49,10 +52,13 @@ export function ImageUploader({
     startTransition(async () => {
       const body = new FormData();
       body.set("file", file);
-      const response = await fetch(`/api/upload?kind=${kind}`, {
-        method: "POST",
-        body,
-      });
+      const response = await fetch(
+        `/api/upload?kind=${kind}${params ? `&${params}` : ""}`,
+        {
+          method: "POST",
+          body,
+        },
+      );
       const result: { error?: string } = await response
         .json()
         .catch(() => ({}));

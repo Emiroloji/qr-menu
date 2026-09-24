@@ -421,6 +421,8 @@ async function seedDemoBusiness() {
     },
   });
 
+  await seedDemoCampaigns(business.id, now);
+
   await upsertUser({
     email: "sahip@limonkafe.test",
     name: "Ayşe Yılmaz",
@@ -434,6 +436,49 @@ async function seedDemoBusiness() {
     businessId: business.id,
     permissions: ["PRODUCT_TOGGLE_AVAILABILITY"],
   });
+}
+
+/** Örnek kampanya, bugünün önerisi ve öne çıkan ürünler (Faz 2.3). */
+async function seedDemoCampaigns(businessId: string, now: Date) {
+  const branch = await db.branch.findFirstOrThrow({ where: { businessId } });
+  const product = (name: string) =>
+    db.product.findFirstOrThrow({
+      where: { name, category: { branchId: branch.id } },
+    });
+  const monthLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  await db.campaign.create({
+    data: {
+      branchId: branch.id,
+      title: "Hafta içi 15:00–17:00 tatlılarda %20 indirim",
+      description: "Kahvenizin yanına bir dilim cheesecake.",
+      startsAt: now,
+      endsAt: monthLater,
+      translations: {
+        en: {
+          name: "20% off desserts on weekdays, 3–5 pm",
+          description: "A slice of cheesecake with your coffee.",
+        },
+      },
+    },
+  });
+
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Istanbul",
+  }).format(now);
+  await db.dailySpecial.create({
+    data: {
+      branchId: branch.id,
+      productId: (await product("San Sebastian Cheesecake")).id,
+      date: new Date(`${today}T00:00:00Z`),
+    },
+  });
+  for (const name of ["Latte", "Soğuk Demleme", "Akdeniz Salatası"]) {
+    await db.product.update({
+      where: { id: (await product(name)).id },
+      data: { isFeatured: true },
+    });
+  }
 }
 
 async function main() {

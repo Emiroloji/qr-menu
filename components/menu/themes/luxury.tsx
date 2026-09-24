@@ -5,6 +5,7 @@ import {
   ProductLink,
 } from "../client/islands";
 import { BusinessMark, priceLabel, SpiceLevel } from "../parts";
+import { Promotions } from "../promotions";
 import type { ThemeProps } from "./index";
 
 /** Lüks: koyu zemin, ortalı serif başlık, fotoğrafsız, noktalı fiyat çizgisi (Faz 0.1). */
@@ -44,6 +45,7 @@ export function LuxuryTheme({ data, labels }: ThemeProps) {
       />
 
       <main className="flex flex-col gap-10 px-7 py-7">
+        <Promotions data={data} labels={labels} />
         {categories.map((category) => (
           <section
             key={category.id}

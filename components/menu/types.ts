@@ -34,6 +34,16 @@ export type MenuCategory = {
   products: MenuProduct[];
 };
 
+/** Kampanya banner'ı (Faz 2.3). Tarihler önbellekte metin olarak saklanır (ISO). */
+export type MenuCampaign = {
+  id: string;
+  title: string;
+  description: string | null;
+  image: { url: string; blurDataUrl: string | null } | null;
+  startsAt: string;
+  endsAt: string;
+};
+
 export type MenuData = {
   lang: LanguageCode;
   appearance: {
@@ -54,4 +64,12 @@ export type MenuData = {
     todayHours: string | null;
   };
   categories: MenuCategory[];
+  /** Önbellekte bitmemiş kampanyalar; istek anında yalnızca yayındakiler kalır. */
+  campaigns: MenuCampaign[];
+  /** Planlanmış günün önerileri ("YYYY-MM-DD"); istek anında `dailyProductId` seçilir. */
+  dailySpecials: { date: string; productId: string }[];
+  /** Bugünün önerisi; önbelleğe girmez, istek anında hesaplanır. */
+  dailyProductId: string | null;
+  /** "Öne çıkanlar" alanındaki ürünler, menü sırasıyla. */
+  featuredIds: string[];
 };

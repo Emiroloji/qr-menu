@@ -68,3 +68,15 @@ export async function assertStaffBelongsToBusiness(
   if (!staff) throw new ActionError("Çalışan bulunamadı.");
   return staff;
 }
+
+export async function assertCampaignBelongsToBusiness(
+  campaignId: string,
+  businessId: string,
+) {
+  const campaign = await db.campaign.findFirst({
+    where: { id: campaignId, branch: { businessId, deletedAt: null } },
+    select: { id: true, branchId: true, imageUrl: true },
+  });
+  if (!campaign) throw new ActionError("Kampanya bulunamadı.");
+  return campaign;
+}

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { signOut } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
-import { hasAnyMenuPermission } from "@/lib/permissions";
+import { hasAnyMenuPermission, hasPermission } from "@/lib/permissions";
 import { getBusinessContext, requireSession } from "@/lib/session";
 import {
   type NavItem,
@@ -24,6 +24,11 @@ export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
     ...(hasAnyMenuPermission(user)
       ? ([
           { href: "/panel/menu", label: "Menü", icon: "menu" },
+        ] satisfies NavItem[])
+      : []),
+    ...(hasPermission(user, "CAMPAIGN_EDIT")
+      ? ([
+          { href: "/panel/campaigns", label: "Kampanyalar", icon: "campaigns" },
         ] satisfies NavItem[])
       : []),
     ...(user.role === "OWNER"

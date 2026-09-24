@@ -70,6 +70,10 @@
     "allergenTableNote": "This document is generated from the information entered by the venue. If in doubt, please ask the staff.",
     "generatedOn": "Generated on {date}",
     "product": "Item",
-    "digitalMenu": "Digital menu"
+    "digitalMenu": "Digital menu",
+    "campaigns": "Offers",
+    "campaignUntil": "Until {date}",
+    "dailySpecial": "Today's pick",
+    "featured": "Featured"
   }
 }

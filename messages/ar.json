@@ -70,6 +70,10 @@
     "allergenTableNote": "أُعدّ هذا المستند وفق المعلومات التي أدخلها المطعم. إذا كنت غير متأكد، يُرجى سؤال الموظفين.",
     "generatedOn": "تاريخ الإنشاء: {date}",
     "product": "الطبق",
-    "digitalMenu": "القائمة الرقمية"
+    "digitalMenu": "القائمة الرقمية",
+    "campaigns": "العروض",
+    "campaignUntil": "حتى {date}",
+    "dailySpecial": "اقتراح اليوم",
+    "featured": "مميز"
   }
 }

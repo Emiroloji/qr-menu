@@ -9,15 +9,18 @@ export function ProductLink({
   id,
   className,
   children,
+  anchor = true,
 }: {
   id: string;
   className?: string;
   children: React.ReactNode;
+  /** Ürün listesindeki asıl bağlantı; öne çıkanlar gibi tekrarlarda false (tekil id). */
+  anchor?: boolean;
 }) {
   const { open } = useMenu();
   return (
     <a
-      id={`p-${id}`}
+      id={anchor ? `p-${id}` : undefined}
       href={`#p-${id}`}
       aria-haspopup="dialog"
       className={className}

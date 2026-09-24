@@ -27,6 +27,11 @@ export const PERMISSION_LABELS: Record<
     label: "Kategori yönetimi",
     description: "Kategori ekler, düzenler, sıralar, gizler, siler.",
   },
+  CAMPAIGN_EDIT: {
+    label: "Kampanya yönetimi",
+    description:
+      "Kampanya banner'ı, günün önerisi ve öne çıkan ürünleri yönetir.",
+  },
 };
 
 /** Menü ekranına erişim sağlayan yetkiler. */
@@ -35,6 +40,12 @@ export const MENU_PERMISSIONS: Permission[] = [
   "PRODUCT_EDIT_PRICE",
   "PRODUCT_EDIT",
   "CATEGORY_EDIT",
+];
+
+/** Çalışana verilebilen tüm yetkiler (çalışan formu sırası). */
+export const STAFF_PERMISSIONS: Permission[] = [
+  ...MENU_PERMISSIONS,
+  "CAMPAIGN_EDIT",
 ];
 
 export function homePathFor(role: Role) {

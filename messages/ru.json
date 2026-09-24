@@ -70,6 +70,10 @@
     "allergenTableNote": "Документ составлен на основе данных, внесённых заведением. Если сомневаетесь, спросите персонал.",
     "generatedOn": "Дата создания: {date}",
     "product": "Блюдо",
-    "digitalMenu": "Электронное меню"
+    "digitalMenu": "Электронное меню",
+    "campaigns": "Акции",
+    "campaignUntil": "До {date}",
+    "dailySpecial": "Блюдо дня",
+    "featured": "Рекомендуем"
   }
 }

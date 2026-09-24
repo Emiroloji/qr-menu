@@ -15,7 +15,7 @@ import {
   getCachedMenuData,
   getMenuLookup,
   getMenuReference,
-  withTodayHours,
+  withToday,
 } from "@/lib/menu-data";
 import { getMenuMessages } from "@/lib/menu-messages";
 import { recordScan } from "@/lib/scan-log";
@@ -73,7 +73,7 @@ export default async function MenuPage({ params, searchParams }: Props) {
     getMenuReference(lang),
   ]);
   if (!cached) notFound();
-  const data = withTodayHours(cached);
+  const data = withToday(cached);
   const labels = createMenuLabels(lang, messages);
   const client = buildClientData(data, labels, messages, {
     ...reference,

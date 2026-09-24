@@ -9,7 +9,10 @@ import {
   toLogo,
   toProductImages,
 } from "@/lib/images";
-import { assertProductBelongsToBusiness } from "@/lib/ownership";
+import {
+  assertCampaignBelongsToBusiness,
+  assertProductBelongsToBusiness,
+} from "@/lib/ownership";
 import { assertOwner, requirePermission } from "@/lib/permissions";
 import {
   assertFeature,
@@ -18,6 +21,7 @@ import {
   readPlanFeatures,
 } from "@/lib/plan-features";
 import { requireWritableSession } from "@/lib/session";
+import { productImageFiles } from "@/lib/product-image";
 import { deleteFiles, publicUrl, uploadFile } from "@/lib/storage";
 
 const MAX_PRODUCT_IMAGES = 10;
@@ -30,6 +34,7 @@ const error = (message: string, status: number) =>
  * - `?kind=logo`: işletme logosu (yalnızca sahip, "Logo ve renkler" içeren paket)
  * - `?kind=cover`: menü kapak görseli (yalnızca sahip, "Tam özelleştirme" içeren paket)
  * - `?kind=product&productId=…`: ürün görseli, 400/800/1200 px + bulanık önizleme
+ * - `?kind=campaign&campaignId=…`: kampanya banner'ı, ürün görseliyle aynı boyutlar (Faz 2.3)
  * Yetki, dosya gövdesi okunmadan önce kontrol edilir.
  */
 export async function POST(request: Request) {
@@ -38,6 +43,11 @@ export async function POST(request: Request) {
 
   let context;
   let product: { id: string; branchId: string } | null = null;
+  let campaign: {
+    id: string;
+    branchId: string;
+    imageUrl: string | null;
+  } | null = null;
   try {
     context = await requireWritableSession();
     const features = readPlanFeatures(context.subscription?.plan.features);
@@ -62,6 +72,14 @@ export async function POST(request: Request) {
           400,
         );
       }
+    } else if (kind === "campaign") {
+      await requirePermission(context.user, "CAMPAIGN_EDIT");
+      const campaignId = params.get("campaignId");
+      if (!campaignId) return error("Kampanya seçin.", 400);
+      campaign = await assertCampaignBelongsToBusiness(
+        campaignId,
+        context.businessId,
+      );
     } else {
       return error("Geçersiz yükleme türü.", 400);
     }
@@ -102,6 +120,25 @@ export async function POST(request: Request) {
     });
     expireBranchMenu(product.branchId);
     return Response.json({ image });
+  }
+
+  if (campaign) {
+    const { sizes, blurDataUrl } = await toProductImages(buffer);
+    const base = `business/${businessId}/campaigns/${campaign.id}/${randomUUID()}`;
+    await Promise.all(
+      sizes.map((s) =>
+        uploadFile(`${base}-${s.width}.webp`, s.buffer, "image/webp"),
+      ),
+    );
+    const url = publicUrl(base);
+    await db.campaign.update({
+      where: { id: campaign.id },
+      data: { imageUrl: url, blurDataUrl },
+    });
+    if (campaign.imageUrl)
+      await deleteFiles(productImageFiles(campaign.imageUrl));
+    expireBranchMenu(campaign.branchId);
+    return Response.json({ url });
   }
 
   if (kind === "cover") {

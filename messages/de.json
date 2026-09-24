@@ -70,6 +70,10 @@
     "allergenTableNote": "Dieses Dokument basiert auf den Angaben des Betriebs. Fragen Sie im Zweifel bitte das Personal.",
     "generatedOn": "Erstellt am {date}",
     "product": "Gericht",
-    "digitalMenu": "Digitale Speisekarte"
+    "digitalMenu": "Digitale Speisekarte",
+    "campaigns": "Angebote",
+    "campaignUntil": "Bis {date}",
+    "dailySpecial": "Empfehlung des Tages",
+    "featured": "Empfehlungen"
   }
 }

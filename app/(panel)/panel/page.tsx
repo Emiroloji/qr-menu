@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   BookOpenIcon,
   MapPinIcon,
+  MegaphoneIcon,
   PackageIcon,
   SettingsIcon,
   UsersIcon,
@@ -11,7 +12,11 @@ import { PageHeader } from "@/components/panel/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/format";
-import { hasAnyMenuPermission, PERMISSION_LABELS } from "@/lib/permissions";
+import {
+  hasAnyMenuPermission,
+  hasPermission,
+  PERMISSION_LABELS,
+} from "@/lib/permissions";
 import { countUsage } from "@/lib/plan-limits";
 import { getBusinessContext, requireSession } from "@/lib/session";
 
@@ -100,15 +105,23 @@ export default async function PanelPage() {
                 ))}
               </ul>
             )}
-            {hasAnyMenuPermission(user) && (
-              <Link
-                href="/panel/menu"
-                className={buttonVariants({ className: "w-fit" })}
-              >
-                <BookOpenIcon />
-                Menüye git
-              </Link>
-            )}
+            <div className="flex flex-wrap gap-2">
+              {hasAnyMenuPermission(user) && (
+                <Link href="/panel/menu" className={buttonVariants()}>
+                  <BookOpenIcon />
+                  Menüye git
+                </Link>
+              )}
+              {hasPermission(user, "CAMPAIGN_EDIT") && (
+                <Link
+                  href="/panel/campaigns"
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  <MegaphoneIcon />
+                  Kampanyalar
+                </Link>
+              )}
+            </div>
           </CardContent>
         </Card>
       </>
