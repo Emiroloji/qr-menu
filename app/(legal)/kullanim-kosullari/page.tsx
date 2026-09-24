@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage } from "@/components/legal/legal-page";
+import { COMPANY } from "@/lib/company";
 
 export const metadata: Metadata = { title: "Kullanım Koşulları" };
 
-// TASLAK — köşeli parantezli alanlar doldurulmalı ve hukukçu onayı alınmalıdır.
+// Metin yayından önce hukukçuya onaylatılmalıdır; şirket bilgileri lib/company.ts'te.
 export default function TermsPage() {
   return (
-    <LegalPage title="Kullanım Koşulları" updatedAt="[TARİH]">
+    <LegalPage title="Kullanım Koşulları">
       <p>
-        Bu koşullar, [ŞİRKET UNVANI] (“QR Menü”) tarafından sunulan dijital menü
-        hizmetinin işletmeler tarafından kullanımını düzenler.
+        Bu koşullar, {COMPANY.legalName} (“QR Menü”) tarafından sunulan dijital
+        menü hizmetinin işletmeler tarafından kullanımını düzenler.
       </p>
 
       <h2>1. Hizmet</h2>
@@ -52,13 +53,23 @@ export default function TermsPage() {
       <p>
         Hizmet, seçilen paketin limitleri ve özellikleriyle sunulur. Abonelik
         süresi dolduğunda menü yayından kalkar ve panel salt okunur olur.
-        Ücretlendirme ve ödeme koşulları: [KOŞULLAR].
+        Abonelik ücreti, seçilen paket ve süre için peşin olarak ödenir; bitiş
+        tarihinden 7 gün önce panelde hatırlatma yapılır. Süresi dolan abonelik
+        yenilenmezse işletme verileri silinmez; yenilendiğinde menü yeniden
+        yayına girer.
       </p>
 
       <h2>5. Değişiklikler ve iletişim</h2>
       <p>
         QR Menü bu koşulları güncelleyebilir; güncel metin bu sayfada
-        yayınlanır. İletişim: [İLETİŞİM E-POSTA ADRESİ].
+        yayınlanır. İletişim:{" "}
+        <a
+          href={`mailto:${COMPANY.supportEmail}`}
+          className="underline underline-offset-4"
+        >
+          {COMPANY.supportEmail}
+        </a>
+        .
       </p>
 
       <p className="text-sm text-stone-600 dark:text-stone-400">

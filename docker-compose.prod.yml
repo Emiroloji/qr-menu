@@ -38,19 +38,57 @@ services:
     expose: ["3000"]
 
   # HTTPS: alan adı için Let's Encrypt sertifikasını otomatik alır ve yeniler.
+  # Alan adı yokken DOMAIN=":80" ile yalnızca HTTP (IP adresiyle) çalışır.
   caddy:
     image: caddy:2
     restart: unless-stopped
-    ports: ["80:80", "443:443"]
+    ports: ["80:80", "443:443", "8000:8000"]
     environment:
       DOMAIN: ${DOMAIN}
+      GLITCHTIP_SITE: ${GLITCHTIP_SITE:-:8000}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
       - caddy-config:/config
     depends_on: [app]
 
+  # --- Hata izleme (isteğe bağlı, ücretsiz, kendi sunucumuzda): GlitchTip ---
+  # Başlatma: docker compose -f docker-compose.prod.yml --env-file .env.production --profile monitoring up -d
+  glitchtip-db:
+    image: postgres:17
+    profiles: [monitoring]
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: ${GLITCHTIP_DB_PASSWORD}
+      POSTGRES_DB: glitchtip
+    volumes:
+      - glitchtip-db-data:/var/lib/postgresql/data
+
+  glitchtip-valkey:
+    image: valkey/valkey:8
+    profiles: [monitoring]
+    restart: unless-stopped
+
+  # Web, arka plan işleri ve migration'lar tek konteynerde (~200 MB bellek).
+  glitchtip:
+    image: glitchtip/glitchtip
+    profiles: [monitoring]
+    restart: unless-stopped
+    command: ./bin/run-all-in-one.sh
+    environment:
+      DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD}@glitchtip-db:5432/glitchtip
+      VALKEY_URL: redis://glitchtip-valkey:6379/0
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY}
+      GLITCHTIP_DOMAIN: ${GLITCHTIP_DOMAIN}
+      DEFAULT_FROM_EMAIL: ${GLITCHTIP_FROM_EMAIL:-hata@localhost}
+      ENABLE_USER_REGISTRATION: "false"
+      GLITCHTIP_MAX_EVENT_LIFE_DAYS: "30"
+    depends_on: [glitchtip-db, glitchtip-valkey]
+    expose: ["8000"]
+
 volumes:
+  glitchtip-db-data:
   db-data:
   caddy-data:
   caddy-config:

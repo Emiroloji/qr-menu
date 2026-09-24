@@ -5,12 +5,12 @@ Görseller Cloudflare R2'de, e-postalar SMTP ile gönderilir.
 
 ## 1. Gerekenler
 
-- Ubuntu 24.04 (veya benzeri) VPS · en az 2 GB RAM, 2 vCPU, 20 GB disk
+- Ubuntu 24.04 (veya benzeri) VPS · en az 2 GB RAM, 2 vCPU, **40 GB disk** (imajlar ve yedekler için)
 - Docker Engine ve Docker Compose eklentisi
-- Alan adı ve **A kaydı** → VPS IP adresi (ör. `menu.ornek.com`)
+- Alan adı ve **A kaydı** → VPS IP adresi (ör. `menu.ornek.com`) — alan adı yoksa bkz. 2a
 - Cloudflare R2 bucket'ı ve herkese açık adresi (`R2_PUBLIC_URL`)
 - SMTP hesabı (şifre belirleme / sıfırlama e-postaları)
-- Güvenlik duvarı: yalnızca 22 (SSH), 80 ve 443 açık
+- Güvenlik duvarı: yalnızca 22 (SSH), 80, 443 ve (hata izleme için) 8000 açık
 
 ## 2. İlk kurulum
 
@@ -32,6 +32,21 @@ docker compose -f docker-compose.prod.yml --env-file .env.production run --rm \
 
 > `NEXT_PUBLIC_APP_URL` derleme sırasında koda gömülür ve **basılı QR kodların adresidir**.
 > Canlıya almadan önce doğru alan adıyla doldurun; sonradan değiştirmek QR'ları geçersiz kılar.
+
+## 2a. Alan adı olmadan (geçici, IP adresiyle)
+
+`.env.production` içinde:
+
+```
+DOMAIN=:80
+NEXT_PUBLIC_APP_URL=http://<SUNUCU_IP>
+BETTER_AUTH_URL=http://<SUNUCU_IP>
+```
+
+- Uygulama `http://<SUNUCU_IP>` adresinde HTTPS olmadan çalışır (yerelde denendi: giriş, panel, menü).
+- **Alan adı gelmeden QR kod bastırmayın:** QR'lar `NEXT_PUBLIC_APP_URL` adresini içerir;
+  alan adı geldiğinde bu üç değeri güncelleyip `up -d --build` ile yeniden derleyin.
+- Şifre gibi bilgiler HTTPS olmadan şifrelenmeden gider; bu mod yalnızca deneme içindir.
 
 ## 3. Güncelleme
 
@@ -59,15 +74,35 @@ Her gece 03:30'da otomatik yedek (`crontab -e`):
   `BACKUP_RCLONE_REMOTE=r2:qrmenu-yedek` verin (R2'de ayrı ve herkese kapalı bir bucket).
 - Geri yükleme (mevcut veriyi siler, onay ister): `./scripts/restore-db.sh backups/<dosya>.sql.gz`
 
-## 5. Kayıtlar ve hata izleme
+## 5. Kayıtlar ve hata izleme (GlitchTip — ücretsiz, kendi sunucumuzda)
 
 - Uygulama kayıtları: `docker compose -f docker-compose.prod.yml logs -f app`
-- Sunucu hataları tek satırlık JSON olarak yazılır (`instrumentation.ts`). Harici bir hata
-  izleme servisi seçildiğinde buraya bağlanır.
+- Sunucu hataları her zaman tek satırlık JSON olarak yazılır (`instrumentation.ts`).
+- **GlitchTip** (Sentry uyumlu, açık kaynak) aynı sunucuda `monitoring` profiliyle çalışır
+  (~250 MB bellek). Kurulum:
+
+```bash
+# .env.production: GLITCHTIP_SECRET_KEY, GLITCHTIP_DB_PASSWORD, GLITCHTIP_DOMAIN doldurun
+docker compose -f docker-compose.prod.yml --env-file .env.production --profile monitoring up -d
+# İlk yönetici hesabı:
+docker compose -f docker-compose.prod.yml --env-file .env.production exec glitchtip \
+  ./manage.py createsuperuser
+```
+
+1. `http://<SUNUCU_IP>:8000` adresinde giriş yapın, bir kuruluş ve "Next.js" projesi oluşturun.
+2. Projenin DSN'ini `.env.production` içine `SENTRY_DSN` olarak yazın; adresin ana makinesini
+   `glitchtip:8000` yapın (ör. `http://ANAHTAR@glitchtip:8000/1`).
+3. `docker compose ... up -d app` ile uygulamayı yeniden başlatın.
+
+- Gönderilen hatalarda çerez, başlık, IP, sorgu parametresi ve kullanıcı bilgisi **yoktur**
+  (yerelde denendi). Hatalar 30 gün sonra silinir.
+- Tarayıcıya hata izleme kodu yüklenmez; müşteri menüsünün hızı etkilenmez.
+- Sonraki güncellemelerde tüm servisler için `--profile monitoring` eklemeyi unutmayın.
 
 ## 6. Güvenlik notları
 
 - Uygulama ve veritabanı dışarıya açık değildir; yalnızca Caddy 80/443'ü dinler.
 - Giriş denemeleri sınırlıdır (aynı hesaba 15 dakikada 8, aynı IP'den 30 deneme).
+- Derleme sonrası eski imajlar yer kaplar: ara sıra `docker image prune -f` ve `docker builder prune -f`.
 - `.env.production` depoya girmez; yetkisiz erişime karşı `chmod 600 .env.production`.
 - Sunucuyu düzenli güncelleyin (`unattended-upgrades` önerilir).

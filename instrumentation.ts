@@ -1,10 +1,42 @@
 import type { Instrumentation } from "next";
 
-/**
- * Sunucu hataları tek satırlık JSON olarak kaydedilir (docker logs / journald ile okunur).
- * Kişisel veri yazılmaz: yalnızca yol, yöntem, rota ve hata bilgisi.
- * Harici bir hata izleme servisi (Sentry vb.) seçildiğinde buraya bağlanır.
- */
+// Hata izleme: sunucu hataları her zaman tek satırlık JSON olarak kaydedilir; SENTRY_DSN
+// tanımlıysa ayrıca GlitchTip'e (kendi sunucumuzda, ücretsiz; Sentry uyumlu) gönderilir.
+// Tarayıcıya SDK yüklenmez: müşteri menüsünün JavaScript bütçesi etkilenmez.
+
+const dsn = process.env.SENTRY_DSN;
+
+export async function register() {
+  if (process.env.NEXT_RUNTIME !== "nodejs" || !dsn) return;
+  const Sentry = await import("@sentry/nextjs");
+  Sentry.init({
+    dsn,
+    environment: process.env.NODE_ENV,
+    tracesSampleRate: 0,
+    // Kişisel veri toplanmaz (Sentry v11 `dataCollection`).
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpHeaders: false,
+      httpBodies: [],
+      urlQueryParams: false,
+      databaseQueryData: false,
+      stackFrameVariables: false,
+    },
+    // Ek güvence: çerez, başlık, IP ve sorgu parametreleri gönderilmeden önce silinir.
+    beforeSend(event) {
+      if (event.request) {
+        delete event.request.cookies;
+        delete event.request.headers;
+        delete event.request.query_string;
+        delete event.request.data;
+      }
+      delete event.user;
+      return event;
+    },
+  });
+}
+
 export const onRequestError: Instrumentation.onRequestError = async (
   error,
   request,
@@ -24,4 +56,8 @@ export const onRequestError: Instrumentation.onRequestError = async (
       routeType: context.routeType,
     }),
   );
+  if (dsn) {
+    const Sentry = await import("@sentry/nextjs");
+    Sentry.captureRequestError(error, { ...request, headers: {} }, context);
+  }
 };

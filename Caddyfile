@@ -1,4 +1,6 @@
-# DOMAIN .env.production içinde tanımlanır (ör. menu.ornek.com). Caddy SSL'i otomatik yönetir.
+# DOMAIN .env.production içinde tanımlanır:
+#  - alan adı varsa (ör. menu.ornek.com) Caddy SSL'i otomatik alır ve yeniler;
+#  - alan adı yokken ":80" → yalnızca HTTP, sunucunun IP adresiyle.
 {$DOMAIN} {
 	encode zstd gzip
 	header {
@@ -8,4 +10,10 @@
 		-Server
 	}
 	reverse_proxy app:3000
+}
+
+# Hata izleme paneli (GlitchTip, "monitoring" profili). Alan adı yokken :8000 (HTTP);
+# alan adı gelince ör. GLITCHTIP_SITE=hata.ornek.com (HTTPS).
+{$GLITCHTIP_SITE} {
+	reverse_proxy glitchtip:8000
 }
