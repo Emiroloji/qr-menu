@@ -12,5 +12,13 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
+  # Yerel SMTP: gönderilen e-postalar http://localhost:8025 adresinde görünür
+  mail:
+    image: axllent/mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
 volumes:
   db-data:

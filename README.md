@@ -8,7 +8,7 @@ Gerekenler: Node.js 20.9+, Docker.
 
 ```bash
 cp .env.example .env          # BETTER_AUTH_SECRET için: openssl rand -base64 32
-docker compose up -d          # PostgreSQL
+docker compose up -d          # PostgreSQL + Mailpit (yerel e-posta)
 npm install                   # Prisma istemcisi de üretilir
 npm run db:reset              # tabloları kurar + örnek veri (seed)
 npm run dev                   # http://localhost:3000
@@ -27,6 +27,10 @@ npm run dev                   # http://localhost:3000
 | `npm run db:migrate` | Şema değişikliği → migration + istemci         |
 | `npm run db:seed`    | Örnek verileri ekler                           |
 | `npm run db:reset`   | Yerel veritabanını sıfırlar ve seed çalıştırır |
+
+## E-posta
+
+Şifre sıfırlama e-postaları SMTP ile gönderilir (`SMTP_*` değişkenleri). Yerelde Mailpit kullanılır: gönderilen e-postalar http://localhost:8025 adresinde görünür.
 
 ## Örnek hesaplar (yalnızca yerel)
 
