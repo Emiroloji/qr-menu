@@ -84,6 +84,7 @@ model Business {
   name          String
   slug          String         @unique
   logoUrl       String?
+  coverUrl      String? // Menü kapak görseli (Faz 1.7)
   // Tema kodu (components/menu/themes/ altındaki dosya adı). Yeni tema eklemek
   // migration gerektirmesin diye enum değil.
   theme         String         @default("minimal")

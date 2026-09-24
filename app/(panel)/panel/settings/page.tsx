@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
+import { removeLogo } from "@/actions/business";
+import { ImageUploader } from "@/components/panel/image-uploader";
 import { PageHeader } from "@/components/panel/page-header";
+import { canUseBranding, readPlanFeatures } from "@/lib/plan-features";
 import { getBusinessContext, requireOwnerSession } from "@/lib/session";
-import { LogoUploader } from "./logo-uploader";
 import { SettingsForm } from "./settings-form";
 
 export const metadata: Metadata = { title: "İşletme bilgileri" };
 
 export default async function SettingsPage() {
   const { businessId } = await requireOwnerSession();
-  const { business } = await getBusinessContext(businessId);
+  const { business, subscription } = await getBusinessContext(businessId);
+  const branding = canUseBranding(
+    readPlanFeatures(subscription?.plan.features),
+  );
 
   return (
     <>
@@ -22,7 +27,19 @@ export default async function SettingsPage() {
           name={business.name}
           slug={business.slug}
         />
-        <LogoUploader name={business.name} logoUrl={business.logoUrl} />
+        <ImageUploader
+          kind="logo"
+          title="Logo"
+          description="JPEG, PNG veya WebP · en fazla 10 MB. Kare logolar en iyi görünür."
+          imageUrl={business.logoUrl}
+          alt={`${business.name} logosu`}
+          unavailableMessage={
+            branding
+              ? undefined
+              : "Logo, Standart ve üzeri paketlerde kullanılabilir. Paket yükseltmek için bizimle iletişime geçin."
+          }
+          onRemove={removeLogo}
+        />
       </div>
     </>
   );

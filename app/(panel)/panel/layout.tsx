@@ -29,6 +29,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
     ...(user.role === "OWNER"
       ? ([
           { href: "/panel/branches", label: "Şubeler", icon: "branches" },
+          { href: "/panel/appearance", label: "Görünüm", icon: "appearance" },
           { href: "/panel/settings", label: "Ayarlar", icon: "settings" },
         ] satisfies NavItem[])
       : []),

@@ -5,6 +5,20 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Müşteri menüsü teması: değerler lib/menu-themes.ts'ten CSS değişkeni olarak gelir. */
+  --color-menu-bg: var(--m-bg);
+  --color-menu-surface: var(--m-surface);
+  --color-menu-ink: var(--m-ink);
+  --color-menu-muted: var(--m-muted);
+  --color-menu-line: var(--m-line);
+  --color-menu-photo: var(--m-photo);
+  --color-menu-accent: var(--m-accent);
+  --color-menu-on-accent: var(--m-on-accent);
+  --color-menu-accent-text: var(--m-accent-text);
+  --color-menu-highlight: var(--m-highlight);
+  --color-menu-on-highlight: var(--m-on-highlight);
+  --font-menu-display: var(--m-font-display);
+  --font-menu-body: var(--m-font-body);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

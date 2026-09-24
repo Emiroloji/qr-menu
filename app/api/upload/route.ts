@@ -5,11 +5,18 @@ import { db } from "@/lib/db";
 import {
   isAllowedImage,
   MAX_IMAGE_SIZE,
+  toCover,
   toLogo,
   toProductImages,
 } from "@/lib/images";
 import { assertProductBelongsToBusiness } from "@/lib/ownership";
 import { assertOwner, requirePermission } from "@/lib/permissions";
+import {
+  assertFeature,
+  canUseBranding,
+  canUseCover,
+  readPlanFeatures,
+} from "@/lib/plan-features";
 import { requireWritableSession } from "@/lib/session";
 import { deleteFiles, publicUrl, uploadFile } from "@/lib/storage";
 
@@ -20,7 +27,8 @@ const error = (message: string, status: number) =>
 
 /**
  * Görsel yükleme (MIMARI §9).
- * - `?kind=logo`: işletme logosu (yalnızca sahip)
+ * - `?kind=logo`: işletme logosu (yalnızca sahip, "Logo ve renkler" içeren paket)
+ * - `?kind=cover`: menü kapak görseli (yalnızca sahip, "Tam özelleştirme" içeren paket)
  * - `?kind=product&productId=…`: ürün görseli, 400/800/1200 px + bulanık önizleme
  * Yetki, dosya gövdesi okunmadan önce kontrol edilir.
  */
@@ -32,8 +40,13 @@ export async function POST(request: Request) {
   let product: { id: string; branchId: string } | null = null;
   try {
     context = await requireWritableSession();
+    const features = readPlanFeatures(context.subscription?.plan.features);
     if (kind === "logo") {
       await assertOwner(context.user);
+      assertFeature(canUseBranding(features));
+    } else if (kind === "cover") {
+      await assertOwner(context.user);
+      assertFeature(canUseCover(features));
     } else if (kind === "product") {
       await requirePermission(context.user, "PRODUCT_EDIT");
       const productId = params.get("productId");
@@ -89,6 +102,22 @@ export async function POST(request: Request) {
     });
     expireBranchMenu(product.branchId);
     return Response.json({ image });
+  }
+
+  if (kind === "cover") {
+    const cover = await toCover(buffer);
+    const url = await uploadFile(
+      `business/${businessId}/cover-${Date.now()}.webp`,
+      cover,
+      "image/webp",
+    );
+    await db.business.update({
+      where: { id: businessId },
+      data: { coverUrl: url },
+    });
+    if (business.coverUrl) await deleteFiles([business.coverUrl]);
+    await expireBusinessMenus(businessId);
+    return Response.json({ url });
   }
 
   const logo = await toLogo(buffer);

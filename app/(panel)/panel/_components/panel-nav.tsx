@@ -6,6 +6,7 @@ import {
   BookOpenIcon,
   LayoutDashboardIcon,
   MapPinIcon,
+  PaletteIcon,
   SettingsIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,7 @@ const ICONS = {
   dashboard: LayoutDashboardIcon,
   menu: BookOpenIcon,
   branches: MapPinIcon,
+  appearance: PaletteIcon,
   settings: SettingsIcon,
 };
 

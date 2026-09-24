@@ -47,3 +47,12 @@ export async function toProductImages(buffer: Buffer) {
     blurDataUrl: `data:image/webp;base64,${blur.toString("base64")}`,
   };
 }
+
+/** Menü kapak görseli: en fazla 1600 px genişlik, WebP. */
+export function toCover(buffer: Buffer) {
+  return sharp(buffer)
+    .rotate()
+    .resize({ width: 1600, withoutEnlargement: true })
+    .webp({ quality: 80 })
+    .toBuffer();
+}
