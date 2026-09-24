@@ -2,13 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CreditCardIcon, LayoutGridIcon, StoreIcon } from "lucide-react";
+import {
+  BarChart3Icon,
+  CreditCardIcon,
+  LayoutGridIcon,
+  StoreIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
   { href: "/admin/businesses", label: "İşletmeler", icon: StoreIcon },
   { href: "/admin/plans", label: "Paketler", icon: LayoutGridIcon },
   { href: "/admin/subscriptions", label: "Abonelikler", icon: CreditCardIcon },
+  { href: "/admin/stats", label: "İstatistikler", icon: BarChart3Icon },
 ];
 
 export function AdminNav() {

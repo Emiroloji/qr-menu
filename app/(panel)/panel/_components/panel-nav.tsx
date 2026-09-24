@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BarChart3Icon,
   BookOpenIcon,
   EllipsisIcon,
   LayoutDashboardIcon,
@@ -25,6 +26,7 @@ const ICONS = {
   dashboard: LayoutDashboardIcon,
   menu: BookOpenIcon,
   qr: QrCodeIcon,
+  stats: BarChart3Icon,
   branches: MapPinIcon,
   appearance: PaletteIcon,
   staff: UsersIcon,

@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { recordProductView } from "@/actions/product-view";
 import type { MenuClientData } from "../client-data";
 import { MenuContext, type Panel } from "./context";
 import { InfoPanel } from "./info-panel";
@@ -28,12 +29,21 @@ export function MenuProvider({
     [data.products],
   );
   const product = productId ? products.get(productId) : undefined;
+  // Aynı ürün bir ziyarette yalnızca bir kez sayılır.
+  const viewed = useRef(new Set<string>());
 
   const context = useMemo(
     () => ({
       data,
       open: (next: Panel) => {
-        if (next.type === "product") setProductId(next.id);
+        if (next.type === "product") {
+          setProductId(next.id);
+          const branchId = data.statsBranchId;
+          if (branchId && !viewed.current.has(next.id)) {
+            viewed.current.add(next.id);
+            recordProductView({ branchId, productId: next.id }).catch(() => {});
+          }
+        }
         if (next.type === "search") setSearchLoaded(true);
         setPanel(next);
       },

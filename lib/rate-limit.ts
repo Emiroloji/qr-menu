@@ -34,6 +34,8 @@ export const RATE_LIMITS = {
   /** Şifre sıfırlama e-postası isteği */
   resetIp: { limit: 5, windowMs: 15 * MINUTE },
   resetEmail: { limit: 3, windowMs: 60 * MINUTE },
+  /** Menüde ürün detayı açılışı kaydı (istatistikleri şişirmeye karşı) */
+  productView: { limit: 60, windowMs: 10 * MINUTE },
 } satisfies Record<string, RateLimitRule>;
 
 /** Ters vekil (Caddy) arkasında istemci IP'si; doğrudan erişimde "unknown". */

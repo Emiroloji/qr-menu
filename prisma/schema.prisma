@@ -115,6 +115,7 @@ model Branch {
   deletedAt    DateTime?
   categories   Category[]
   scanLogs     ScanLog[]
+  productViews ProductView[]
 
   @@unique([businessId, slug])
 }
@@ -164,6 +165,7 @@ model Product {
   nutrition    Nutrition?
   allergens    ProductAllergen[]
   tags         ProductTag[]
+  views        ProductView[]
 
   @@index([categoryId, sortOrder])
 }
@@ -324,6 +326,19 @@ model ScanLog {
   createdAt DateTime @default(now())
   language  String
   device    String? // "mobile" | "tablet" | "desktop"
+
+  @@index([branchId, createdAt])
+}
+
+// Müşterinin menüde ürün detayını açması ("en çok açılan ürünler", Faz 2.2).
+// Tarama kaydı gibi IP adresi veya kişisel veri tutulmaz.
+model ProductView {
+  id        String   @id @default(cuid())
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
   @@index([branchId, createdAt])
 }

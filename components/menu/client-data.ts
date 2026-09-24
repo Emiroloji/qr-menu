@@ -29,6 +29,8 @@ export type MenuClientData = {
   branch: MenuData["branch"] & { businessName: string; todayText: string };
   /** Şubenin alerjen tablosu (PDF, seçili dilde; Faz 2.1). Önizlemede yok. */
   allergenPdfUrl: string | null;
+  /** Ürün açılışı istatistiği için şube (Faz 2.2). Önizlemede yok, kayıt yazılmaz. */
+  statsBranchId: string | null;
 };
 
 export function priceText(
@@ -81,6 +83,7 @@ export function buildClientData(
     allergenPdfUrl: options.branchId
       ? `/api/pdf/${options.branchId}?type=allergens&lang=${data.lang}`
       : null,
+    statsBranchId: options.branchId,
     branch: {
       ...data.branch,
       businessName: data.business.name,
