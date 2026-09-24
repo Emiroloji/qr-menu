@@ -20,5 +20,20 @@ services:
       - "1025:1025"
       - "8025:8025"
 
+  # Yerel S3 (Cloudflare R2 yerine). Dosyalar http://localhost:9090/qrmenu/... adresinden sunulur.
+  storage:
+    image: adobe/s3mock
+    restart: unless-stopped
+    user: root # adlandırılmış birime yazabilmesi için
+    environment:
+      COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: qrmenu
+      COM_ADOBE_TESTING_S3MOCK_STORE_RETAIN_FILES_ON_EXIT: "true"
+      COM_ADOBE_TESTING_S3MOCK_STORE_ROOT: /data
+    ports:
+      - "9090:9090"
+    volumes:
+      - storage-data:/data
+
 volumes:
   db-data:
+  storage-data:

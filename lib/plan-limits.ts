@@ -32,7 +32,8 @@ export async function getActivePlan(businessId: string) {
   return subscription?.plan ?? null;
 }
 
-async function countUsage(
+/** İşletmenin paket limitine sayılan kullanımı (silinmiş kayıtlar hariç). */
+export async function countUsage(
   businessId: string,
   resource: Exclude<PlanResource, "languages">,
 ) {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ActionError } from "@/lib/action";
 import {
+  assertOwner,
   hasPermission,
   homePathFor,
   requirePermission,
@@ -52,5 +53,15 @@ describe("requirePermission", () => {
     await expect(
       requirePermission(staff, "PRODUCT_TOGGLE_AVAILABILITY"),
     ).resolves.toBeUndefined();
+  });
+});
+
+describe("assertOwner", () => {
+  it("yalnızca işletme sahibine izin verir", async () => {
+    await expect(assertOwner(owner)).resolves.toBeUndefined();
+    await expect(assertOwner(staff)).rejects.toThrow(
+      "Bu işlem için yetkiniz yok.",
+    );
+    await expect(assertOwner(superAdmin)).rejects.toThrow(ActionError);
   });
 });

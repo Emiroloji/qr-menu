@@ -3,6 +3,7 @@
 import { refresh } from "next/cache";
 import { z } from "zod";
 import type { ActionResult, FormState } from "@/lib/action";
+import { expireBusinessMenus } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { parseDateInput } from "@/lib/format";
 import { requireRole } from "@/lib/session";
@@ -12,8 +13,8 @@ import {
 } from "@/lib/validations/business";
 import { firstError, id } from "@/lib/validations/common";
 
-// Menü önbelleği (Faz 1.10) geldiğinde abonelik değişikliklerinden sonra
-// işletmenin şube etiketleri de temizlenecek.
+// Abonelik değişiklikleri menünün yayında olup olmadığını etkiler; her birinden sonra
+// işletmenin menü önbelleği temizlenir.
 
 export async function startSubscription(
   _prev: FormState,
@@ -41,6 +42,7 @@ export async function startSubscription(
       endsAt: parseDateInput(endsAt, "end"),
     },
   });
+  await expireBusinessMenus(businessId);
   refresh();
   return { ok: true, data: null };
 }
@@ -72,6 +74,7 @@ export async function extendSubscription(
     where: { id: subscription.id },
     data: { endsAt },
   });
+  await expireBusinessMenus(subscription.businessId);
   refresh();
   return { ok: true, data: null };
 }
@@ -88,10 +91,11 @@ export async function setSubscriptionStatus(
   const parsed = statusSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: firstError(parsed.error) };
 
-  await db.subscription.update({
+  const subscription = await db.subscription.update({
     where: { id: parsed.data.subscriptionId },
     data: { status: parsed.data.status },
   });
+  await expireBusinessMenus(subscription.businessId);
   refresh();
   return { ok: true, data: null };
 }

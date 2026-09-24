@@ -8,7 +8,7 @@ Gerekenler: Node.js 20.9+, Docker.
 
 ```bash
 cp .env.example .env          # BETTER_AUTH_SECRET için: openssl rand -base64 32
-docker compose up -d          # PostgreSQL + Mailpit (yerel e-posta)
+docker compose up -d          # PostgreSQL + Mailpit (e-posta) + S3Mock (görseller)
 npm install                   # Prisma istemcisi de üretilir
 npm run db:reset              # tabloları kurar + örnek veri (seed)
 npm run dev                   # http://localhost:3000
@@ -31,6 +31,10 @@ npm run dev                   # http://localhost:3000
 ## E-posta
 
 Şifre sıfırlama e-postaları SMTP ile gönderilir (`SMTP_*` değişkenleri). Yerelde Mailpit kullanılır: gönderilen e-postalar http://localhost:8025 adresinde görünür.
+
+## Görseller
+
+Görseller canlıda Cloudflare R2'de tutulur (`R2_*` değişkenleri). Yerelde R2 yerine S3 uyumlu S3Mock kullanılır (`R2_ENDPOINT=http://localhost:9090`).
 
 ## Örnek hesaplar (yalnızca yerel)
 

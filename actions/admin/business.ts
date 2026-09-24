@@ -5,6 +5,7 @@ import { refresh } from "next/cache";
 import { z } from "zod";
 import type { ActionResult, FormState } from "@/lib/action";
 import { auth } from "@/lib/auth";
+import { expireBusinessMenus } from "@/lib/cache";
 import { db, isUniqueConstraintError } from "@/lib/db";
 import { parseDateInput } from "@/lib/format";
 import { requireRole } from "@/lib/session";
@@ -94,11 +95,11 @@ export async function setBusinessActive(
   const parsed = setActiveSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: firstError(parsed.error) };
 
-  // Menü önbelleği (Faz 1.10) geldiğinde burada şubelerin etiketleri de temizlenecek.
   await db.business.update({
     where: { id: parsed.data.businessId, deletedAt: null },
     data: { isActive: parsed.data.isActive },
   });
+  await expireBusinessMenus(parsed.data.businessId);
   refresh();
   return { ok: true, data: null };
 }

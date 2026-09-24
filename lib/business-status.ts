@@ -48,7 +48,27 @@ export function getBusinessStatus(
   return "ACTIVE";
 }
 
+/** Bitişe kalan tam gün sayısı (en az 0). */
+export function daysUntil(date: Date, now = new Date()) {
+  return Math.max(0, Math.ceil((date.getTime() - now.getTime()) / DAY));
+}
+
 /** Menü yayında mı, panelde değişiklik yapılabilir mi? */
-export function isBusinessOperational(status: BusinessStatus) {
+export function isBusinessOperational(
+  status: BusinessStatus,
+): status is "ACTIVE" | "EXPIRING" {
   return status === "ACTIVE" || status === "EXPIRING";
 }
+
+/** Menü yayında olmadığında panelde gösterilen ve yazma işlemlerinde dönen mesaj. */
+export const READ_ONLY_MESSAGES: Record<
+  Exclude<BusinessStatus, "ACTIVE" | "EXPIRING">,
+  string
+> = {
+  EXPIRED:
+    "Aboneliğiniz sona erdi. Menünüz yayında değil ve değişiklik yapılamaz.",
+  SUSPENDED:
+    "Aboneliğiniz askıya alındı. Menünüz yayında değil ve değişiklik yapılamaz.",
+  PASSIVE:
+    "İşletmeniz pasif durumda. Menünüz yayında değil ve değişiklik yapılamaz.",
+};

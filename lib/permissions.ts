@@ -30,3 +30,10 @@ export async function requirePermission(
     throw new ActionError("Bu işlem için yetkiniz yok.");
   }
 }
+
+/** Şube, çalışan, görünüm ve işletme ayarları yalnızca işletme sahibine açıktır (MIMARI §6). */
+export async function assertOwner(user: { role: Role }) {
+  if (user.role !== "OWNER") {
+    throw new ActionError("Bu işlem için yetkiniz yok.");
+  }
+}
