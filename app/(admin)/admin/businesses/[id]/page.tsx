@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, EyeIcon } from "lucide-react";
+import { startViewingBusiness } from "@/actions/admin/view-as";
 import { PageHeader } from "@/components/panel/page-header";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -100,10 +102,18 @@ export default async function BusinessPage({
           </span>
         }
         actions={
-          <BusinessActiveButton
-            businessId={business.id}
-            isActive={business.isActive}
-          />
+          <>
+            <form action={startViewingBusiness.bind(null, business.id)}>
+              <Button type="submit" variant="outline">
+                <EyeIcon />
+                İşletmenin gözünden bak
+              </Button>
+            </form>
+            <BusinessActiveButton
+              businessId={business.id}
+              isActive={business.isActive}
+            />
+          </>
         }
       />
 

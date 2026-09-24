@@ -29,6 +29,9 @@ docker compose -f docker-compose.prod.yml --env-file .env.production run --rm \
 - Seed'den sonra `.env.production` içindeki `SEED_PASSWORD`'ü silin ve admin olarak giriş yapıp
   "Şifremi unuttum" ile şifreyi değiştirin.
 - Paket fiyatlarını süper admin panelinden (Paketler) girin.
+- `CRON_SECRET`'i doldurun (`openssl rand -hex 32`). `cron` servisi saatte bir abonelik bitiş
+  hatırlatmalarını tetikler: bitişe 7 gün kala işletme sahibine bir kez e-posta gider.
+  Boş bırakılırsa hatırlatma gönderilmez (panel uyarısı yine görünür).
 
 > `NEXT_PUBLIC_APP_URL` derleme sırasında koda gömülür ve **basılı QR kodların adresidir**.
 > Canlıya almadan önce doğru alan adıyla doldurun; sonradan değiştirmek QR'ları geçersiz kılar.

@@ -17,7 +17,7 @@ import { renderPrintedMenuPdf } from "@/lib/pdf/printed-menu";
 import { readPlanFeatures } from "@/lib/plan-features";
 import { menuUrl, qrPng } from "@/lib/qr";
 import { clientIp, consumeRateLimit } from "@/lib/rate-limit";
-import { getCurrentUser } from "@/lib/session";
+import { getPanelIdentity } from "@/lib/session";
 
 const error = (message: string, status: number) =>
   Response.json({ error: message }, { status });
@@ -47,8 +47,10 @@ export async function GET(
     return error("Şube bulunamadı.", 404);
   const { business } = branch;
 
-  const user = await getCurrentUser();
-  const isOwner = user?.role === "OWNER" && user.businessId === business.id;
+  // İşletme sahibi (veya işletmenin gözünden bakan süper admin).
+  const identity = await getPanelIdentity();
+  const isOwner =
+    identity?.user.role === "OWNER" && identity.businessId === business.id;
   if (type === "menu" && !isOwner)
     return error("Bu işlem için yetkiniz yok.", 403);
   if (!isOwner) {

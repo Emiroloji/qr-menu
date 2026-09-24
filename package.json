@@ -14,7 +14,8 @@
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset --force && prisma generate && prisma db seed",
     "db:migrate": "prisma migrate dev && prisma generate",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1139.0",
@@ -46,6 +47,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/nodemailer": "^8.0.2",

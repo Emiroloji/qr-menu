@@ -37,6 +37,24 @@ services:
     # Dışarıya açılmaz; yalnızca Caddy üzerinden erişilir.
     expose: ["3000"]
 
+  # Zamanlanmış görevler: saatte bir abonelik bitiş hatırlatmalarını tetikler (FAZLAR 2.5).
+  # Her abonelik için e-posta bir kez gönderilir; sık çalışması tekrar göndermez.
+  cron:
+    image: curlimages/curl:8.16.0
+    restart: unless-stopped
+    environment:
+      CRON_SECRET: ${CRON_SECRET}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          sleep 3600
+          curl -fsS -X POST -H "Authorization: Bearer $$CRON_SECRET" \
+            http://app:3000/api/cron/subscription-reminders || true
+          echo
+        done
+    depends_on: [app]
+
   # HTTPS: alan adı için Let's Encrypt sertifikasını otomatik alır ve yeniler.
   # Alan adı yokken DOMAIN=":80" ile yalnızca HTTP (IP adresiyle) çalışır.
   caddy:

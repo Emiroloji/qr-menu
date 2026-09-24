@@ -44,6 +44,13 @@ Görseller canlıda Cloudflare R2'de tutulur (`R2_*` değişkenleri). Yerelde R2
 - İşletme sahibi: `sahip@limonkafe.test`
 - Çalışan: `calisan@limonkafe.test` (yalnızca tükendi işaretleme)
 
+## Testler
+
+- `npm test`: birim testleri (Vitest)
+- `npm run test:e2e`: uçtan uca testler (Playwright): giriş, ürün ekleme, müşteri menüsü,
+  işletmenin gözünden bakma. Seed'li yerel veritabanı gerekir; açık sunucu yoksa üretim
+  derlemesi alınıp başlatılır. İlk kullanımda tarayıcı: `npx playwright install chromium`.
+
 ## Klasörler
 
 `MIMARI.md` §3'teki yapı izlenir. Raporlar `raporlar/`, tasarım taslakları `tasarim/` altındadır.

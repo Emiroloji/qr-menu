@@ -72,7 +72,8 @@ export async function extendSubscription(
 
   await db.subscription.update({
     where: { id: subscription.id },
-    data: { endsAt },
+    // Yeni bitişe 7 gün kala hatırlatma yeniden gönderilir.
+    data: { endsAt, reminderSentAt: null },
   });
   await expireBusinessMenus(subscription.businessId);
   refresh();

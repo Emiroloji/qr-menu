@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { EyeIcon } from "lucide-react";
+import { stopViewingBusiness } from "@/actions/admin/view-as";
 import { signOut } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
@@ -14,7 +16,7 @@ import { StatusBanner } from "./_components/status-banner";
 // Rol kontrolü: yalnızca işletme sahibi ve çalışan.
 // Bu kontrol sayfaya girişi korur; her Server Action ayrıca kendi kontrolünü yapar.
 export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
-  const { user, businessId } = await requireSession();
+  const { user, businessId, viewOnly } = await requireSession();
   const { business, status, subscription } =
     await getBusinessContext(businessId);
 
@@ -85,14 +87,40 @@ export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
             </span>
           </span>
           <span className="hidden text-sm text-muted-foreground sm:inline">
-            {user.name} · {user.role === "OWNER" ? "İşletme sahibi" : "Çalışan"}
+            {user.name} ·{" "}
+            {viewOnly
+              ? "Süper admin"
+              : user.role === "OWNER"
+                ? "İşletme sahibi"
+                : "Çalışan"}
           </span>
-          <form action={signOut}>
-            <Button type="submit" variant="ghost" size="sm">
-              Çıkış yap
-            </Button>
-          </form>
+          {!viewOnly && (
+            <form action={signOut}>
+              <Button type="submit" variant="ghost" size="sm">
+                Çıkış yap
+              </Button>
+            </form>
+          )}
         </header>
+        {viewOnly && (
+          <div
+            role="status"
+            className="flex flex-wrap items-center justify-between gap-3 border-b border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950 md:px-8 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-100"
+          >
+            <p className="flex items-center gap-2">
+              <EyeIcon className="size-4 shrink-0" aria-hidden />
+              <span>
+                <strong>{business.name}</strong> işletmesinin panelini sahibi
+                gibi görüntülüyorsunuz. Değişiklik yapılamaz.
+              </span>
+            </p>
+            <form action={stopViewingBusiness}>
+              <Button type="submit" size="sm" variant="outline">
+                Görüntülemeyi bitir
+              </Button>
+            </form>
+          </div>
+        )}
         <StatusBanner status={status} endsAt={subscription?.endsAt} />
         <main className="flex flex-1 flex-col gap-6 p-4 md:p-8">
           {children}

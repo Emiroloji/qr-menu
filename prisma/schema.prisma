@@ -64,16 +64,18 @@ model Plan {
 }
 
 model Subscription {
-  id         String             @id @default(cuid())
-  businessId String
-  business   Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  planId     String
-  plan       Plan               @relation(fields: [planId], references: [id])
-  startsAt   DateTime
-  endsAt     DateTime
-  status     SubscriptionStatus @default(ACTIVE)
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
+  id             String             @id @default(cuid())
+  businessId     String
+  business       Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  planId         String
+  plan           Plan               @relation(fields: [planId], references: [id])
+  startsAt       DateTime
+  endsAt         DateTime
+  status         SubscriptionStatus @default(ACTIVE)
+  // Bitişe 7 gün kala gönderilen e-posta (Faz 2.5); süre uzatılınca sıfırlanır.
+  reminderSentAt DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 
   @@index([businessId, endsAt])
 }

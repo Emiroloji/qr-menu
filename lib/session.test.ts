@@ -4,11 +4,16 @@ const mocks = vi.hoisted(() => ({
   getSession: vi.fn(),
   findUnique: vi.fn(),
   findBusiness: vi.fn(),
+  findFirstBusiness: vi.fn(),
+  cookie: vi.fn(),
   redirect: vi.fn((path: string) => {
     throw new Error(`REDIRECT:${path}`);
   }),
 }));
-vi.mock("next/headers", () => ({ headers: async () => new Headers() }));
+vi.mock("next/headers", () => ({
+  headers: async () => new Headers(),
+  cookies: async () => ({ get: mocks.cookie }),
+}));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
 vi.mock("@/lib/auth", () => ({
   auth: { api: { getSession: mocks.getSession } },
@@ -16,7 +21,10 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/lib/db", () => ({
   db: {
     user: { findUnique: mocks.findUnique },
-    business: { findUnique: mocks.findBusiness },
+    business: {
+      findUnique: mocks.findBusiness,
+      findFirst: mocks.findFirstBusiness,
+    },
   },
 }));
 
@@ -102,6 +110,60 @@ describe("requireSession (panel)", () => {
       where: { id: "u1" },
       include: { permissions: true },
     });
+  });
+});
+
+describe("işletmenin gözünden bak (süper admin)", () => {
+  const admin = {
+    id: "admin",
+    role: "SUPER_ADMIN",
+    businessId: null,
+    permissions: [],
+  };
+
+  it("seçilen işletmenin panelini sahibi gibi açar", async () => {
+    loggedInAs(admin);
+    mocks.cookie.mockReturnValue({ value: "biz-9" });
+    mocks.findFirstBusiness.mockResolvedValue({ id: "biz-9" });
+    const session = await requireSession();
+    expect(session).toMatchObject({
+      businessId: "biz-9",
+      viewOnly: true,
+      user: { role: "OWNER", businessId: "biz-9" },
+    });
+    expect(mocks.findFirstBusiness).toHaveBeenCalledWith({
+      where: { id: "biz-9", deletedAt: null },
+      select: { id: true },
+    });
+  });
+
+  it("görüntüleme modunda hiçbir değişikliğe izin vermez", async () => {
+    loggedInAs(admin);
+    mocks.cookie.mockReturnValue({ value: "biz-9" });
+    mocks.findFirstBusiness.mockResolvedValue({ id: "biz-9" });
+    await expect(requireWritableSession()).rejects.toThrow(
+      "İşletmenin gözünden bakarken değişiklik yapılamaz.",
+    );
+  });
+
+  it("silinmiş veya olmayan işletme için admin alanına döner", async () => {
+    loggedInAs(admin);
+    mocks.cookie.mockReturnValue({ value: "yok" });
+    mocks.findFirstBusiness.mockResolvedValue(null);
+    await expect(requireSession()).rejects.toThrow("REDIRECT:/admin");
+  });
+
+  it("çerez işletme sahibi veya çalışanın işletmesini değiştirmez", async () => {
+    loggedInAs({
+      id: "u1",
+      role: "OWNER",
+      businessId: "biz-1",
+      permissions: [],
+    });
+    mocks.cookie.mockReturnValue({ value: "biz-9" });
+    const session = await requireSession();
+    expect(session).toMatchObject({ businessId: "biz-1", viewOnly: false });
+    expect(mocks.cookie).not.toHaveBeenCalled();
   });
 });
 

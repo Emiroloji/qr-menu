@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ActionError } from "@/lib/action";
 import {
@@ -33,13 +33,48 @@ export async function requireRole(...roles: Role[]) {
 }
 
 /**
+ * "İşletmenin gözünden bak" (FAZLAR 2.5): süper admin bu çerezle bir işletmenin panelini
+ * sahibi gibi, salt okunur görür. Çerez yalnızca SUPER_ADMIN rolündeki oturumda dikkate
+ * alınır; süper admin zaten tüm işletmeleri görebildiği için imza gerekmez.
+ */
+export const VIEW_AS_COOKIE = "qrmenu-view-as";
+
+/**
+ * Panel kimliği: işletme sahibi, çalışan veya görüntüleme modundaki süper admin.
+ * `businessId` her zaman sunucudan gelir (oturum veya süper adminin seçimi).
+ */
+export const getPanelIdentity = cache(async () => {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  if (user.role === "SUPER_ADMIN") {
+    const businessId = (await cookies()).get(VIEW_AS_COOKIE)?.value;
+    if (!businessId) return null;
+    const business = await db.business.findFirst({
+      where: { id: businessId, deletedAt: null },
+      select: { id: true },
+    });
+    if (!business) return null;
+    return {
+      user: { ...user, role: "OWNER" as Role, businessId, permissions: [] },
+      businessId,
+      viewOnly: true,
+    };
+  }
+  if (!user.businessId) return null;
+  return { user, businessId: user.businessId, viewOnly: false };
+});
+
+/**
  * Panel için: işletme sahibi veya çalışan. `businessId` her zaman oturumdan gelir,
  * istemciden gelen bir değere asla güvenilmez.
  */
 export async function requireSession() {
-  const user = await requireRole("OWNER", "STAFF");
-  if (!user.businessId) redirect("/login");
-  return { user, businessId: user.businessId };
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  const identity = await getPanelIdentity();
+  if (!identity)
+    redirect(user.role === "SUPER_ADMIN" ? homePathFor(user.role) : "/login");
+  return identity;
 }
 
 /** Yalnızca işletme sahibine açık panel sayfaları için; çalışan özete yönlendirilir. */
@@ -69,6 +104,9 @@ export const getBusinessContext = cache(async (businessId: string) => {
  */
 export async function requireWritableSession() {
   const session = await requireSession();
+  if (session.viewOnly) {
+    throw new ActionError("İşletmenin gözünden bakarken değişiklik yapılamaz.");
+  }
   const context = await getBusinessContext(session.businessId);
   if (!isBusinessOperational(context.status)) {
     throw new ActionError(READ_ONLY_MESSAGES[context.status]);

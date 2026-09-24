@@ -10,7 +10,7 @@ import {
 } from "@/lib/pdf/qr-templates";
 import { readPlanFeatures } from "@/lib/plan-features";
 import { menuUrl, qrPng, qrSvg } from "@/lib/qr";
-import { getCurrentUser } from "@/lib/session";
+import { getPanelIdentity } from "@/lib/session";
 import { logoPng } from "@/lib/pdf/logo";
 
 // PDF yazı tipi Arapça içermediği için Arapça satır eklenmez.
@@ -32,13 +32,14 @@ export async function GET(
   request: Request,
   { params }: RouteContext<"/api/qr/[branchId]">,
 ) {
-  const user = await getCurrentUser();
-  if (!user || user.role !== "OWNER" || !user.businessId) {
+  // İşletme sahibi (veya işletmenin gözünden bakan süper admin).
+  const identity = await getPanelIdentity();
+  if (!identity || identity.user.role !== "OWNER") {
     return error("Bu işlem için yetkiniz yok.", 403);
   }
   const { branchId } = await params;
   const branch = await db.branch.findFirst({
-    where: { id: branchId, businessId: user.businessId, deletedAt: null },
+    where: { id: branchId, businessId: identity.businessId, deletedAt: null },
     include: {
       business: { include: { subscriptions: { include: { plan: true } } } },
     },
