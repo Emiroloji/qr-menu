@@ -14,6 +14,11 @@ export function formatPrice(kurus: number) {
   return priceFormatter.format(kurus / 100);
 }
 
+/** PDF'ler için: 4550 → "45,50 TL" (PDF yazı tipinde ₺ işareti yok). */
+export function formatPriceText(kurus: number) {
+  return `${new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(kurus / 100)} TL`;
+}
+
 /** "45,50", "45.50", "1.250" veya "1250" (TL) → kuruş. Geçersizse null. */
 export function parsePrice(value: string): number | null {
   const trimmed = value.trim().replace(/\s|₺|TL/gi, "");

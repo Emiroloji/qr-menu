@@ -64,6 +64,12 @@
     "fri": "Freitag",
     "sat": "Samstag",
     "sun": "Sonntag",
-    "privacy": "Datenschutz"
+    "privacy": "Datenschutz",
+    "allergenTable": "Allergentabelle",
+    "allergenTableTitle": "Allergeninformationen",
+    "allergenTableNote": "Dieses Dokument basiert auf den Angaben des Betriebs. Fragen Sie im Zweifel bitte das Personal.",
+    "generatedOn": "Erstellt am {date}",
+    "product": "Gericht",
+    "digitalMenu": "Digitale Speisekarte"
   }
 }

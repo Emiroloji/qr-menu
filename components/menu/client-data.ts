@@ -27,6 +27,8 @@ export type MenuClientData = {
     current: boolean;
   }[];
   branch: MenuData["branch"] & { businessName: string; todayText: string };
+  /** Şubenin alerjen tablosu (PDF, seçili dilde; Faz 2.1). Önizlemede yok. */
+  allergenPdfUrl: string | null;
 };
 
 export function priceText(
@@ -49,6 +51,7 @@ export function buildClientData(
     languages: LanguageCode[];
     /** Dil bağlantısı için sayfa yolu, ör. /limon-kafe/kadikoy */
     path: string;
+    branchId: string | null;
   },
 ): MenuClientData {
   return {
@@ -75,6 +78,9 @@ export function buildClientData(
       href: `${options.path}?lang=${code}`,
       current: code === data.lang,
     })),
+    allergenPdfUrl: options.branchId
+      ? `/api/pdf/${options.branchId}?type=allergens&lang=${data.lang}`
+      : null,
     branch: {
       ...data.branch,
       businessName: data.business.name,

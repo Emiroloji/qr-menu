@@ -183,6 +183,19 @@ export function ProductDetail({
           )}
           <p dir="auto" className="text-xs text-menu-muted">
             {text.allergenNote}
+            {data.allergenPdfUrl && (
+              <>
+                {" "}
+                <a
+                  href={data.allergenPdfUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-menu-accent-text underline underline-offset-4"
+                >
+                  {text.allergenTable} (PDF)
+                </a>
+              </>
+            )}
           </p>
         </section>
 

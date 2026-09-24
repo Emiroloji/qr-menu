@@ -79,6 +79,7 @@ export default async function MenuPage({ params, searchParams }: Props) {
     ...reference,
     languages: lookup.languages.filter(isLanguageCode),
     path: `/${business}/${branch}`,
+    branchId: lookup.branchId,
   });
 
   // Tarama kaydı yanıttan sonra yazılır; menüyü yavaşlatmaz. Dil değiştirme (?lang) sayılmaz.

@@ -5,6 +5,7 @@ import {
   CheckIcon,
   ClockIcon,
   CopyIcon,
+  FileTextIcon,
   MapPinIcon,
   PhoneIcon,
   WifiIcon,
@@ -108,6 +109,18 @@ export function InfoPanel({ data }: { data: MenuClientData }) {
         >
           <PhoneIcon className="size-5 shrink-0" aria-hidden />
           <span dir="ltr">{branch.phone}</span>
+        </a>
+      )}
+
+      {data.allergenPdfUrl && (
+        <a
+          href={data.allergenPdfUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="flex min-h-11 items-center gap-3 font-semibold text-menu-accent-text underline-offset-4 hover:underline"
+        >
+          <FileTextIcon className="size-5 shrink-0" aria-hidden />
+          {text.allergenTable} (PDF)
         </a>
       )}
 

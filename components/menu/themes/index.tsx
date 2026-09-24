@@ -55,7 +55,17 @@ export function ThemedMenu({
       <MenuProvider data={client}>
         <Theme data={data} labels={labels} />
       </MenuProvider>
-      <footer className="flex justify-center bg-menu-bg pt-2 pb-8">
+      <footer className="flex flex-wrap justify-center gap-x-2 bg-menu-bg pt-2 pb-8">
+        {client.allergenPdfUrl && (
+          <a
+            href={client.allergenPdfUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex min-h-11 items-center px-3 text-xs text-menu-muted underline-offset-4 hover:underline"
+          >
+            {client.text.allergenTable} (PDF)
+          </a>
+        )}
         <Link
           href="/kvkk"
           className="flex min-h-11 items-center px-3 text-xs text-menu-muted underline-offset-4 hover:underline"

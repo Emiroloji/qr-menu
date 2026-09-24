@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   formatDate,
   formatPrice,
+  formatPriceText,
   parseDateInput,
   parsePrice,
   slugify,
@@ -58,5 +59,12 @@ describe("slugify", () => {
     expect(slugify("Kahve Dünyası Kadıköy")).toBe("kahve-dunyasi-kadikoy");
     expect(slugify("  ÇINAR Lokantası & Bar ")).toBe("cinar-lokantasi-bar");
     expect(slugify("Şişli Güneş")).toBe("sisli-gunes");
+  });
+});
+
+describe("formatPriceText", () => {
+  it("PDF için TL yazar", () => {
+    expect(plain(formatPriceText(4550))).toBe("45,50 TL");
+    expect(plain(formatPriceText(125000))).toBe("1.250,00 TL");
   });
 });

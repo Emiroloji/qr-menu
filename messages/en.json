@@ -64,6 +64,12 @@
     "fri": "Friday",
     "sat": "Saturday",
     "sun": "Sunday",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "allergenTable": "Allergen table",
+    "allergenTableTitle": "Allergen Information",
+    "allergenTableNote": "This document is generated from the information entered by the venue. If in doubt, please ask the staff.",
+    "generatedOn": "Generated on {date}",
+    "product": "Item",
+    "digitalMenu": "Digital menu"
   }
 }

@@ -82,6 +82,7 @@ export default async function AppearancePage() {
       ...(await getMenuReference("tr")),
       languages: ["tr"],
       path: "#",
+      branchId: null,
     },
   );
 

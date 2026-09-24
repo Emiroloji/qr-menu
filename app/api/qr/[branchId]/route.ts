@@ -1,4 +1,3 @@
-import sharp from "sharp";
 import { getCurrentSubscription } from "@/lib/business-status";
 import { onColor, readableOn } from "@/lib/color";
 import { db } from "@/lib/db";
@@ -12,6 +11,7 @@ import {
 import { readPlanFeatures } from "@/lib/plan-features";
 import { menuUrl, qrPng, qrSvg } from "@/lib/qr";
 import { getCurrentUser } from "@/lib/session";
+import { logoPng } from "@/lib/pdf/logo";
 
 // PDF yazı tipi Arapça içermediği için Arapça satır eklenmez.
 const INSTRUCTIONS: Partial<Record<LanguageCode, string>> = {
@@ -80,15 +80,6 @@ export async function GET(
       getCurrentSubscription(business.subscriptions)?.plan.features,
     ),
   );
-  // PDF WebP desteklemez: logo PNG'ye çevrilir.
-  let logo: Buffer | null = null;
-  if (appearance.logoUrl) {
-    const response = await fetch(appearance.logoUrl);
-    if (response.ok)
-      logo = await sharp(Buffer.from(await response.arrayBuffer()))
-        .png()
-        .toBuffer();
-  }
   const languages = branch.languages.filter(isLanguageCode);
 
   const pdf = await renderQrPdf(template as QrTemplate, {
@@ -97,7 +88,7 @@ export async function GET(
     url,
     displayUrl: url.replace(/^https?:\/\//, ""),
     qr: await qrPng(url, 1200),
-    logo,
+    logo: await logoPng(appearance.logoUrl),
     accent: appearance.color,
     onAccent: onColor(appearance.color),
     accentText: readableOn(appearance.color, "#FFFFFF"),

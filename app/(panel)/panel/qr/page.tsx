@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { db } from "@/lib/db";
 import { QR_TEMPLATES } from "@/lib/pdf/qr-templates";
+import { getLanguage, isLanguageCode } from "@/lib/languages";
 import { menuUrl } from "@/lib/qr";
 import { getBusinessContext, requireOwnerSession } from "@/lib/session";
 import { BranchSwitcher } from "../menu/_components/branch-switcher";
@@ -30,7 +31,7 @@ export default async function QrPage({ searchParams }: PageProps<"/panel/qr">) {
     getBusinessContext(businessId),
     db.branch.findMany({
       where: { businessId, deletedAt: null },
-      select: { id: true, name: true, slug: true },
+      select: { id: true, name: true, slug: true, languages: true },
       orderBy: { createdAt: "asc" },
     }),
     searchParams,
@@ -58,11 +59,16 @@ export default async function QrPage({ searchParams }: PageProps<"/panel/qr">) {
   const branch = branches.find((b) => b.id === params.branch) ?? branches[0];
   const url = menuUrl(business.slug, branch.slug);
   const api = `/api/qr/${branch.id}`;
+  const pdf = `/api/pdf/${branch.id}`;
+  // Alerjen tablosu şubenin dillerinde (PDF yazı tipi Arapça içermez).
+  const documentLanguages = branch.languages
+    .filter(isLanguageCode)
+    .filter((l) => l !== "ar");
 
   return (
     <>
       <PageHeader
-        title="QR kodlar"
+        title="QR ve belgeler"
         description="Her şubenin tek bir QR kodu vardır. Menüyü güncellediğinizde kodu yeniden bastırmanız gerekmez."
         actions={
           branches.length > 1 && (
@@ -170,6 +176,69 @@ export default async function QrPage({ searchParams }: PageProps<"/panel/qr">) {
                 </div>
               </div>
             ))}
+          </CardContent>
+        </Card>
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Yasal belgeler</CardTitle>
+            <CardDescription>
+              Menünüzdeki bilgilerle anında üretilir; menüyü güncellediğinizde
+              yeniden indirmeniz yeterli.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2">
+            <div className="flex flex-col gap-3 rounded-xl border p-4">
+              <div className="flex flex-col gap-1">
+                <h3 className="font-medium">Alerjen tablosu</h3>
+                <p className="text-sm text-muted-foreground">
+                  Şubedeki tüm ürünler × 14 alerjen. Denetimlerde gösterebilir,
+                  müşteriye verebilirsiniz. Müşteriler menüden de indirebilir.
+                </p>
+              </div>
+              <div className="mt-auto flex flex-wrap gap-2">
+                {documentLanguages.map((l) => (
+                  <a
+                    key={l}
+                    href={`${pdf}?type=allergens&lang=${l}&download=1`}
+                    className={buttonVariants({
+                      size: "sm",
+                      variant: l === "tr" ? "default" : "outline",
+                    })}
+                    download
+                  >
+                    <DownloadIcon />
+                    {getLanguage(l).name}
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 rounded-xl border p-4">
+              <div className="flex flex-col gap-1">
+                <h3 className="font-medium">Basılı menü</h3>
+                <p className="text-sm text-muted-foreground">
+                  Fiyatlı, logonuz ve renginizle A4 menü. Masada basılı menü
+                  bulundurma zorunluluğu için.
+                </p>
+              </div>
+              <div className="mt-auto flex flex-wrap gap-2">
+                <a
+                  href={`${pdf}?type=menu&download=1`}
+                  className={buttonVariants({ size: "sm" })}
+                  download
+                >
+                  <DownloadIcon />
+                  PDF indir
+                </a>
+                <a
+                  href={`${pdf}?type=menu`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={buttonVariants({ size: "sm", variant: "ghost" })}
+                >
+                  Önizle
+                </a>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
