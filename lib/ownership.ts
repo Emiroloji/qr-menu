@@ -55,3 +55,16 @@ export async function assertProductBelongsToBusiness(
     branchId: product.category.branchId,
   };
 }
+
+/** Çalışan bu işletmenin çalışanı olmalı; sahip veya başka işletmenin kullanıcısı değil. */
+export async function assertStaffBelongsToBusiness(
+  userId: string,
+  businessId: string,
+) {
+  const staff = await db.user.findFirst({
+    where: { id: userId, businessId, role: "STAFF" },
+    select: { id: true, email: true },
+  });
+  if (!staff) throw new ActionError("Çalışan bulunamadı.");
+  return staff;
+}

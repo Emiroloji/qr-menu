@@ -14,7 +14,7 @@ import { assertPlanLimit } from "@/lib/plan-limits";
 import { productImageFiles } from "@/lib/product-image";
 import { requireWritableSession } from "@/lib/session";
 import { deleteFiles } from "@/lib/storage";
-import { firstError, id } from "@/lib/validations/common";
+import { firstError, id, priceInput } from "@/lib/validations/common";
 import {
   type ProductInput,
   productSchema,
@@ -331,6 +331,53 @@ export async function deleteProductImage(
 
     await db.productImage.delete({ where: { id: image.id } });
     await deleteFiles(productImageFiles(image.url));
+    expireBranchMenu(product.branchId);
+    refresh();
+    return { ok: true, data: null };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+const variantPricesSchema = z.object({
+  productId: id,
+  prices: z
+    .array(z.object({ variantId: id, price: priceInput }))
+    .min(1)
+    .max(10),
+});
+
+/** Yalnızca boy fiyatlarını değiştirir (fiyat yetkisi olan çalışan için). */
+export async function updateVariantPrices(
+  input: unknown,
+): Promise<ActionResult<null>> {
+  try {
+    const { user, businessId } = await requireWritableSession();
+    await requirePermission(user, "PRODUCT_EDIT_PRICE");
+    const parsed = variantPricesSchema.safeParse(input);
+    if (!parsed.success) return { ok: false, error: firstError(parsed.error) };
+    const product = await assertProductBelongsToBusiness(
+      parsed.data.productId,
+      businessId,
+    );
+
+    const ids = parsed.data.prices.map((p) => p.variantId);
+    const owned = await db.productVariant.count({
+      where: { id: { in: ids }, productId: product.id },
+    });
+    if (owned !== ids.length) return { ok: false, error: "Boy bulunamadı." };
+    if (parsed.data.prices.some((p) => p.price <= 0)) {
+      return { ok: false, error: "Fiyat sıfırdan büyük olmalı." };
+    }
+
+    await db.$transaction(
+      parsed.data.prices.map((p) =>
+        db.productVariant.update({
+          where: { id: p.variantId },
+          data: { price: p.price },
+        }),
+      ),
+    );
     expireBranchMenu(product.branchId);
     refresh();
     return { ok: true, data: null };

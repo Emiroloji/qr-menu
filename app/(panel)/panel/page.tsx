@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MapPinIcon, PackageIcon, SettingsIcon, UsersIcon } from "lucide-react";
+import {
+  BookOpenIcon,
+  MapPinIcon,
+  PackageIcon,
+  SettingsIcon,
+  UsersIcon,
+} from "lucide-react";
 import { PageHeader } from "@/components/panel/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/format";
+import { hasAnyMenuPermission, PERMISSION_LABELS } from "@/lib/permissions";
 import { countUsage } from "@/lib/plan-limits";
 import { getBusinessContext, requireSession } from "@/lib/session";
 
@@ -60,6 +67,54 @@ function UsageCard({
 export default async function PanelPage() {
   const { user, businessId } = await requireSession();
   const { business, subscription } = await getBusinessContext(businessId);
+
+  // Çalışan paket ve kullanım bilgilerini görmez; kendi yetkilerini görür (MIMARI §6).
+  if (user.role === "STAFF") {
+    const permissions = user.permissions.map((p) => p.permission);
+    return (
+      <>
+        <PageHeader
+          title={`Merhaba, ${user.name.split(" ")[0]}`}
+          description={business.name}
+        />
+        <Card className="max-w-2xl">
+          <CardHeader>
+            <CardTitle>Yetkileriniz</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            {permissions.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Henüz size bir yetki verilmedi. İşletme sahibinizle görüşün.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {permissions.map((p) => (
+                  <li key={p} className="flex flex-col gap-0.5 text-sm">
+                    <span className="font-medium">
+                      {PERMISSION_LABELS[p].label}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {PERMISSION_LABELS[p].description}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {hasAnyMenuPermission(user) && (
+              <Link
+                href="/panel/menu"
+                className={buttonVariants({ className: "w-fit" })}
+              >
+                <BookOpenIcon />
+                Menüye git
+              </Link>
+            )}
+          </CardContent>
+        </Card>
+      </>
+    );
+  }
+
   const [branches, products, staff] = await Promise.all([
     countUsage(businessId, "branches"),
     countUsage(businessId, "products"),

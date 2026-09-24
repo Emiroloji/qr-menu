@@ -18,6 +18,7 @@ import { formatPrice } from "@/lib/format";
 import { productImageSrc } from "@/lib/product-image";
 import { cn } from "@/lib/utils";
 import { BADGES } from "@/lib/validations/menu";
+import { PriceDialog } from "./price-dialog";
 
 export type ProductItem = {
   id: string;
@@ -25,12 +26,11 @@ export type ProductItem = {
   isAvailable: boolean;
   isVisible: boolean;
   badges: (keyof typeof BADGES)[];
-  prices: number[];
-  variantCount: number;
+  variants: { id: string; name: string | null; price: number }[];
   image: { url: string; blurDataUrl: string | null } | null;
 };
 
-type Permissions = { edit: boolean; toggle: boolean };
+type Permissions = { edit: boolean; toggle: boolean; price: boolean };
 
 function priceLabel(prices: number[]) {
   if (prices.length === 0) return "—";
@@ -128,7 +128,10 @@ export function ProductList({
   return (
     <SortableList
       key={products
-        .map((p) => `${p.id}:${p.isVisible}:${p.isAvailable}`)
+        .map(
+          (p) =>
+            `${p.id}:${p.isVisible}:${p.isAvailable}:${p.variants.map((v) => v.price).join("-")}`,
+        )
         .join()}
       items={products}
       disabled={!permissions.edit}
@@ -180,11 +183,15 @@ export function ProductList({
               ))}
             </div>
             <span className="text-sm text-muted-foreground tabular-nums">
-              {priceLabel(product.prices)}
-              {product.variantCount > 1 && ` · ${product.variantCount} boy`}
+              {priceLabel(product.variants.map((v) => v.price))}
+              {product.variants.length > 1 &&
+                ` · ${product.variants.length} boy`}
             </span>
           </div>
           <AvailabilitySwitch product={product} enabled={permissions.toggle} />
+          {permissions.price && !permissions.edit && (
+            <PriceDialog product={product} />
+          )}
           {permissions.edit && (
             <>
               <VisibilityButton product={product} />

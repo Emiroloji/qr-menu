@@ -6,6 +6,29 @@ type UserWithPermissions = {
   permissions: { permission: Permission }[];
 };
 
+/** Çalışan yetkileri ve açıklamaları (MIMARI §6). */
+export const PERMISSION_LABELS: Record<
+  Permission,
+  { label: string; description: string }
+> = {
+  PRODUCT_TOGGLE_AVAILABILITY: {
+    label: "Tükendi işaretleme",
+    description: "Biten ürünü “Tükendi”, geleni “Mevcut” yapar.",
+  },
+  PRODUCT_EDIT_PRICE: {
+    label: "Fiyat güncelleme",
+    description: "Ürün fiyatlarını ve toplu zam/indirimi değiştirir.",
+  },
+  PRODUCT_EDIT: {
+    label: "Ürün ekleme ve düzenleme",
+    description: "Ürün ekler, düzenler, gizler, siler; görsel ve çeviri girer.",
+  },
+  CATEGORY_EDIT: {
+    label: "Kategori yönetimi",
+    description: "Kategori ekler, düzenler, sıralar, gizler, siler.",
+  },
+};
+
 /** Menü ekranına erişim sağlayan yetkiler. */
 export const MENU_PERMISSIONS: Permission[] = [
   "PRODUCT_TOGGLE_AVAILABILITY",

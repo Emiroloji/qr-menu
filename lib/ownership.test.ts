@@ -83,3 +83,22 @@ describe("kategori ve ürün sahipliği (işletme izolasyonu)", () => {
     ).rejects.toThrow("Ürün bulunamadı.");
   });
 });
+
+describe("çalışan sahipliği (işletme izolasyonu)", () => {
+  it("yalnızca bu işletmenin STAFF rolündeki kullanıcısını kabul eder", async () => {
+    const { assertStaffBelongsToBusiness } = await import("@/lib/ownership");
+    const { db } = await import("@/lib/db");
+    const findFirst = vi.fn().mockResolvedValue(null);
+    (db as unknown as { user: { findFirst: typeof findFirst } }).user = {
+      findFirst,
+    };
+    await expect(
+      assertStaffBelongsToBusiness("u-sahip", "biz-1"),
+    ).rejects.toThrow("Çalışan bulunamadı.");
+    expect(findFirst.mock.calls[0][0].where).toEqual({
+      id: "u-sahip",
+      businessId: "biz-1",
+      role: "STAFF",
+    });
+  });
+});

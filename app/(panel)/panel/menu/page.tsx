@@ -78,7 +78,10 @@ export default async function MenuPage({
         where: { categoryId: category.id, deletedAt: null },
         orderBy: { sortOrder: "asc" },
         include: {
-          variants: { orderBy: { sortOrder: "asc" }, select: { price: true } },
+          variants: {
+            orderBy: { sortOrder: "asc" },
+            select: { id: true, name: true, price: true },
+          },
           images: { orderBy: { sortOrder: "asc" }, take: 1 },
         },
       })
@@ -221,15 +224,18 @@ export default async function MenuPage({
               ) : (
                 <ProductList
                   categoryId={category.id}
-                  permissions={{ edit: can.editProduct, toggle: can.toggle }}
+                  permissions={{
+                    edit: can.editProduct,
+                    toggle: can.toggle,
+                    price: can.editPrice,
+                  }}
                   products={products.map((p) => ({
                     id: p.id,
                     name: p.name,
                     isAvailable: p.isAvailable,
                     isVisible: p.isVisible,
                     badges: p.badges,
-                    prices: p.variants.map((v) => v.price),
-                    variantCount: p.variants.length,
+                    variants: p.variants,
                     image: p.images[0] ?? null,
                   }))}
                 />
