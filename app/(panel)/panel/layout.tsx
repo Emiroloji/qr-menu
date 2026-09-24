@@ -2,6 +2,7 @@ import Image from "next/image";
 import { signOut } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
+import { hasAnyMenuPermission } from "@/lib/permissions";
 import { getBusinessContext, requireSession } from "@/lib/session";
 import {
   type NavItem,
@@ -17,9 +18,14 @@ export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
   const { business, status, subscription } =
     await getBusinessContext(businessId);
 
-  // Şube ve ayarlar yalnızca işletme sahibine açıktır (MIMARI §6).
+  // Menü: sahip veya menü yetkisi olan çalışan. Şube ve ayarlar yalnızca sahip (MIMARI §6).
   const items: NavItem[] = [
     { href: "/panel", label: "Özet", icon: "dashboard" },
+    ...(hasAnyMenuPermission(user)
+      ? ([
+          { href: "/panel/menu", label: "Menü", icon: "menu" },
+        ] satisfies NavItem[])
+      : []),
     ...(user.role === "OWNER"
       ? ([
           { href: "/panel/branches", label: "Şubeler", icon: "branches" },

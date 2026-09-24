@@ -2,11 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboardIcon, MapPinIcon, SettingsIcon } from "lucide-react";
+import {
+  BookOpenIcon,
+  LayoutDashboardIcon,
+  MapPinIcon,
+  SettingsIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ICONS = {
   dashboard: LayoutDashboardIcon,
+  menu: BookOpenIcon,
   branches: MapPinIcon,
   settings: SettingsIcon,
 };

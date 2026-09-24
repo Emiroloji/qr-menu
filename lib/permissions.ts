@@ -6,6 +6,14 @@ type UserWithPermissions = {
   permissions: { permission: Permission }[];
 };
 
+/** Menü ekranına erişim sağlayan yetkiler. */
+export const MENU_PERMISSIONS: Permission[] = [
+  "PRODUCT_TOGGLE_AVAILABILITY",
+  "PRODUCT_EDIT_PRICE",
+  "PRODUCT_EDIT",
+  "CATEGORY_EDIT",
+];
+
 export function homePathFor(role: Role) {
   return role === "SUPER_ADMIN" ? "/admin" : "/panel";
 }
@@ -20,6 +28,10 @@ export function hasPermission(
     return user.permissions.some((p) => p.permission === permission);
   }
   return false;
+}
+
+export function hasAnyMenuPermission(user: UserWithPermissions) {
+  return MENU_PERMISSIONS.some((p) => hasPermission(user, p));
 }
 
 export async function requirePermission(

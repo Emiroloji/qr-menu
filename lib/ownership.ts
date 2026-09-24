@@ -15,3 +15,43 @@ export async function assertBranchBelongsToBusiness(
   });
   if (!branch) throw new ActionError("Şube bulunamadı.");
 }
+
+export async function assertCategoryBelongsToBusiness(
+  categoryId: string,
+  businessId: string,
+) {
+  const category = await db.category.findFirst({
+    where: {
+      id: categoryId,
+      deletedAt: null,
+      branch: { businessId, deletedAt: null },
+    },
+    select: { id: true, branchId: true },
+  });
+  if (!category) throw new ActionError("Kategori bulunamadı.");
+  return category;
+}
+
+export async function assertProductBelongsToBusiness(
+  productId: string,
+  businessId: string,
+) {
+  const product = await db.product.findFirst({
+    where: {
+      id: productId,
+      deletedAt: null,
+      category: { deletedAt: null, branch: { businessId, deletedAt: null } },
+    },
+    select: {
+      id: true,
+      categoryId: true,
+      category: { select: { branchId: true } },
+    },
+  });
+  if (!product) throw new ActionError("Ürün bulunamadı.");
+  return {
+    id: product.id,
+    categoryId: product.categoryId,
+    branchId: product.category.branchId,
+  };
+}

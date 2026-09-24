@@ -1,5 +1,6 @@
 import "server-only";
 import {
+  CopyObjectCommand,
   DeleteObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -23,6 +24,11 @@ const s3 = new S3Client({
 const bucket = process.env.R2_BUCKET;
 const publicBase = (process.env.R2_PUBLIC_URL ?? "").replace(/\/$/, "");
 
+/** Depo anahtarının herkese açık adresi. */
+export function publicUrl(key: string) {
+  return `${publicBase}/${key}`;
+}
+
 /** Dosyayı yükler ve herkese açık adresini döner. Anahtarlar değişmez, önbellek uzun tutulur. */
 export async function uploadFile(
   key: string,
@@ -41,11 +47,26 @@ export async function uploadFile(
   return `${publicBase}/${key}`;
 }
 
+const keyOf = (url: string) =>
+  url.startsWith(`${publicBase}/`) ? url.slice(publicBase.length + 1) : null;
+
+/** Depodaki bir dosyayı yeni anahtara kopyalar (menü kopyalama). */
+export async function copyFile(fromUrl: string, toKey: string) {
+  const fromKey = keyOf(fromUrl);
+  if (!fromKey) throw new Error("Kopyalanacak dosya bu depoda değil.");
+  await s3.send(
+    new CopyObjectCommand({
+      Bucket: bucket,
+      CopySource: `${bucket}/${fromKey}`,
+      Key: toKey,
+    }),
+  );
+  return publicUrl(toKey);
+}
+
 /** Bu depolamaya ait adresleri siler; başka adresleri yok sayar. */
 export async function deleteFiles(urls: string[]) {
-  const keys = urls
-    .filter((url) => url.startsWith(`${publicBase}/`))
-    .map((url) => url.slice(publicBase.length + 1));
+  const keys = urls.map(keyOf).filter((key) => key !== null);
   await Promise.all(
     keys.map((Key) =>
       s3.send(new DeleteObjectCommand({ Bucket: bucket, Key })),

@@ -28,3 +28,58 @@ describe("assertBranchBelongsToBusiness (işletme izolasyonu)", () => {
     ).rejects.toThrow("Şube bulunamadı.");
   });
 });
+
+describe("kategori ve ürün sahipliği (işletme izolasyonu)", () => {
+  it("kategoriyi şube üzerinden işletmeye bağlı arar", async () => {
+    const { assertCategoryBelongsToBusiness } = await import("@/lib/ownership");
+    const { db } = await import("@/lib/db");
+    const category = vi.fn().mockResolvedValue({ id: "c1", branchId: "br-1" });
+    (db as unknown as { category: { findFirst: typeof category } }).category = {
+      findFirst: category,
+    };
+    await expect(
+      assertCategoryBelongsToBusiness("c1", "biz-1"),
+    ).resolves.toEqual({ id: "c1", branchId: "br-1" });
+    expect(category.mock.calls[0][0].where).toEqual({
+      id: "c1",
+      deletedAt: null,
+      branch: { businessId: "biz-1", deletedAt: null },
+    });
+    category.mockResolvedValue(null);
+    await expect(
+      assertCategoryBelongsToBusiness("c-baska", "biz-1"),
+    ).rejects.toThrow("Kategori bulunamadı.");
+  });
+
+  it("ürünü kategori ve şube zinciriyle işletmeye bağlı arar", async () => {
+    const { assertProductBelongsToBusiness } = await import("@/lib/ownership");
+    const { db } = await import("@/lib/db");
+    const product = vi.fn().mockResolvedValue({
+      id: "p1",
+      categoryId: "c1",
+      category: { branchId: "br-1" },
+    });
+    (db as unknown as { product: { findFirst: typeof product } }).product = {
+      findFirst: product,
+    };
+    await expect(
+      assertProductBelongsToBusiness("p1", "biz-1"),
+    ).resolves.toEqual({
+      id: "p1",
+      categoryId: "c1",
+      branchId: "br-1",
+    });
+    expect(product.mock.calls[0][0].where).toEqual({
+      id: "p1",
+      deletedAt: null,
+      category: {
+        deletedAt: null,
+        branch: { businessId: "biz-1", deletedAt: null },
+      },
+    });
+    product.mockResolvedValue(null);
+    await expect(
+      assertProductBelongsToBusiness("p-baska", "biz-1"),
+    ).rejects.toThrow("Ürün bulunamadı.");
+  });
+});

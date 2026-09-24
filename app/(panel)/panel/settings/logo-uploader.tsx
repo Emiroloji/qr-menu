@@ -33,9 +33,11 @@ export function LogoUploader({
     setError(null);
     startTransition(async () => {
       const body = new FormData();
-      body.set("kind", "logo");
       body.set("file", file);
-      const response = await fetch("/api/upload", { method: "POST", body });
+      const response = await fetch("/api/upload?kind=logo", {
+        method: "POST",
+        body,
+      });
       const result: { url?: string; error?: string } = await response
         .json()
         .catch(() => ({}));

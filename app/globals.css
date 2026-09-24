@@ -128,3 +128,18 @@
     @apply font-sans;
   }
 }
+
+/* Dokunmatik ekranlarda dokunma alanları en az 44×44 px (KURALLAR 10).
+   shadcn'in varsayılan boyutları fareyle kullanım için 32 px'tir. */
+@media (pointer: coarse) {
+  [data-slot="button"],
+  [data-slot="input"],
+  [data-slot="select-trigger"],
+  [data-slot="toggle-group-item"] {
+    min-height: 2.75rem;
+  }
+  [data-slot="button"]:has(> svg:only-child),
+  [data-slot="toggle-group-item"] {
+    min-width: 2.75rem;
+  }
+}
