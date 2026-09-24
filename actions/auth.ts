@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { APIError } from "better-auth/api";
-import type { ActionResult } from "@/lib/action";
+import type { FormState } from "@/lib/action";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { homePathFor } from "@/lib/permissions";
@@ -12,8 +12,6 @@ import {
   resetPasswordSchema,
   signInSchema,
 } from "@/lib/validations/auth";
-
-type FormState = ActionResult<null> | null;
 
 export async function signIn(
   _prev: FormState,

@@ -1,6 +1,9 @@
 export type ActionResult<T> =
   { ok: true; data: T } | { ok: false; error: string };
 
+/** `useActionState` ile kullanılan form action'larının durumu. */
+export type FormState<T = null> = ActionResult<T> | null;
+
 /** Beklenen hata: mesajı Türkçedir ve kullanıcıya gösterilebilir. */
 export class ActionError extends Error {}
 
