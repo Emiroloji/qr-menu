@@ -48,6 +48,7 @@ export default async function AppearancePage() {
         id: "ornek",
         name: "Örnek kategori",
         description: null,
+        hours: null,
         products: [
           {
             id: "ornek-urun",
@@ -76,7 +77,11 @@ export default async function AppearancePage() {
     featuredIds: [],
   };
 
-  const preview: MenuData = withToday(found);
+  // Önizleme saate bağlı kategorileri de gösterir; tema her kategoride denenebilsin.
+  const preview: MenuData = {
+    ...withToday(found),
+    categories: found.categories,
+  };
   const messages = getMenuMessages("tr");
   const client = buildClientData(
     preview,

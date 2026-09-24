@@ -74,6 +74,7 @@
     "campaigns": "Акции",
     "campaignUntil": "До {date}",
     "dailySpecial": "Блюдо дня",
-    "featured": "Рекомендуем"
+    "featured": "Рекомендуем",
+    "servedHours": "Подаётся {hours}"
   }
 }

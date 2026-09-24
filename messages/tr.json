@@ -74,6 +74,7 @@
     "campaigns": "Kampanyalar",
     "campaignUntil": "{date} tarihine kadar",
     "dailySpecial": "Günün önerisi",
-    "featured": "Öne çıkanlar"
+    "featured": "Öne çıkanlar",
+    "servedHours": "{hours} arası servis edilir"
   }
 }

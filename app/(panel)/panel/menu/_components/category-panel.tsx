@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { EyeOffIcon, PlusIcon } from "lucide-react";
+import { ClockIcon, EyeOffIcon, PlusIcon } from "lucide-react";
 import { reorderCategories } from "@/actions/category";
 import { SortableList } from "@/components/panel/sortable-list";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ type CategoryItem = {
   id: string;
   name: string;
   isVisible: boolean;
+  /** Görünme saatleri, ör. "08:00–11:00" */
+  hours: string | null;
   productCount: number;
 };
 
@@ -50,7 +52,8 @@ export function CategoryPanel({
         </p>
       ) : (
         <SortableList
-          key={categories.map((c) => c.id).join()}
+          // Ad, görünürlük, saat veya sayı değişince de liste yenilenir.
+          key={JSON.stringify(categories)}
           items={categories}
           disabled={!canEdit}
           onReorder={(ids) => reorderCategories({ parentId: branchId, ids })}
@@ -71,6 +74,12 @@ export function CategoryPanel({
                 className="flex min-h-10 flex-1 items-center gap-2 text-sm font-medium"
               >
                 <span className="flex-1 truncate">{category.name}</span>
+                {category.hours && (
+                  <ClockIcon
+                    className="size-3.5 text-muted-foreground"
+                    aria-label={`${category.hours} arası görünür`}
+                  />
+                )}
                 {!category.isVisible && (
                   <EyeOffIcon
                     className="size-3.5 text-muted-foreground"

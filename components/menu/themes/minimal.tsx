@@ -5,7 +5,13 @@ import {
   MenuToolbar,
   ProductLink,
 } from "../client/islands";
-import { BusinessMark, priceLabel, ProductPhoto, SpiceLevel } from "../parts";
+import {
+  BusinessMark,
+  priceLabel,
+  ProductPhoto,
+  SpiceLevel,
+  ServedHours,
+} from "../parts";
 import { Promotions } from "../promotions";
 import type { ThemeProps } from "./index";
 
@@ -82,6 +88,7 @@ export function MinimalTheme({ data, labels }: ThemeProps) {
             <h2 dir="auto" className="mb-1 text-xl font-bold tracking-tight">
               {category.name}
             </h2>
+            <ServedHours category={category} labels={labels} className="mb-2" />
             {category.description && (
               <p dir="auto" className="mb-2 text-sm text-menu-muted">
                 {category.description}

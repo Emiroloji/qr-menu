@@ -74,6 +74,7 @@
     "campaigns": "Offers",
     "campaignUntil": "Until {date}",
     "dailySpecial": "Today's pick",
-    "featured": "Featured"
+    "featured": "Featured",
+    "servedHours": "Served {hours}"
   }
 }

@@ -25,6 +25,8 @@ export type CategoryValues = {
   name: string;
   description: string | null;
   isVisible: boolean;
+  availableFrom: string | null;
+  availableTo: string | null;
 };
 
 export function CategoryDialog({
@@ -53,7 +55,12 @@ export function CategoryDialog({
             {category ? "Kategoriyi düzenle" : "Yeni kategori"}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        {/* Kayıttan sonra değerler değişince form yeniden kurulur (varsayılan değerler). */}
+        <form
+          key={JSON.stringify(category ?? null)}
+          onSubmit={onSubmit}
+          className="flex flex-col gap-4"
+        >
           {category ? (
             <input type="hidden" name="id" value={category.id} />
           ) : (
@@ -77,6 +84,30 @@ export function CategoryDialog({
               defaultValue={category?.description ?? ""}
             />
           </Field>
+          <fieldset className="flex flex-col gap-2">
+            <legend className="text-sm font-medium">
+              Görünme saatleri (isteğe bağlı)
+            </legend>
+            <div className="grid grid-cols-2 gap-3">
+              <Input
+                type="time"
+                name="availableFrom"
+                aria-label="Başlangıç saati"
+                defaultValue={category?.availableFrom ?? ""}
+              />
+              <Input
+                type="time"
+                name="availableTo"
+                aria-label="Bitiş saati"
+                defaultValue={category?.availableTo ?? ""}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Örn. kahvaltı için 08:00–11:00. Kategori menüde yalnızca bu
+              saatlerde görünür ve “şu saatlerde servis edilir” bilgisi yazar.
+              Boş bırakırsanız gün boyu görünür.
+            </p>
+          </fieldset>
           <div className="flex items-center gap-2">
             <Checkbox
               id="category-visible"

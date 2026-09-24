@@ -11,6 +11,7 @@ import {
 } from "@react-pdf/renderer";
 import type { MenuCategory } from "@/components/menu/types";
 import { formatPriceText } from "@/lib/format";
+import { formatServiceHours } from "@/lib/service-hours";
 import { PDF_FONT } from "./fonts";
 
 export type PrintedMenuData = {
@@ -25,7 +26,13 @@ export type PrintedMenuData = {
   accentText: string;
   allergens: { code: string; name: string }[];
   categories: MenuCategory[];
-  text: { allergens: string; note: string; scan: string };
+  text: {
+    allergens: string;
+    note: string;
+    scan: string;
+    /** "{hours} arası servis edilir" */
+    servedHours: string;
+  };
 };
 
 const MUTED = "#555555";
@@ -97,6 +104,14 @@ function PrintedMenu({ data }: { data: PrintedMenuData }) {
                 >
                   {category.name}
                 </Text>
+                {category.hours && (
+                  <Text style={{ fontSize: 9, color: MUTED }}>
+                    {data.text.servedHours.replace(
+                      "{hours}",
+                      formatServiceHours(category.hours),
+                    )}
+                  </Text>
+                )}
                 {category.description && (
                   <Text style={{ fontSize: 9, color: MUTED }}>
                     {category.description}

@@ -4,7 +4,7 @@ import {
   MenuToolbar,
   ProductLink,
 } from "../client/islands";
-import { priceLabel, ProductPhoto } from "../parts";
+import { priceLabel, ProductPhoto, ServedHours } from "../parts";
 import { Promotions } from "../promotions";
 import type { ThemeProps } from "./index";
 
@@ -54,6 +54,7 @@ export function VibrantTheme({ data, labels }: ThemeProps) {
             >
               {category.name}
             </h2>
+            <ServedHours category={category} labels={labels} />
             {category.products.map((product) => (
               <ProductLink
                 key={product.id}

@@ -74,6 +74,7 @@
     "campaigns": "العروض",
     "campaignUntil": "حتى {date}",
     "dailySpecial": "اقتراح اليوم",
-    "featured": "مميز"
+    "featured": "مميز",
+    "servedHours": "يُقدَّم {hours}"
   }
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BookOpenIcon, LanguagesIcon, PlusIcon } from "lucide-react";
+import { BookOpenIcon, ClockIcon, LanguagesIcon, PlusIcon } from "lucide-react";
 import { PageHeader } from "@/components/panel/page-header";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { db } from "@/lib/db";
 import { hasAnyMenuPermission, hasPermission } from "@/lib/permissions";
 import { isLanguageCode } from "@/lib/languages";
+import { formatServiceHours } from "@/lib/service-hours";
 import { requireSession } from "@/lib/session";
 import { isProductMissing, missingFields } from "@/lib/translations";
 import { BranchSwitcher } from "./_components/branch-switcher";
@@ -171,6 +172,13 @@ export default async function MenuPage({
             id: c.id,
             name: c.name,
             isVisible: c.isVisible,
+            hours:
+              c.availableFrom && c.availableTo
+                ? formatServiceHours({
+                    from: c.availableFrom,
+                    to: c.availableTo,
+                  })
+                : null,
             productCount: c._count.products,
           }))}
         />
@@ -188,6 +196,15 @@ export default async function MenuPage({
                     {!category.isVisible && (
                       <Badge variant="secondary">Gizli</Badge>
                     )}
+                    {category.availableFrom && category.availableTo && (
+                      <Badge variant="outline">
+                        <ClockIcon />
+                        {formatServiceHours({
+                          from: category.availableFrom,
+                          to: category.availableTo,
+                        })}
+                      </Badge>
+                    )}
                   </h2>
                   <p className="text-sm text-muted-foreground">
                     {products.length} ürün
@@ -203,6 +220,8 @@ export default async function MenuPage({
                         name: category.name,
                         description: category.description,
                         isVisible: category.isVisible,
+                        availableFrom: category.availableFrom,
+                        availableTo: category.availableTo,
                       }}
                     />
                   )}

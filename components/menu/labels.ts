@@ -39,6 +39,7 @@ export function createMenuLabels(
     campaignUntil: (date: string) => t("campaignUntil", { date }),
     dailySpecial: t("dailySpecial"),
     featured: t("featured"),
+    servedHours: (hours: string) => t("servedHours", { hours }),
   };
 }
 export type MenuLabels = ReturnType<typeof createMenuLabels>;

@@ -5,7 +5,7 @@ import {
   MenuToolbar,
   ProductLink,
 } from "../client/islands";
-import { BusinessMark, priceLabel, ProductPhoto } from "../parts";
+import { BusinessMark, priceLabel, ProductPhoto, ServedHours } from "../parts";
 import { Promotions } from "../promotions";
 import type { ThemeProps } from "./index";
 
@@ -69,6 +69,7 @@ export function WarmTheme({ data, labels }: ThemeProps) {
             <h2 dir="auto" className="font-menu-display text-2xl font-bold">
               {category.name}
             </h2>
+            <ServedHours category={category} labels={labels} />
             <div className="grid grid-cols-2 gap-3">
               {category.products.map((product) => (
                 <ProductLink

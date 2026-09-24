@@ -74,6 +74,7 @@
     "campaigns": "Angebote",
     "campaignUntil": "Bis {date}",
     "dailySpecial": "Empfehlung des Tages",
-    "featured": "Empfehlungen"
+    "featured": "Empfehlungen",
+    "servedHours": "Serviert {hours}"
   }
 }

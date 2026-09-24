@@ -10,6 +10,7 @@ import {
 } from "@/lib/campaigns";
 import { db } from "@/lib/db";
 import { toDateInputValue } from "@/lib/format";
+import { isWithinServiceHours } from "@/lib/service-hours";
 import type { LanguageCode } from "@/lib/languages";
 import { effectiveAppearance } from "@/lib/menu-themes";
 import { readPlanFeatures } from "@/lib/plan-features";
@@ -95,6 +96,10 @@ export async function getMenuData(
     .map((category) => ({
       id: category.id,
       ...translate(category, lang),
+      hours:
+        category.availableFrom && category.availableTo
+          ? { from: category.availableFrom, to: category.availableTo }
+          : null,
       products: category.products.map((p) => ({
         id: p.id,
         ...translate(p, lang),
@@ -193,12 +198,16 @@ export async function getMenuData(
 
 /**
  * Güne ve saate bağlı alanları istek anında hesaplar (önbellek bir saate kadar eski
- * olabilir): bugünün çalışma saati, yayındaki kampanyalar ve günün önerisi.
+ * olabilir): bugünün çalışma saati, servis saatindeki kategoriler, yayındaki
+ * kampanyalar ve günün önerisi.
  */
 export function withToday(data: MenuData, now = new Date()): MenuData {
   const today = toDateInputValue(now);
+  const categories = data.categories.filter(
+    (c) => !c.hours || isWithinServiceHours(c.hours, now),
+  );
   const productIds = new Set(
-    data.categories.flatMap((c) => c.products.map((p) => p.id)),
+    categories.flatMap((c) => c.products.map((p) => p.id)),
   );
   const special = data.dailySpecials.find(
     (d) => d.date === today && productIds.has(d.productId),
@@ -219,6 +228,7 @@ export function withToday(data: MenuData, now = new Date()): MenuData {
         now,
       ),
     ),
+    categories,
     dailyProductId: special?.productId ?? null,
   };
 }
@@ -229,7 +239,7 @@ export function withToday(data: MenuData, now = new Date()): MenuData {
  */
 // Önbellekteki verinin yapısı (MenuData) değiştiğinde artırılır; yoksa yayına çıkıştan
 // sonra eski yapıdaki kayıtlar bir saate kadar okunur ve menü bozulur.
-const MENU_DATA_VERSION = 2;
+const MENU_DATA_VERSION = 3;
 
 export function getCachedMenuData(branchId: string, lang: LanguageCode) {
   return unstable_cache(

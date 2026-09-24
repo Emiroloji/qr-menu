@@ -9,11 +9,31 @@ const optionalText = (max: number) =>
     .optional()
     .transform((v) => v || null);
 
-export const categorySchema = z.object({
-  name: z.string().trim().min(1, "Kategori adı girin.").max(80),
-  description: optionalText(300),
-  isVisible: checkbox,
-});
+const optionalTime = z
+  .string()
+  .trim()
+  .optional()
+  .transform((v) => v || null)
+  .refine((v) => v === null || /^([01]\d|2[0-3]):[0-5]\d$/.test(v), {
+    message: "Saatleri SS:DD biçiminde girin.",
+  });
+
+export const categorySchema = z
+  .object({
+    name: z.string().trim().min(1, "Kategori adı girin.").max(80),
+    description: optionalText(300),
+    isVisible: checkbox,
+    // Saate göre menü (Faz 2.4): ikisi de boşsa kategori gün boyu görünür.
+    availableFrom: optionalTime,
+    availableTo: optionalTime,
+  })
+  .refine((c) => (c.availableFrom === null) === (c.availableTo === null), {
+    message: "Görünme saatleri için başlangıç ve bitiş saatini birlikte girin.",
+  })
+  .refine(
+    (c) => c.availableFrom === null || c.availableFrom !== c.availableTo,
+    { message: "Başlangıç ve bitiş saati aynı olamaz." },
+  );
 
 export const BADGES = {
   CHEFS_CHOICE: "Şefin önerisi",

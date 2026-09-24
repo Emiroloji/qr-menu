@@ -2,6 +2,7 @@ import type { AllergenLevel, Badge } from "@/lib/generated/prisma/enums";
 import type { LanguageCode } from "@/lib/languages";
 import type { MenuThemeCode } from "@/lib/menu-themes";
 import type { OpeningHours, Socials } from "@/lib/branch-info";
+import type { ServiceHours } from "@/lib/service-hours";
 
 // Her temanın aldığı ortak veri yapısı (KURALLAR 8). Metinler seçilen dile çevrilmiştir;
 // çevirisi olmayan alan Türkçe gelir.
@@ -31,6 +32,8 @@ export type MenuCategory = {
   id: string;
   name: string;
   description: string | null;
+  /** Görünme saatleri (Faz 2.4); null: gün boyu. Dışında menüden çıkar. */
+  hours: ServiceHours | null;
   products: MenuProduct[];
 };
 

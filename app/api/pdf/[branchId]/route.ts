@@ -130,6 +130,7 @@ export async function GET(
             allergens: messages.allergens,
             note: messages.allergenNote,
             scan: messages.digitalMenu,
+            servedHours: messages.servedHours,
           },
         });
 

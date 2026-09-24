@@ -4,7 +4,7 @@ import {
   MenuToolbar,
   ProductLink,
 } from "../client/islands";
-import { BusinessMark, priceLabel, SpiceLevel } from "../parts";
+import { BusinessMark, priceLabel, SpiceLevel, ServedHours } from "../parts";
 import { Promotions } from "../promotions";
 import type { ThemeProps } from "./index";
 
@@ -58,6 +58,11 @@ export function LuxuryTheme({ data, labels }: ThemeProps) {
             >
               {category.name}
             </h2>
+            <ServedHours
+              category={category}
+              labels={labels}
+              className="justify-center"
+            />
             {category.products.map((product) => (
               <ProductLink
                 key={product.id}

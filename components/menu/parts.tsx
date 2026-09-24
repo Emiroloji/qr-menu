@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { FlameIcon, ImageIcon } from "lucide-react";
+import { ClockIcon, FlameIcon, ImageIcon } from "lucide-react";
 import { productImageSrc } from "@/lib/product-image";
+import { formatServiceHours } from "@/lib/service-hours";
 import { cn } from "@/lib/utils";
 import { priceText } from "./client-data";
 import type { MenuLabels } from "./labels";
-import type { MenuProduct } from "./types";
+import type { MenuCategory, MenuProduct } from "./types";
 
 /** "₺85,00" veya çok boylu üründe "₺85,00’den" */
 export function priceLabel(product: MenuProduct, labels: MenuLabels) {
@@ -101,5 +102,29 @@ export function BusinessMark({
         <span aria-hidden>{name.charAt(0)}</span>
       )}
     </div>
+  );
+}
+
+/** Saate bağlı kategoride "08:00–11:00 arası servis edilir" (Faz 2.4). */
+export function ServedHours({
+  category,
+  labels,
+  className,
+}: {
+  category: MenuCategory;
+  labels: MenuLabels;
+  className?: string;
+}) {
+  if (!category.hours) return null;
+  return (
+    <p
+      className={cn(
+        "flex items-center gap-1.5 text-sm text-menu-muted",
+        className,
+      )}
+    >
+      <ClockIcon className="size-3.5 shrink-0" aria-hidden />
+      {labels.servedHours(formatServiceHours(category.hours))}
+    </p>
   );
 }

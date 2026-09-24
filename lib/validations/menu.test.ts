@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { productSchema, readProductForm } from "@/lib/validations/menu";
+import {
+  categorySchema,
+  productSchema,
+  readProductForm,
+} from "@/lib/validations/menu";
 
 function form(entries: [string, string][]) {
   const fd = new FormData();
@@ -87,5 +91,47 @@ describe("ürün formu", () => {
       productSchema.safeParse(readProductForm(form(base))).error?.issues[0]
         .message,
     ).toBe("En az bir fiyat girin.");
+  });
+});
+
+describe("kategori görünme saatleri", () => {
+  const category = { name: "Kahvaltı", isVisible: "on" };
+
+  it("saat girilmezse gün boyu görünür", () => {
+    const data = categorySchema.parse(category);
+    expect(data.availableFrom).toBeNull();
+    expect(data.availableTo).toBeNull();
+  });
+  it("başlangıç ve bitişi birlikte kabul eder", () => {
+    const data = categorySchema.parse({
+      ...category,
+      availableFrom: "08:00",
+      availableTo: "11:30",
+    });
+    expect(data).toMatchObject({
+      availableFrom: "08:00",
+      availableTo: "11:30",
+    });
+  });
+  it("yalnızca biri girilirse reddeder", () => {
+    expect(
+      categorySchema.safeParse({ ...category, availableFrom: "08:00" }).success,
+    ).toBe(false);
+  });
+  it("aynı saatleri ve geçersiz saati reddeder", () => {
+    expect(
+      categorySchema.safeParse({
+        ...category,
+        availableFrom: "08:00",
+        availableTo: "08:00",
+      }).success,
+    ).toBe(false);
+    expect(
+      categorySchema.safeParse({
+        ...category,
+        availableFrom: "25:00",
+        availableTo: "11:00",
+      }).success,
+    ).toBe(false);
   });
 });
