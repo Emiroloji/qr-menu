@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useFormAction } from "@/hooks/use-form-action";
 import { slugify } from "@/lib/format";
+import { LANGUAGES } from "@/lib/languages";
 import {
   DAYS,
   type OpeningHours,
@@ -36,6 +37,7 @@ export type BranchFormValues = {
   wifi: string | null;
   openingHours: OpeningHours;
   socials: Socials;
+  languages: string[];
 };
 
 const DEFAULT_RANGE: [string, string] = ["09:00", "22:00"];
@@ -43,9 +45,12 @@ const DEFAULT_RANGE: [string, string] = ["09:00", "22:00"];
 export function BranchForm({
   branch,
   businessSlug,
+  maxLanguages,
 }: {
   branch?: BranchFormValues;
   businessSlug: string;
+  /** Paketin izin verdiği toplam dil sayısı (Türkçe dahil); null = sınırsız */
+  maxLanguages: number | null;
 }) {
   const router = useRouter();
   const [slug, setSlug] = useState(branch?.slug ?? "");
@@ -58,6 +63,11 @@ export function BranchForm({
       ]),
     ),
   );
+  const [languages, setLanguages] = useState<string[]>(
+    branch?.languages ?? ["tr"],
+  );
+  const languageLimitReached =
+    maxLanguages !== null && languages.length >= maxLanguages;
   const { pending, error, onSubmit } = useFormAction(saveBranch, ({ id }) => {
     toast.success(branch ? "Şube kaydedildi." : "Şube eklendi.");
     if (!branch) router.push(`/panel/branches/${id}`);
@@ -188,6 +198,59 @@ export function BranchForm({
                 ) : (
                   <span className="text-sm text-muted-foreground">Kapalı</span>
                 )}
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Menü dilleri</CardTitle>
+          <CardDescription>
+            Müşteri menüde dili kendisi seçer. Çevirileri Menü → Çeviriler
+            ekranından girersiniz.{" "}
+            {maxLanguages === null
+              ? "Paketiniz sınırsız dile izin veriyor."
+              : `Paketiniz Türkçe dahil ${maxLanguages} dile izin veriyor.`}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          {LANGUAGES.map((language) => {
+            const checked = languages.includes(language.code);
+            const isDefault = language.code === "tr";
+            return (
+              <div key={language.code} className="flex items-center gap-2">
+                <Checkbox
+                  id={`language-${language.code}`}
+                  name="languages"
+                  value={language.code}
+                  checked={checked}
+                  disabled={isDefault || (!checked && languageLimitReached)}
+                  onCheckedChange={(next) =>
+                    setLanguages((current) =>
+                      next
+                        ? [...current, language.code]
+                        : current.filter((c) => c !== language.code),
+                    )
+                  }
+                />
+                <Label htmlFor={`language-${language.code}`}>
+                  {language.name}
+                  <span
+                    className="font-normal text-muted-foreground"
+                    lang={language.code}
+                  >
+                    {language.native !== language.name &&
+                      ` · ${language.native}`}
+                  </span>
+                  {isDefault && (
+                    <span className="font-normal text-muted-foreground">
+                      {" "}
+                      (ana dil)
+                    </span>
+                  )}
+                </Label>
               </div>
             );
           })}

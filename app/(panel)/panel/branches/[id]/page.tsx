@@ -15,7 +15,7 @@ export default async function BranchPage({
 }: PageProps<"/panel/branches/[id]">) {
   const { businessId } = await requireOwnerSession();
   const { id } = await params;
-  const [{ business }, branch] = await Promise.all([
+  const [{ business, subscription }, branch] = await Promise.all([
     getBusinessContext(businessId),
     // İşletme izolasyonu: başka işletmenin şubesi bulunamaz.
     db.branch.findFirst({ where: { id, businessId, deletedAt: null } }),
@@ -42,6 +42,7 @@ export default async function BranchPage({
       <BranchForm
         key={branch.updatedAt.toISOString()}
         businessSlug={business.slug}
+        maxLanguages={subscription?.plan.maxLanguages ?? 1}
         branch={{
           ...branch,
           openingHours: branch.openingHours as OpeningHours,

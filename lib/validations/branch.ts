@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  DEFAULT_LANGUAGE,
+  isLanguageCode,
+  type LanguageCode,
+} from "@/lib/languages";
 import { slug } from "@/lib/validations/business";
 
 export const DAYS = [
@@ -84,6 +89,18 @@ export const branchSchema = z
       if (url) socials[key] = url;
     }
 
+    // Türkçe her zaman açıktır; bilinmeyen dil kodları yok sayılır.
+    const selected = Array.isArray(raw.languages)
+      ? raw.languages
+      : [raw.languages];
+    const languages: LanguageCode[] = [
+      DEFAULT_LANGUAGE,
+      ...selected.filter(
+        (l): l is LanguageCode =>
+          typeof l === "string" && isLanguageCode(l) && l !== DEFAULT_LANGUAGE,
+      ),
+    ];
+
     return {
       name: data.name,
       slug: data.slug,
@@ -92,6 +109,7 @@ export const branchSchema = z
       wifi: data.wifi,
       openingHours,
       socials,
+      languages: [...new Set(languages)],
     };
   });
 

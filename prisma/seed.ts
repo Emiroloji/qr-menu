@@ -21,28 +21,91 @@ const isProduction = process.env.NODE_ENV === "production";
 // Yasal olarak tanımlı 14 alerjen (proje-tanitimi.md). `icon` şimdilik kod ile aynı;
 // ikon seti Faz 1.10'da belirlenir.
 const ALLERGENS = [
-  ["gluten", "Gluten", "Gluten"],
-  ["crustaceans", "Kabuklular", "Crustaceans"],
-  ["molluscs", "Yumuşakçalar", "Molluscs"],
-  ["eggs", "Yumurta", "Eggs"],
-  ["fish", "Balık", "Fish"],
-  ["peanuts", "Yer fıstığı", "Peanuts"],
-  ["tree_nuts", "Sert kabuklu yemişler", "Tree nuts"],
-  ["soy", "Soya", "Soy"],
-  ["milk", "Süt", "Milk"],
-  ["celery", "Kereviz", "Celery"],
-  ["mustard", "Hardal", "Mustard"],
-  ["sesame", "Susam", "Sesame"],
-  ["sulphites", "Sülfit", "Sulphites"],
-  ["lupin", "Acı bakla", "Lupin"],
+  [
+    "gluten",
+    "Gluten",
+    { en: "Gluten", de: "Gluten", ru: "Глютен", ar: "الغلوتين" },
+  ],
+  [
+    "crustaceans",
+    "Kabuklular",
+    { en: "Crustaceans", de: "Krebstiere", ru: "Ракообразные", ar: "القشريات" },
+  ],
+  [
+    "molluscs",
+    "Yumuşakçalar",
+    { en: "Molluscs", de: "Weichtiere", ru: "Моллюски", ar: "الرخويات" },
+  ],
+  ["eggs", "Yumurta", { en: "Eggs", de: "Eier", ru: "Яйца", ar: "البيض" }],
+  ["fish", "Balık", { en: "Fish", de: "Fisch", ru: "Рыба", ar: "السمك" }],
+  [
+    "peanuts",
+    "Yer fıstığı",
+    { en: "Peanuts", de: "Erdnüsse", ru: "Арахис", ar: "الفول السوداني" },
+  ],
+  [
+    "tree_nuts",
+    "Sert kabuklu yemişler",
+    { en: "Tree nuts", de: "Schalenfrüchte", ru: "Орехи", ar: "المكسرات" },
+  ],
+  ["soy", "Soya", { en: "Soy", de: "Soja", ru: "Соя", ar: "الصويا" }],
+  ["milk", "Süt", { en: "Milk", de: "Milch", ru: "Молоко", ar: "الحليب" }],
+  [
+    "celery",
+    "Kereviz",
+    { en: "Celery", de: "Sellerie", ru: "Сельдерей", ar: "الكرفس" },
+  ],
+  [
+    "mustard",
+    "Hardal",
+    { en: "Mustard", de: "Senf", ru: "Горчица", ar: "الخردل" },
+  ],
+  [
+    "sesame",
+    "Susam",
+    { en: "Sesame", de: "Sesam", ru: "Кунжут", ar: "السمسم" },
+  ],
+  [
+    "sulphites",
+    "Sülfit",
+    { en: "Sulphites", de: "Sulfite", ru: "Сульфиты", ar: "الكبريتيت" },
+  ],
+  [
+    "lupin",
+    "Acı bakla",
+    { en: "Lupin", de: "Lupinen", ru: "Люпин", ar: "الترمس" },
+  ],
 ] as const;
 
 const TAGS = [
-  ["vegan", "Vegan", "Vegan"],
-  ["vegetarian", "Vejetaryen", "Vegetarian"],
-  ["gluten_free", "Glutensiz", "Gluten-free"],
-  ["halal", "Helal", "Halal"],
+  [
+    "vegan",
+    "Vegan",
+    { en: "Vegan", de: "Vegan", ru: "Веганское", ar: "نباتي صرف" },
+  ],
+  [
+    "vegetarian",
+    "Vejetaryen",
+    { en: "Vegetarian", de: "Vegetarisch", ru: "Вегетарианское", ar: "نباتي" },
+  ],
+  [
+    "gluten_free",
+    "Glutensiz",
+    {
+      en: "Gluten-free",
+      de: "Glutenfrei",
+      ru: "Без глютена",
+      ar: "خالٍ من الغلوتين",
+    },
+  ],
+  ["halal", "Helal", { en: "Halal", de: "Halal", ru: "Халяль", ar: "حلال" }],
 ] as const;
+
+/** { en: "Milk" } → { en: { name: "Milk" } } */
+const nameTranslations = (names: Record<string, string>) =>
+  Object.fromEntries(
+    Object.entries(names).map(([lang, name]) => [lang, { name }]),
+  );
 
 // Paket fiyatları kaynakta yok: 0 girilir, süper admin panelden belirler.
 // Limitlerde null = sınırsız.
@@ -123,18 +186,20 @@ async function upsertUser(input: {
 // ---------- Adımlar ----------
 
 async function seedReferenceData() {
-  for (const [code, name, en] of ALLERGENS) {
+  for (const [code, name, names] of ALLERGENS) {
+    const translations = nameTranslations(names);
     await db.allergen.upsert({
       where: { code },
-      update: { name, translations: { en: { name: en } } },
-      create: { code, name, icon: code, translations: { en: { name: en } } },
+      update: { name, translations },
+      create: { code, name, icon: code, translations },
     });
   }
-  for (const [code, name, en] of TAGS) {
+  for (const [code, name, names] of TAGS) {
+    const translations = nameTranslations(names);
     await db.tag.upsert({
       where: { code },
-      update: { name, translations: { en: { name: en } } },
-      create: { code, name, icon: code, translations: { en: { name: en } } },
+      update: { name, translations },
+      create: { code, name, icon: code, translations },
     });
   }
   for (const plan of PLANS) {

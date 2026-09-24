@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BookOpenIcon, PlusIcon } from "lucide-react";
+import { BookOpenIcon, LanguagesIcon, PlusIcon } from "lucide-react";
 import { PageHeader } from "@/components/panel/page-header";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { db } from "@/lib/db";
 import { hasAnyMenuPermission, hasPermission } from "@/lib/permissions";
+import { isLanguageCode } from "@/lib/languages";
 import { requireSession } from "@/lib/session";
+import { isProductMissing, missingFields } from "@/lib/translations";
 import { BranchSwitcher } from "./_components/branch-switcher";
 import { BulkPriceDialog } from "./_components/bulk-price-dialog";
 import { CategoryActions } from "./_components/category-actions";
@@ -34,7 +36,7 @@ export default async function MenuPage({
   const params = await searchParams;
   const branches = await db.branch.findMany({
     where: { businessId, deletedAt: null },
-    select: { id: true, name: true },
+    select: { id: true, name: true, languages: true },
     orderBy: { createdAt: "asc" },
   });
   if (branches.length === 0) {
@@ -82,6 +84,36 @@ export default async function MenuPage({
       })
     : [];
 
+  // Çevirisi eksik kayıt sayısı (şubenin Türkçe dışındaki tüm dilleri).
+  const foreign = branch.languages.filter(
+    (l) => isLanguageCode(l) && l !== "tr",
+  );
+  const canTranslate = can.editCategory || can.editProduct;
+  let missingTranslations = 0;
+  if (canTranslate && foreign.length > 0) {
+    const all = await db.product.findMany({
+      where: {
+        deletedAt: null,
+        category: { branchId: branch.id, deletedAt: null },
+      },
+      select: {
+        name: true,
+        description: true,
+        translations: true,
+        variants: { select: { name: true, translations: true } },
+      },
+    });
+    for (const l of foreign) {
+      if (!isLanguageCode(l)) continue;
+      if (can.editProduct)
+        missingTranslations += all.filter((p) => isProductMissing(p, l)).length;
+      if (can.editCategory)
+        missingTranslations += categories.filter(
+          (c) => missingFields(c, l).length > 0,
+        ).length;
+    }
+  }
+
   return (
     <>
       <PageHeader
@@ -95,6 +127,20 @@ export default async function MenuPage({
           <>
             {branches.length > 1 && (
               <BranchSwitcher branches={branches} value={branch.id} />
+            )}
+            {canTranslate && foreign.length > 0 && (
+              <Link
+                href={`/panel/menu/translations?branch=${branch.id}${missingTranslations ? "&missing=1" : ""}`}
+                className={buttonVariants({ variant: "outline" })}
+              >
+                <LanguagesIcon />
+                Çeviriler
+                {missingTranslations > 0 && (
+                  <Badge variant="secondary" className="tabular-nums">
+                    {missingTranslations} eksik
+                  </Badge>
+                )}
+              </Link>
             )}
             {can.editPrice && (
               <BulkPriceDialog

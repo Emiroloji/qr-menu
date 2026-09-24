@@ -25,12 +25,18 @@ export async function saveBranch(
 
     // 3. Girdi
     const branchId = id.optional().parse(formData.get("id") || undefined);
-    const parsed = branchSchema.safeParse(Object.fromEntries(formData));
+    const parsed = branchSchema.safeParse({
+      ...Object.fromEntries(formData),
+      languages: formData.getAll("languages"),
+    });
     if (!parsed.success) return { ok: false, error: firstError(parsed.error) };
 
-    // 4–5. Sahiplik veya paket limiti
+    // 4–5. Sahiplik ve paket limitleri
     if (branchId) await assertBranchBelongsToBusiness(branchId, businessId);
     else await assertPlanLimit(businessId, "branches");
+    await assertPlanLimit(businessId, "languages", {
+      languageCount: parsed.data.languages.length,
+    });
 
     // 6. İşlem
     const branch = branchId

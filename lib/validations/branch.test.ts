@@ -62,3 +62,17 @@ describe("branchSchema", () => {
     ).toBe(false);
   });
 });
+
+describe("şube dilleri", () => {
+  it("Türkçe her zaman ilk ve açıktır, bilinmeyen kodlar atılır", () => {
+    const result = branchSchema.parse({
+      name: "Kadıköy",
+      slug: "kadikoy",
+      languages: ["en", "xx", "tr", "en", "ar"],
+    });
+    expect(result.languages).toEqual(["tr", "en", "ar"]);
+    expect(
+      branchSchema.parse({ name: "Moda", slug: "moda" }).languages,
+    ).toEqual(["tr"]);
+  });
+});
