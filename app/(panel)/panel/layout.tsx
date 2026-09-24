@@ -28,6 +28,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
       : []),
     ...(user.role === "OWNER"
       ? ([
+          { href: "/panel/qr", label: "QR kodlar", icon: "qr" },
           { href: "/panel/branches", label: "Şubeler", icon: "branches" },
           { href: "/panel/appearance", label: "Görünüm", icon: "appearance" },
           { href: "/panel/staff", label: "Çalışanlar", icon: "staff" },
