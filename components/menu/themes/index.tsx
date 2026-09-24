@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getLanguage } from "@/lib/languages";
 import type { MenuThemeCode } from "@/lib/menu-themes";
 import type { MenuClientData } from "../client-data";
@@ -54,6 +55,14 @@ export function ThemedMenu({
       <MenuProvider data={client}>
         <Theme data={data} labels={labels} />
       </MenuProvider>
+      <footer className="flex justify-center bg-menu-bg pt-2 pb-8">
+        <Link
+          href="/kvkk"
+          className="flex min-h-11 items-center px-3 text-xs text-menu-muted underline-offset-4 hover:underline"
+        >
+          {client.text.privacy}
+        </Link>
+      </footer>
     </div>
   );
 }

@@ -47,3 +47,8 @@ Görseller canlıda Cloudflare R2'de tutulur (`R2_*` değişkenleri). Yerelde R2
 ## Klasörler
 
 `MIMARI.md` §3'teki yapı izlenir. Raporlar `raporlar/`, tasarım taslakları `tasarim/` altındadır.
+
+## Canlıya alma
+
+VPS kurulumu, güncelleme ve yedekleme: [docs/YAYIN.md](docs/YAYIN.md). Kaynak dokümanlardan
+sapmalar ve kararlar: [docs/KARARLAR.md](docs/KARARLAR.md).

@@ -6,6 +6,10 @@ const storageUrl = process.env.R2_PUBLIC_URL
   : null;
 
 const nextConfig: NextConfig = {
+  // VPS'te Docker ile çalışır: yalnızca gereken dosyaları içeren tek başına sunucu.
+  output: "standalone",
+  // PDF yazı tipleri dosyadan okunur; izleyici bunları kendiliğinden bulamaz.
+  outputFileTracingIncludes: { "/api/qr/*": ["./assets/fonts/**/*"] },
   images: {
     remotePatterns: storageUrl
       ? [

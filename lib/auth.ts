@@ -49,5 +49,16 @@ export const auth = betterAuth({
       );
     },
   },
+  // HTTP uçları için (canlıda açık). Paneldeki giriş formu Server Action ile çalıştığından
+  // ayrıca lib/rate-limit.ts ile sınırlanır.
+  rateLimit: {
+    window: 60,
+    max: 60,
+    customRules: {
+      "/sign-in/email": { window: 900, max: 10 },
+      "/request-password-reset": { window: 900, max: 5 },
+      "/reset-password": { window: 900, max: 10 },
+    },
+  },
   plugins: [nextCookies()],
 });

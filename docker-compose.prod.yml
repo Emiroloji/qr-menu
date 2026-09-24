@@ -1,0 +1,56 @@
+# Canlı ortam (VPS). Kullanım: docs/YAYIN.md
+# docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 10
+
+  # Migration'ları uygular ve çıkar; uygulama bunu bekler.
+  migrate:
+    build: { context: ., target: migrator }
+    env_file: .env.production
+    depends_on:
+      db: { condition: service_healthy }
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+    restart: unless-stopped
+    env_file: .env.production
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    # Dışarıya açılmaz; yalnızca Caddy üzerinden erişilir.
+    expose: ["3000"]
+
+  # HTTPS: alan adı için Let's Encrypt sertifikasını otomatik alır ve yeniler.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [app]
+
+volumes:
+  db-data:
+  caddy-data:
+  caddy-config:

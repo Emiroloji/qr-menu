@@ -44,3 +44,5 @@ next-env.d.ts
 
 !.env.example
 .DS_Store
+!.env.production.example
+backups

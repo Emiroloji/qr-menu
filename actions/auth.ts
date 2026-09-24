@@ -7,6 +7,7 @@ import type { FormState } from "@/lib/action";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { homePathFor } from "@/lib/permissions";
+import { clientIp, consumeRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import {
   forgotPasswordSchema,
   resetPasswordSchema,
@@ -21,11 +22,26 @@ export async function signIn(
   if (!parsed.success)
     return { ok: false, error: parsed.error.issues[0].message };
 
+  // Giriş hız sınırı: aynı IP'den ve aynı hesaba (şifre tahminine karşı).
+  const requestHeaders = await headers();
+  const ip = clientIp(requestHeaders);
+  const email = parsed.data.email.toLowerCase();
+  if (
+    !consumeRateLimit(`signin:ip:${ip}`, RATE_LIMITS.signInIp) ||
+    !consumeRateLimit(`signin:email:${email}`, RATE_LIMITS.signInEmail)
+  ) {
+    return {
+      ok: false,
+      error:
+        "Çok fazla deneme yaptınız. Lütfen 15 dakika sonra tekrar deneyin.",
+    };
+  }
+
   let homePath: string;
   try {
     const result = await auth.api.signInEmail({
       body: parsed.data,
-      headers: await headers(),
+      headers: requestHeaders,
     });
     const user = await db.user.findUniqueOrThrow({
       where: { id: result.user.id },
@@ -59,10 +75,25 @@ export async function requestPasswordReset(
   if (!parsed.success)
     return { ok: false, error: parsed.error.issues[0].message };
 
+  const requestHeaders = await headers();
+  const ip = clientIp(requestHeaders);
+  if (
+    !consumeRateLimit(`reset:ip:${ip}`, RATE_LIMITS.resetIp) ||
+    !consumeRateLimit(
+      `reset:email:${parsed.data.email.toLowerCase()}`,
+      RATE_LIMITS.resetEmail,
+    )
+  ) {
+    return {
+      ok: false,
+      error: "Çok fazla istek gönderdiniz. Lütfen daha sonra tekrar deneyin.",
+    };
+  }
+
   // E-posta kayıtlı olsun olmasın aynı yanıt döner.
   await auth.api.requestPasswordReset({
     body: { email: parsed.data.email, redirectTo: "/reset-password" },
-    headers: await headers(),
+    headers: requestHeaders,
   });
   return { ok: true, data: null };
 }

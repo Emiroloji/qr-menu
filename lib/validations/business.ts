@@ -9,6 +9,8 @@ export const RESERVED_SLUGS = [
   "api",
   "forgot-password",
   "reset-password",
+  "kvkk",
+  "kullanim-kosullari",
 ];
 
 export const slug = z
