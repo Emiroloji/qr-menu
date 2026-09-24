@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Arama ve filtre</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:"Geist",system-ui,sans-serif}</style>
+</helmet>
+<div style="width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; background: #F7F6F3; color: #1B1B19; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column">
+  <div style="padding: 16px 20px 12px; display: flex; gap: 8px; align-items: center">
+    <button aria-label="Geri" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #E4E2DC; background: #FFFFFF; color: #1B1B19; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg>
+    </button>
+    <label style="flex-grow: 1; height: 48px; border-radius: 14px; background: #FFFFFF; border: 1.5px solid #2F5D50; display: flex; align-items: center; gap: 10px; padding: 0 14px; color: #5F5E59">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input value="salata" aria-label="Menüde ara" style="flex-grow: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 15px; color: #1B1B19">
+    </label>
+  </div>
+
+  <div style="padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 14px; border-bottom: 1px solid #E4E2DC">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5E59">Şunları içermesin</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{allergens}}" as="a" hint-placeholder-count="6">
+          <button aria-pressed="{{a.pressed}}" style="height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; background: {{a.bg}}; color: {{a.fg}}; border: 1px solid {{a.border}}">{{a.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5E59">Beslenme tercihi</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{diets}}" as="d" hint-placeholder-count="4">
+          <button aria-pressed="{{d.pressed}}" style="height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; background: {{d.bg}}; color: {{d.fg}}; border: 1px solid {{d.border}}">{{d.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px">
+      <span style="font-size: 14px; color: #5F5E59">3 ürün bulundu</span>
+      <button style="height: 44px; border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: #2F5D50; padding: 0">Filtreleri temizle</button>
+    </div>
+    <sc-for list="{{results}}" as="r" hint-placeholder-count="3">
+      <article style="display: flex; gap: 12px; padding: 12px; background: #FFFFFF; border-radius: 14px; border: 1px solid #E4E2DC; margin-bottom: 8px">
+        <div role="img" aria-label="{{r.name}} fotoğrafı" style="width: 72px; height: 72px; flex-shrink: 0; border-radius: 10px; background: #EAE7E0"></div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0">
+          <div style="display: flex; justify-content: space-between; gap: 8px">
+            <h3 style="margin: 0; font-size: 15px; font-weight: 600">{{r.name}}</h3>
+            <span style="font-size: 15px; font-weight: 700; flex-shrink: 0">{{r.price}}</span>
+          </div>
+          <span style="font-size: 13px; color: #5F5E59">{{r.category}}</span>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+            <sc-if value="{{r.spicy}}" hint-placeholder-val="{{r.spicy}}">
+              <span style="font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 3px; color: #9A3412">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-3 7-7 0-5-5-7-5-12-3 2-4 5-4 7-1-1-2-2-2-4-2 2-3 5-3 9 0 4 3 7 7 7z"></path></svg>
+                {{r.spiceText}}
+              </span>
+            </sc-if>
+            <sc-if value="{{r.hasWarn}}" hint-placeholder-val="{{r.hasWarn}}">
+              <span style="font-size: 12px; padding: 2px 8px; border-radius: 6px; border: 1.5px dashed #5F5E59; color: #3E3D39">{{r.warn}}</span>
+            </sc-if>
+          </div>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  chip(label, on) {
+    return on
+      ? { label: label, pressed: 'true', bg: '#1B1B19', fg: '#FFFFFF', border: '#1B1B19' }
+      : { label: label, pressed: 'false', bg: '#FFFFFF', fg: '#1B1B19', border: '#E4E2DC' };
+  }
+  renderVals() {
+    var self = this;
+    var allergens = [['Gluten', true], ['Süt', true], ['Yumurta', false], ['Sert kabuklu yemiş', false], ['Susam', false], ['Tümü (14)', false]]
+      .map(function (a) { return self.chip(a[0], a[1]); });
+    var diets = [['Vegan', false], ['Vejetaryen', false], ['Glutensiz', false], ['Helal', true]]
+      .map(function (d) { return self.chip(d[0], d[1]); });
+    var results = [
+      { name: 'Akdeniz Salatası', category: 'Salatalar', price: '150 ₺', spicy: false, spiceText: '', hasWarn: true, warn: 'Gluten izi içerebilir' },
+      { name: 'Acılı Ton Balıklı Salata', category: 'Salatalar', price: '185 ₺', spicy: true, spiceText: 'Acı · 2/3', hasWarn: false, warn: '' },
+      { name: 'Kinoalı Yeşil Salata', category: 'Salatalar', price: '160 ₺', spicy: false, spiceText: '', hasWarn: false, warn: '' }
+    ];
+    return { allergens: allergens, diets: diets, results: results };
+  }
+}
+</script>
+</body>
+</html>

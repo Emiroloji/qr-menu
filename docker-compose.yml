@@ -1,0 +1,16 @@
+# Yerel geliştirme veritabanı (MIMARI.md §11: "Docker ile PostgreSQL")
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: qrmenu
+      POSTGRES_PASSWORD: qrmenu
+      POSTGRES_DB: qrmenu
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

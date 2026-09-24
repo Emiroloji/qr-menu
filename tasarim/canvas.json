@@ -1,0 +1,178 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Canli.dc.html": {
+      "h": 844,
+      "title": "Tema · Canlı",
+      "w": 390,
+      "x": 1410,
+      "y": 1264
+    },
+    "Closed.dc.html": {
+      "h": 844,
+      "title": "Menü kapalı",
+      "w": 390,
+      "x": 1880,
+      "y": 0
+    },
+    "Dark.dc.html": {
+      "h": 844,
+      "title": "Karanlık mod · Minimal",
+      "w": 390,
+      "x": 0,
+      "y": 1264
+    },
+    "Detail.dc.html": {
+      "h": 844,
+      "title": "Ürün detay kartı",
+      "w": 390,
+      "x": 470,
+      "y": 0
+    },
+    "Language.dc.html": {
+      "h": 844,
+      "title": "Dil seçimi",
+      "w": 390,
+      "x": 1410,
+      "y": 0
+    },
+    "Luks.dc.html": {
+      "h": 844,
+      "title": "Tema · Lüks",
+      "w": 390,
+      "x": 470,
+      "y": 1264
+    },
+    "Main.dc.html": {
+      "h": 844,
+      "title": "Ana ekran · Minimal",
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "Search.dc.html": {
+      "h": 844,
+      "title": "Arama ve filtre",
+      "w": 390,
+      "x": 940,
+      "y": 0
+    },
+    "Sicak.dc.html": {
+      "h": 844,
+      "title": "Tema · Sıcak",
+      "w": 390,
+      "x": 940,
+      "y": 1264
+    },
+    "PanelHome.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "İşletme paneli · Özet",
+      "page": "panel"
+    },
+    "PanelProducts.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Ürün listesi",
+      "page": "panel"
+    },
+    "PanelProductForm.dc.html": {
+      "x": 0,
+      "y": 1320,
+      "w": 1440,
+      "h": 2000,
+      "title": "Ürün düzenleme formu",
+      "page": "panel"
+    },
+    "PanelMobile.dc.html": {
+      "x": 1520,
+      "y": 1320,
+      "w": 390,
+      "h": 844,
+      "title": "Panel · telefon (alt menü)",
+      "page": "panel"
+    },
+    "AdminBusinesses.dc.html": {
+      "x": 1990,
+      "y": 1320,
+      "w": 1440,
+      "h": 900,
+      "title": "Süper admin · işletme listesi",
+      "page": "panel"
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-09-24T12:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "row1": {
+      "kind": "title1",
+      "maxW": 2270,
+      "text": "Müşteri menüsü · ekranlar (Minimal tema)",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "row2": {
+      "kind": "title1",
+      "maxW": 1800,
+      "text": "Karanlık mod ve tema taslakları",
+      "w": 240,
+      "x": 0,
+      "y": 964
+    },
+    "prow1": {
+      "x": 0,
+      "y": -300,
+      "text": "İşletme paneli · masaüstü",
+      "kind": "title1",
+      "maxW": 2960,
+      "page": "panel"
+    },
+    "prow2": {
+      "x": 0,
+      "y": 1020,
+      "text": "Ürün formu, telefon düzeni ve süper admin",
+      "kind": "title1",
+      "maxW": 3430,
+      "page": "panel"
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Detail.dc.html",
+    "Search.dc.html",
+    "Language.dc.html",
+    "Closed.dc.html",
+    "Dark.dc.html",
+    "Luks.dc.html",
+    "Sicak.dc.html",
+    "Canli.dc.html",
+    "PanelHome.dc.html",
+    "PanelProducts.dc.html",
+    "PanelProductForm.dc.html",
+    "PanelMobile.dc.html",
+    "AdminBusinesses.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "menu",
+      "name": "Müşteri menüsü"
+    },
+    {
+      "id": "panel",
+      "name": "Paneller"
+    }
+  ],
+  "title": "QR Menü Tasarımı"
+}

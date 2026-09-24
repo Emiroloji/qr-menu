@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Ürün detay kartı</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:"Geist",system-ui,sans-serif}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: 'Geist', system-ui, sans-serif; color: #1B1B19">
+  <dc-import name="Main" hint-size="390px,844px"></dc-import>
+  <div style="position: absolute; left: 0; top: 0; width: 390px; height: 844px; background: rgba(18, 18, 17, 0.5)"></div>
+
+  <section role="dialog" aria-label="Latte" style="position: absolute; left: 0; bottom: 0; width: 390px; height: 772px; box-sizing: border-box; background: #FFFFFF; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; overflow: hidden">
+    <div style="position: relative; height: 230px; flex-shrink: 0; background: #EAE7E0; display: flex; align-items: center; justify-content: center; color: #A19D93">
+      <div style="position: absolute; top: 8px; left: 175px; width: 40px; height: 5px; border-radius: 3px; background: rgba(27, 27, 25, 0.25)"></div>
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.5"></circle><path d="m21 16-5-5-8 8"></path></svg>
+      <button aria-label="Kapat" style="position: absolute; top: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #FFFFFF; color: #1B1B19; display: flex; align-items: center; justify-content: center; padding: 0">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+      </button>
+      <div style="position: absolute; bottom: 12px; display: flex; gap: 6px">
+        <span style="width: 18px; height: 6px; border-radius: 3px; background: #1B1B19"></span>
+        <span style="width: 6px; height: 6px; border-radius: 3px; background: rgba(27, 27, 25, 0.3)"></span>
+        <span style="width: 6px; height: 6px; border-radius: 3px; background: rgba(27, 27, 25, 0.3)"></span>
+      </div>
+    </div>
+
+    <div style="padding: 20px 20px 28px; display: flex; flex-direction: column; gap: 20px">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; gap: 6px">
+          <span style="font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: #E0E7E5; color: #264A40">Popüler</span>
+          <span style="font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; border: 1px solid #E4E2DC; display: flex; align-items: center; gap: 4px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13c0-6 7-9 16-9 0 9-3 16-9 16z"></path><path d="M4 20 13 11"></path></svg>
+            Vejetaryen
+          </span>
+        </div>
+        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Latte</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 22px; color: #5F5E59">Çift shot espresso ve buharda ısıtılmış süt. İstersen laktozsuz süt veya yulaf sütü ile hazırlanır.</p>
+      </div>
+
+      <div style="border: 1px solid #E4E2DC; border-radius: 14px; overflow: hidden">
+        <div style="display: flex; justify-content: space-between; padding: 12px 14px; font-size: 15px; border-bottom: 1px solid #E4E2DC"><span>Küçük · 250 ml</span><span style="font-weight: 700">85 ₺</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 12px 14px; font-size: 15px; border-bottom: 1px solid #E4E2DC"><span>Orta · 350 ml</span><span style="font-weight: 700">95 ₺</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 12px 14px; font-size: 15px"><span>Büyük · 450 ml</span><span style="font-weight: 700">110 ₺</span></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <h3 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5E59">Alerjenler</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 15px">
+            <span style="width: 32px; height: 32px; border-radius: 8px; background: #1B1B19; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700">S</span>
+            <span style="flex-grow: 1">Süt</span>
+            <span style="font-size: 13px; font-weight: 600">İçerir</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 15px">
+            <span style="width: 32px; height: 32px; border-radius: 8px; border: 1.5px dashed #1B1B19; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700">G</span>
+            <span style="flex-grow: 1">Gluten</span>
+            <span style="font-size: 13px; color: #5F5E59">İz miktarda içerebilir</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <h3 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5E59">Besin değerleri · orta boy</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+          <div style="background: #F7F6F3; border-radius: 12px; padding: 10px 12px"><div style="font-size: 17px; font-weight: 700">[kcal]</div><div style="font-size: 12px; color: #5F5E59">Kalori</div></div>
+          <div style="background: #F7F6F3; border-radius: 12px; padding: 10px 12px"><div style="font-size: 17px; font-weight: 700">[g]</div><div style="font-size: 12px; color: #5F5E59">Protein</div></div>
+          <div style="background: #F7F6F3; border-radius: 12px; padding: 10px 12px"><div style="font-size: 17px; font-weight: 700">[g]</div><div style="font-size: 12px; color: #5F5E59">Karbonhidrat</div></div>
+          <div style="background: #F7F6F3; border-radius: 12px; padding: 10px 12px"><div style="font-size: 17px; font-weight: 700">[g]</div><div style="font-size: 12px; color: #5F5E59">Yağ</div></div>
+          <div style="background: #F7F6F3; border-radius: 12px; padding: 10px 12px"><div style="font-size: 17px; font-weight: 700">[g]</div><div style="font-size: 12px; color: #5F5E59">Şeker</div></div>
+          <div style="background: #F7F6F3; border-radius: 12px; padding: 10px 12px"><div style="font-size: 17px; font-weight: 700">[g]</div><div style="font-size: 12px; color: #5F5E59">Tuz</div></div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0; font-size: 15px">
+        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #E4E2DC"><span style="color: #5F5E59">İçindekiler</span><span>Espresso, süt</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #E4E2DC"><span style="color: #5F5E59">Hazırlanma süresi</span><span>~5 dk</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 10px 0"><span style="color: #5F5E59">Menşe</span><span>[çekirdek menşei]</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

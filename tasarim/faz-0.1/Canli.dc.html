@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Tema taslağı — Canlı</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:"Bricolage Grotesque",system-ui,sans-serif}</style>
+</helmet>
+<div style="width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; background: #FFFFFF; color: #111111; font-family: 'Bricolage Grotesque', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="background: {{accent}}; color: #FFFFFF; padding: 22px 20px 20px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <span style="font-size: 14px; font-weight: 500">Kadıköy · 08:00–23:00</span>
+      <div style="display: flex; gap: 8px">
+        <button aria-label="Ara" style="width: 44px; height: 44px; border-radius: 14px; border: 0; background: rgba(255, 255, 255, 0.16); color: #FFFFFF; display: flex; align-items: center; justify-content: center; padding: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg></button>
+        <button aria-label="Dil seçimi" style="width: 44px; height: 44px; border-radius: 14px; border: 0; background: {{lime}}; color: #111111; font: inherit; font-size: 14px; font-weight: 800; padding: 0">TR</button>
+      </div>
+    </div>
+    <h1 style="margin: 0; font-size: 52px; line-height: 48px; font-weight: 800; letter-spacing: -0.04em">LİMON<br>KAFE</h1>
+  </header>
+  <nav aria-label="Kategoriler" style="display: flex; gap: 6px; padding: 14px 20px; overflow: hidden; border-bottom: 2px solid #111111">
+    <a href="#" style="flex-shrink: 0; height: 40px; padding: 0 14px; border-radius: 12px; display: flex; align-items: center; text-decoration: none; font-size: 15px; font-weight: 800; background: #111111; color: {{lime}}">KAHVELER</a>
+    <a href="#" style="flex-shrink: 0; height: 40px; padding: 0 14px; border-radius: 12px; display: flex; align-items: center; text-decoration: none; font-size: 15px; font-weight: 700; color: #111111">SOĞUK</a>
+    <a href="#" style="flex-shrink: 0; height: 40px; padding: 0 14px; border-radius: 12px; display: flex; align-items: center; text-decoration: none; font-size: 15px; font-weight: 700; color: #111111">TATLILAR</a>
+    <a href="#" style="flex-shrink: 0; height: 40px; padding: 0 14px; border-radius: 12px; display: flex; align-items: center; text-decoration: none; font-size: 15px; font-weight: 700; color: #111111">SANDVİÇ</a>
+  </nav>
+  <main style="padding: 16px 20px; display: flex; flex-direction: column; gap: 12px">
+    <sc-for list="{{products}}" as="p" hint-placeholder-count="4">
+      <article style="display: flex; gap: 14px; align-items: stretch; border: 2px solid #111111; border-radius: 18px; overflow: hidden">
+        <div role="img" aria-label="{{p.name}} fotoğrafı" style="width: 112px; flex-shrink: 0; background: #E9ECFB; opacity: {{p.opacity}}"></div>
+        <div style="flex-grow: 1; padding: 12px 12px 12px 0; display: flex; flex-direction: column; gap: 6px">
+          <sc-if value="{{p.hasBadge}}" hint-placeholder-val="{{p.hasBadge}}">
+            <span style="align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 6px; background: {{accent}}; color: #FFFFFF">{{p.badge}}</span>
+          </sc-if>
+          <h3 style="margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.01em">{{p.name}}</h3>
+          <span style="align-self: flex-start; font-size: 15px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: {{p.priceBg}}; color: #111111">{{p.price}}</span>
+        </div>
+      </article>
+    </sc-for>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2436D9","options":["#2436D9","#C2185B","#0F7A5C"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var lime = '#D8F55A';
+    var products = [
+      { name: 'Latte', price: '85 ₺’den', badge: 'POPÜLER' },
+      { name: 'Filtre Kahve', price: '70 ₺', badge: 'YENİ' },
+      { name: 'Türk Kahvesi', price: '65 ₺', badge: 'ŞEFİN ÖNERİSİ' },
+      { name: 'Mocha', price: 'Tükendi', badge: '', soldOut: true }
+    ].map(function (p) {
+      return Object.assign({}, p, { hasBadge: !!p.badge, opacity: p.soldOut ? '0.4' : '1', priceBg: p.soldOut ? '#EDEDED' : lime });
+    });
+    return { accent: this.props.accent ?? '#2436D9', lime: lime, products: products };
+  }
+}
+</script>
+</body>
+</html>
