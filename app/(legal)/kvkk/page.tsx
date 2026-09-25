@@ -50,10 +50,12 @@ export default function KvkkPage() {
         Veriler; sunucu hizmeti sağlayıcısı ({COMPANY.hostingProvider}), e-posta
         gönderim hizmeti ({COMPANY.emailProvider}) ve görsel depolama hizmeti
         (Cloudflare R2) ile yalnızca hizmetin sunulması için gerekli ölçüde
-        paylaşılır. Görsel depolama hizmetinin altyapısı yurt dışında
-        bulunabildiğinden, bu kapsamdaki aktarım KVKK m. 9 uyarınca Kurul
-        tarafından ilan edilen standart sözleşme ile ve bu maddedeki usullere
-        uygun olarak yapılır. Ürün görselleri kişisel veri içermez.
+        paylaşılır. E-posta gönderim ve görsel depolama hizmetlerinin altyapısı
+        yurt dışında bulunabildiğinden, bu kapsamdaki aktarım KVKK m. 9 uyarınca
+        Kurul tarafından ilan edilen standart sözleşme ile ve bu maddedeki
+        usullere uygun olarak yapılır. E-posta hizmetine yalnızca alıcının adı
+        ve e-posta adresi ile e-postanın içeriği iletilir; ürün görselleri
+        kişisel veri içermez.
       </p>
       <p>
         Uygulama hataları, kişisel veri içermeyecek şekilde (çerez, başlık, IP

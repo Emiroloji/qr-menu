@@ -9,7 +9,7 @@ Görseller Cloudflare R2'de, e-postalar SMTP ile gönderilir.
 - Docker Engine ve Docker Compose eklentisi
 - Alan adı ve **A kaydı** → VPS IP adresi (ör. `menu.ornek.com`) — alan adı yoksa bkz. 2a
 - Cloudflare R2 bucket'ı ve herkese açık adresi (`R2_PUBLIC_URL`)
-- SMTP hesabı (şifre belirleme / sıfırlama e-postaları)
+- SMTP: Gmail (emircanuysal6e@gmail.com) ve bir Google **uygulama şifresi** (2 Adımlı Doğrulama açıkken Google Hesabı → Güvenlik → Uygulama şifreleri); `.env.production` içinde `SMTP_PASSWORD`
 - Güvenlik duvarı: yalnızca 22 (SSH), 80, 443 ve (hata izleme için) 8000 açık
 
 ## 2. İlk kurulum

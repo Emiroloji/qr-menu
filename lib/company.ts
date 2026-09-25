@@ -8,9 +8,10 @@ export const COMPANY = {
   mersis: "0123456789000015",
   address: "Örnek Mah. Deneme Cad. No: 1, 34710 Kadıköy/İstanbul",
   kvkkEmail: "kvkk@ornek.com",
-  supportEmail: "destek@ornek.com",
+  // Hesap talepleri, destek ve bildirim e-postalarının adresi (Gmail SMTP ile gönderilir).
+  supportEmail: "emircanuysal6e@gmail.com",
   /** Sanal sunucu (VPS) sağlayıcısı ve sunucunun bulunduğu ülke */
   hostingProvider: "Örnek Sunucu Hizmetleri A.Ş. (Türkiye)",
-  emailProvider: "Örnek E-posta Hizmetleri A.Ş.",
+  emailProvider: "Google (Gmail)",
   updatedAt: "24 Eylül 2026",
 };
