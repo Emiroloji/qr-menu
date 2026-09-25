@@ -18,6 +18,8 @@ export function readPlanFeatures(value: unknown): PlanFeatures {
 export const canUseBranding = (f: PlanFeatures) => f.appearance !== "PRESET";
 /** Kapak görseli: Pro */
 export const canUseCover = (f: PlanFeatures) => f.appearance === "FULL";
+/** Kendi alan adı (Faz 3.2): paket ayarındaki "Özel alan adı" */
+export const canUseCustomDomain = (f: PlanFeatures) => f.customDomain;
 
 export function assertFeature(allowed: boolean) {
   if (!allowed)

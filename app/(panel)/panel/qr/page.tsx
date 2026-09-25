@@ -18,6 +18,7 @@ import {
 import { db } from "@/lib/db";
 import { QR_TEMPLATES } from "@/lib/pdf/qr-templates";
 import { getLanguage, isLanguageCode } from "@/lib/languages";
+import { activeCustomDomain } from "@/lib/domains";
 import { menuUrl } from "@/lib/qr";
 import { getBusinessContext, requireOwnerSession } from "@/lib/session";
 import { BranchSwitcher } from "../menu/_components/branch-switcher";
@@ -27,7 +28,7 @@ export const metadata: Metadata = { title: "QR kodlar" };
 
 export default async function QrPage({ searchParams }: PageProps<"/panel/qr">) {
   const { businessId } = await requireOwnerSession();
-  const [{ business }, branches, params] = await Promise.all([
+  const [{ business, subscription }, branches, params] = await Promise.all([
     getBusinessContext(businessId),
     db.branch.findMany({
       where: { businessId, deletedAt: null },
@@ -57,7 +58,11 @@ export default async function QrPage({ searchParams }: PageProps<"/panel/qr">) {
   }
 
   const branch = branches.find((b) => b.id === params.branch) ?? branches[0];
-  const url = menuUrl(business.slug, branch.slug);
+  const url = menuUrl(
+    business.slug,
+    branch.slug,
+    activeCustomDomain(business, subscription?.plan.features),
+  );
   const api = `/api/qr/${branch.id}`;
   const pdf = `/api/pdf/${branch.id}`;
   // Alerjen tablosu şubenin dillerinde (PDF yazı tipi Arapça içermez).

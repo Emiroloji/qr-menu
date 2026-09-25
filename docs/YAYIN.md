@@ -51,6 +51,26 @@ BETTER_AUTH_URL=http://<SUNUCU_IP>
   alan adı geldiğinde bu üç değeri güncelleyip `up -d --build` ile yeniden derleyin.
 - Şifre gibi bilgiler HTTPS olmadan şifrelenmeden gider; bu mod yalnızca deneme içindir.
 
+## 2b. İşletmenin kendi alan adı (Pro paket)
+
+- İşletme sahibi **Ayarlar → Özel alan adı** bölümüne alan adını (ör. `menu.isletme.com`) girer.
+  Panel eklenecek DNS kaydını gösterir: platform alan adıyla çalışıyorsa **CNAME →
+  platform alan adı**, IP adresiyle çalışıyorsa **A → sunucu IP'si**. Ardından
+  "DNS'i kontrol et" ile doğrular.
+- Doğrulanınca Caddy, ilk ziyarette bu alan adı için SSL sertifikasını **otomatik** alır
+  (on-demand TLS). Sertifika yalnızca doğrulanmış alan adlarına verilir: Caddy her seferinde
+  `/api/domains/allowed` ucuna sorar.
+- Alan adında yalnızca menü (`/`, `/{şube}`), yasal sayfalar ve alerjen PDF'i açılır; panel ve
+  giriş platform adresine yönlendirilir. QR kodlar ve basılı menü alan adını kullanır.
+- Paket alan adını artık içermezse ziyaretçi platformdaki menüye yönlendirilir; basılı QR'lar
+  çalışmaya devam eder.
+- İlk kurulumdan sonra bir alan adıyla `http://` → `https://` yönlendirmesini ve sertifikayı
+  kontrol edin: `curl -I http://menu.isletme.com` ve `curl -I https://menu.isletme.com`.
+  `curl -I https://menu.isletme.com/panel` yanıtındaki `location` platform adresini
+  (`https://platform/panel`) göstermeli.
+- Yerelde denemek için geliştirme sunucusu yerine üretim derlemesi kullanın (`npm run build &&
+npm start`); geliştirme sunucusu başka alan adlarından gelen JS isteklerini engeller.
+
 ## 3. Güncelleme
 
 ```bash

@@ -9,6 +9,7 @@ import {
   renderQrPdf,
 } from "@/lib/pdf/qr-templates";
 import { readPlanFeatures } from "@/lib/plan-features";
+import { activeCustomDomain } from "@/lib/domains";
 import { menuUrl, qrPng, qrSvg } from "@/lib/qr";
 import { getPanelIdentity } from "@/lib/session";
 import { logoPng } from "@/lib/pdf/logo";
@@ -47,7 +48,14 @@ export async function GET(
   if (!branch) return error("Şube bulunamadı.", 404);
 
   const { business } = branch;
-  const url = menuUrl(business.slug, branch.slug);
+  const url = menuUrl(
+    business.slug,
+    branch.slug,
+    activeCustomDomain(
+      business,
+      getCurrentSubscription(business.subscriptions)?.plan.features,
+    ),
+  );
   const search = new URL(request.url).searchParams;
   const format = search.get("format") ?? "svg";
   const filename = `qr-${business.slug}-${branch.slug}`;

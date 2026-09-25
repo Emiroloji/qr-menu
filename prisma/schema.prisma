@@ -83,22 +83,26 @@ model Subscription {
 // ---------- İşletme ve şube ----------
 
 model Business {
-  id            String         @id @default(cuid())
-  name          String
-  slug          String         @unique
-  logoUrl       String?
-  coverUrl      String? // Menü kapak görseli (Faz 1.7)
+  id                     String         @id @default(cuid())
+  name                   String
+  slug                   String         @unique
+  logoUrl                String?
+  coverUrl               String? // Menü kapak görseli (Faz 1.7)
+  // İşletmenin kendi alan adı (Pro, Faz 3.2), ör. "menu.isletme.com". DNS'i sunucumuzu
+  // gösterdiği doğrulanınca `customDomainVerifiedAt` dolar ve alan adı yayına girer.
+  customDomain           String?        @unique
+  customDomainVerifiedAt DateTime?
   // Tema kodu (components/menu/themes/ altındaki dosya adı). Yeni tema eklemek
   // migration gerektirmesin diye enum değil.
-  theme         String         @default("minimal")
-  primaryColor  String         @default("#2F5D50")
-  isActive      Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  deletedAt     DateTime?
-  branches      Branch[]
-  subscriptions Subscription[]
-  users         User[]
+  theme                  String         @default("minimal")
+  primaryColor           String         @default("#2F5D50")
+  isActive               Boolean        @default(true)
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  deletedAt              DateTime?
+  branches               Branch[]
+  subscriptions          Subscription[]
+  users                  User[]
 }
 
 model Branch {

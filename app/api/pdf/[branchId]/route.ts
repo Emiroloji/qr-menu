@@ -15,6 +15,7 @@ import { renderAllergenPdf } from "@/lib/pdf/allergen-document";
 import { logoPng } from "@/lib/pdf/logo";
 import { renderPrintedMenuPdf } from "@/lib/pdf/printed-menu";
 import { readPlanFeatures } from "@/lib/plan-features";
+import { activeCustomDomain } from "@/lib/domains";
 import { menuUrl, qrPng } from "@/lib/qr";
 import { clientIp, consumeRateLimit } from "@/lib/rate-limit";
 import { getPanelIdentity } from "@/lib/session";
@@ -88,6 +89,14 @@ export async function GET(
     ),
   );
   const messages = getMenuMessages(lang);
+  const url = menuUrl(
+    business.slug,
+    branch.slug,
+    activeCustomDomain(
+      business,
+      getCurrentSubscription(business.subscriptions)?.plan.features,
+    ),
+  );
   const accentText = readableOn(appearance.color, "#FFFFFF");
   const date = formatDate(new Date());
   const filename =
@@ -118,11 +127,8 @@ export async function GET(
           businessName: business.name,
           branchName: branch.name,
           logo: await logoPng(appearance.logoUrl),
-          qr: await qrPng(menuUrl(business.slug, branch.slug), 600),
-          displayUrl: menuUrl(business.slug, branch.slug).replace(
-            /^https?:\/\//,
-            "",
-          ),
+          qr: await qrPng(url, 600),
+          displayUrl: url.replace(/^https?:\/\//, ""),
           accent: appearance.color,
           onAccent: onColor(appearance.color),
           accentText,

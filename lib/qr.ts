@@ -1,8 +1,16 @@
 import "server-only";
 import QRCode from "qrcode";
 
-/** Şubenin müşteri menüsü adresi (MIMARI §8): /{işletme}/{şube} */
-export function menuUrl(businessSlug: string, branchSlug: string) {
+/**
+ * Şubenin müşteri menüsü adresi (MIMARI §8): /{işletme}/{şube}. İşletmenin doğrulanmış
+ * kendi alan adı varsa (Faz 3.2, `activeCustomDomain`) https://{alan-adı}/{şube}.
+ */
+export function menuUrl(
+  businessSlug: string,
+  branchSlug: string,
+  customDomain?: string | null,
+) {
+  if (customDomain) return `https://${customDomain}/${branchSlug}`;
   const base = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
   return `${base}/${businessSlug}/${branchSlug}`;
 }
