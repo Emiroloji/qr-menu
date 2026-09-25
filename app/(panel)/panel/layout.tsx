@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { EyeIcon } from "lucide-react";
 import { stopViewingBusiness } from "@/actions/admin/view-as";
 import { signOut } from "@/actions/auth";
@@ -94,6 +95,13 @@ export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
                 ? "İşletme sahibi"
                 : "Çalışan"}
           </span>
+          <Link
+            href="/yardim"
+            target="_blank"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            Yardım
+          </Link>
           {!viewOnly && (
             <form action={signOut}>
               <Button type="submit" variant="ghost" size="sm">

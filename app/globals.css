@@ -4,6 +4,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Tanıtım sayfaları (Faz 3.4): menü temalarının yeşili ve tek vurgu olarak limon sarısı. */
+@theme {
+  --color-site-ink: #16211d;
+  --color-site-green: #1f4d40;
+  --color-site-lemon: #f2d64b;
+  --color-site-muted: #56655f;
+  --color-site-line: #dbe3df;
+  --color-site-mist: #eef3f0;
+}
+@theme inline {
+  --font-site-display: var(--font-young-serif);
+  --font-site-body: var(--font-onest);
+}
+
 @theme inline {
   /* Müşteri menüsü teması: değerler lib/menu-themes.ts'ten CSS değişkeni olarak gelir. */
   --color-menu-bg: var(--m-bg);
