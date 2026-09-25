@@ -1,0 +1,101 @@
+# Canlı ortam — Dokploy. Kullanım: docs/YAYIN.md "Dokploy ile"
+#
+# docker-compose.prod.yml'den farkı: Caddy yoktur. HTTPS ve alan adlarını Dokploy'un
+# Traefik'i verir; bu dosya dışarıya hiçbir port açmaz. Alan adı Dokploy panelinde
+# "qrmenu-app" servisinin 3000 portuna bağlanır. Ortam değişkenleri panelden girilir,
+# Dokploy bunları bu klasördeki .env dosyasına yazar.
+#
+# Servis adları "qrmenu-" ön eklidir: Dokploy'daki diğer projelerle aynı ağı
+# paylaştıklarında "db" gibi ortak bir ad yanlış konteynere çözümlenebilir.
+
+services:
+  qrmenu-db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      retries: 10
+
+  # Migration'ları uygular ve çıkar; uygulama bunu bekler.
+  qrmenu-migrate:
+    build: { context: ., target: migrator }
+    env_file: .env
+    depends_on:
+      qrmenu-db: { condition: service_healthy }
+    restart: "no"
+
+  qrmenu-app:
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      qrmenu-migrate: { condition: service_completed_successfully }
+    expose: ["3000"]
+    mem_limit: 512m
+
+  # Saatte bir abonelik bitiş hatırlatmalarını tetikler (FAZLAR 2.5).
+  qrmenu-cron:
+    image: curlimages/curl:8.16.0
+    restart: unless-stopped
+    environment:
+      CRON_SECRET: ${CRON_SECRET}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          sleep 3600
+          curl -fsS -X POST -H "Authorization: Bearer $$CRON_SECRET" \
+            http://qrmenu-app:3000/api/cron/subscription-reminders || true
+          echo
+        done
+    depends_on: [qrmenu-app]
+    mem_limit: 32m
+
+  # Her gece 00:30 UTC (03:30 TR) veritabanı yedeği; scripts/backup-db.sh ile aynı
+  # kontroller (yarım yedek kalmaz) ve KEEP_DAYS'ten eski yedeklerin silinmesi.
+  # Yedekler "backups" volume'undadır; geri yükleme: docs/YAYIN.md.
+  qrmenu-backup:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      PGHOST: qrmenu-db
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      KEEP_DAYS: ${KEEP_DAYS:-14}
+    volumes:
+      - backups:/backups
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        yedekle() {
+          f=/backups/qrmenu-$$(date +%Y%m%d-%H%M%S).sql.gz
+          pg_dump --no-owner --no-privileges | gzip > "$$f.tmp" \
+            && gzip -dc "$$f.tmp" | grep -q "PostgreSQL database dump complete" \
+            && mv "$$f.tmp" "$$f" && echo "Yedek alındı: $$f" \
+            || { rm -f "$$f.tmp"; echo "Yedek alınamadı." >&2; }
+          find /backups -name 'qrmenu-*.sql.gz' -mtime +"$$KEEP_DAYS" -delete
+        }
+        while true; do
+          [ "$$(date -u +%H%M)" = "0030" ] && yedekle
+          sleep 60
+        done
+    depends_on:
+      qrmenu-db: { condition: service_healthy }
+    mem_limit: 128m
+
+volumes:
+  db-data:
+  backups:

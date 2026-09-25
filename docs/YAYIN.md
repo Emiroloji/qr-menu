@@ -1,5 +1,56 @@
 # Canlıya Alma (VPS)
 
+> **Canlı kurulum Dokploy ile yapılır (aşağıda, "Dokploy ile").** Aynı sunucuda başka
+> projeler de çalıştığı için 80/443 portları Dokploy'un Traefik'indedir; Caddy'li
+> `docker-compose.prod.yml` yalnızca sunucuda tek başına çalışılacaksa kullanılır
+> (bölüm 1'den itibaren).
+
+## Dokploy ile
+
+`docker-compose.dokploy.yml` servisleri: `qrmenu-db` (PostgreSQL 17), `qrmenu-migrate`
+(migration'ları uygular ve çıkar), `qrmenu-app` (Next.js, port 3000), `qrmenu-cron`
+(abonelik hatırlatması, saatte bir), `qrmenu-backup` (her gece 03:30 TR yedek). Dışarıya
+port açılmaz; HTTPS'i Dokploy verir. Her servisin bellek sınırı vardır.
+
+1. Dokploy'da **Create Project** → `qr-menu` → **Create Service → Compose**; kaynak GitHub,
+   compose yolu `./docker-compose.dokploy.yml`.
+2. **Environment**: `.env.production.example`'daki değişkenler, şu farklarla:
+   - `DATABASE_URL=postgresql://qrmenu:PAROLA@qrmenu-db:5432/qrmenu?schema=public`
+     (ana makine `db` değil `qrmenu-db`)
+   - `DOMAIN`, `GLITCHTIP_*` gerekmez (Caddy ve GlitchTip bu dosyada yok).
+   - Alan adı yokken: `NEXT_PUBLIC_APP_URL=https://menu.<IP-tireli>.sslip.io` ve
+     `BETTER_AUTH_URL` aynısı (ör. `https://menu.91-151-88-152.sslip.io`). **QR bastırmayın.**
+3. **Domains**: servis `qrmenu-app`, port `3000`, HTTPS açık (Let's Encrypt). Alan adı
+   `NEXT_PUBLIC_APP_URL` ile aynı olmalı.
+4. **Deploy**. Kontrol: `curl https://<alan-adı>/api/health` → `{"ok":true}`.
+5. Süper admin (bir kez), Dokploy'da `qrmenu-migrate` yerine sunucuda:
+   ```bash
+   cd /etc/dokploy/compose/<proje-klasörü>/code
+   docker compose -p <proje-adı> -f docker-compose.dokploy.yml run --rm \
+     -e NODE_ENV=production qrmenu-migrate npx prisma db seed
+   ```
+   Sonra `SEED_PASSWORD`'ü ortam değişkenlerinden silin.
+
+**İşletmenin kendi alan adı (Pro):** Caddy'nin kendiliğinden sertifika alma özelliği
+(on-demand TLS) Dokploy'da yoktur. İşletme alan adını panelde doğruladıktan sonra süper
+admin aynı alan adını Dokploy'da **Domains**'e `qrmenu-app:3000` olarak ekler; sertifika
+orada alınır. Yönlendirme ve doğrulama uygulamada olduğu gibi çalışır (`proxy.ts`).
+
+**Yedek:** `qrmenu-backup` yedekleri `backups` volume'una yazar, 14 günden eskileri siler
+(`KEEP_DAYS`). Listeleme ve geri yükleme (mevcut veriyi siler):
+
+```bash
+docker exec $(docker ps -qf name=qrmenu-backup) ls -la /backups
+docker exec $(docker ps -qf name=qrmenu-backup) sh -c \
+  'gzip -dc /backups/<dosya>.sql.gz | psql -v ON_ERROR_STOP=1'
+```
+
+Geri yüklemeden önce `qrmenu-app`'i durdurun ve veritabanını boşaltın
+(`psql -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"`).
+
+**Hata izleme:** GlitchTip, Dokploy'un hazır şablonlarından ayrı bir proje olarak kurulur;
+DSN `SENTRY_DSN` olarak girilir.
+
 Uygulama tek bir VPS'te Docker ile çalışır: **PostgreSQL + uygulama (Next.js) + Caddy (HTTPS)**.
 Görseller Cloudflare R2'de, e-postalar SMTP ile gönderilir.
 
