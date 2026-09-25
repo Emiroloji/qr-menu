@@ -53,11 +53,12 @@ export async function countUsage(
 /**
  * Yeni kayıt eklemeden önce paket limitini kontrol eder.
  * Diller şube başınadır: `languages` için şubenin seçeceği toplam dil sayısı verilir.
+ * Toplu eklemede (Excel, Faz 3.3) `adding` eklenecek kayıt sayısıdır.
  */
 export async function assertPlanLimit(
   businessId: string,
   resource: PlanResource,
-  options: { languageCount?: number } = {},
+  options: { languageCount?: number; adding?: number } = {},
 ) {
   const plan = await getActivePlan(businessId);
   if (!plan) throw new ActionError("Aktif bir aboneliğiniz yok.");
@@ -71,7 +72,7 @@ export async function assertPlanLimit(
   const next =
     resource === "languages"
       ? (options.languageCount ?? 1)
-      : (await countUsage(businessId, resource)) + 1;
+      : (await countUsage(businessId, resource)) + (options.adding ?? 1);
 
   if (!isWithinLimit(limits[resource], next)) {
     throw new ActionError(MESSAGES[resource]);

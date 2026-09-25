@@ -17,6 +17,7 @@ import { BulkPriceDialog } from "./_components/bulk-price-dialog";
 import { CategoryActions } from "./_components/category-actions";
 import { CategoryPanel } from "./_components/category-panel";
 import { CopyMenuDialog } from "./_components/copy-menu-dialog";
+import { ExcelDialog } from "./_components/excel-dialog";
 import { ProductList } from "./_components/product-list";
 
 export const metadata: Metadata = { title: "Menü" };
@@ -153,6 +154,11 @@ export default async function MenuPage({
                 samplePrice={products[0]?.variants[0]?.price ?? null}
               />
             )}
+            <ExcelDialog
+              branchId={branch.id}
+              branchName={branch.name}
+              canImport={can.editProduct}
+            />
             {can.owner && branches.length > 1 && (
               <CopyMenuDialog
                 from={branch}
