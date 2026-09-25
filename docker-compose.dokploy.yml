@@ -38,6 +38,7 @@ services:
       target: runner
       args:
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        R2_PUBLIC_URL: ${R2_PUBLIC_URL}
     restart: unless-stopped
     env_file: .env
     depends_on:

@@ -15,9 +15,13 @@ COPY prisma ./prisma
 RUN npm ci
 
 # Derleme. NEXT_PUBLIC_* değişkenleri derleme anında koda gömülür.
+# R2_PUBLIC_URL de derlemede gerekir: next.config'deki görsel izin listesi
+# (images.remotePatterns) standalone çıktıya derleme anında yazılır; verilmezse
+# canlıda R2'deki görseller next/image tarafından reddedilir.
 FROM deps AS builder
 ARG NEXT_PUBLIC_APP_URL
-ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ARG R2_PUBLIC_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL R2_PUBLIC_URL=$R2_PUBLIC_URL
 COPY . .
 RUN npx prisma generate && npm run build
 
