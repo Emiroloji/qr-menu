@@ -58,18 +58,19 @@ export default function KvkkPage() {
         kişisel veri içermez.
       </p>
       <p>
-        Uygulama hataları, kişisel veri içermeyecek şekilde (çerez, başlık, IP
-        adresi ve kullanıcı bilgisi çıkarılarak) yalnızca kendi sunucumuzda
-        çalışan hata izleme sisteminde tutulur ve 30 gün sonra silinir.
+        Uygulama hataları, kişisel veri içermeyecek şekilde (çerez, IP adresi,
+        kullanıcı bilgisi ve adres sorgu parametreleri yazılmadan) yalnızca
+        sunucunun uygulama kayıtlarında tutulur.
       </p>
 
       <h2>4. Saklama süresi</h2>
       <p>
         Hesap verileri, hesap açık olduğu sürece ve hesabın kapanmasından sonra
         ilgili mevzuatta öngörülen zamanaşımı süreleri boyunca (genel olarak 10
-        yıl) saklanır. Oturum kayıtları en geç 7 gün, anonim menü açılış
-        sayıları en fazla 2 yıl tutulur. Süre sonunda veriler silinir, yok
-        edilir veya anonim hale getirilir.
+        yıl) saklanır. Oturum kayıtları en geç 7 gün tutulur. Süre sonunda
+        veriler silinir, yok edilir veya anonim hale getirilir. Menü açılış
+        sayıları bir kişiyle ilişkilendirilemeyen anonim bilgilerdir ve
+        istatistik amacıyla tutulur.
       </p>
 
       <h2>5. Haklarınız</h2>
@@ -85,13 +86,16 @@ export default function KvkkPage() {
         >
           {COMPANY.kvkkEmail}
         </a>{" "}
-        adresine veya {COMPANY.address} adresine yazılı olarak iletebilirsiniz.
-        Başvurular en geç 30 gün içinde ücretsiz olarak sonuçlandırılır.
+        adresine
+        {COMPANY.address &&
+          ` veya ${COMPANY.address} adresine yazılı olarak`}{" "}
+        iletebilirsiniz. Başvurular en geç 30 gün içinde ücretsiz olarak
+        sonuçlandırılır.
       </p>
 
       <p className="text-sm text-stone-600 dark:text-stone-400">
-        Veri sorumlusu: {COMPANY.legalName} · MERSİS: {COMPANY.mersis} · Adres:{" "}
-        {COMPANY.address} ·{" "}
+        Veri sorumlusu: {COMPANY.legalName} ·{" "}
+        {COMPANY.address && `Adres: ${COMPANY.address} · `}
         <Link
           href="/kullanim-kosullari"
           className="underline underline-offset-4"

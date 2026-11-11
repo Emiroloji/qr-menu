@@ -51,12 +51,13 @@ export default function TermsPage() {
 
       <h2>4. Paketler ve abonelik</h2>
       <p>
-        Hizmet, seçilen paketin limitleri ve özellikleriyle sunulur. Abonelik
-        süresi dolduğunda menü yayından kalkar ve panel salt okunur olur.
-        Abonelik ücreti, seçilen paket ve süre için peşin olarak ödenir; bitiş
-        tarihinden 7 gün önce panelde hatırlatma yapılır. Süresi dolan abonelik
-        yenilenmezse işletme verileri silinmez; yenilendiğinde menü yeniden
-        yayına girer.
+        Hizmet şu an <strong>ücretsizdir</strong> ve tanımlanan paketin
+        limitleri ve özellikleriyle, belirlenen süre için sunulur. Süre
+        dolduğunda menü yayından kalkar ve panel salt okunur olur; bitiş
+        tarihinden 7 gün önce panelde ve e-postayla hatırlatma yapılır. Süre
+        uzatılmazsa işletme verileri silinmez; uzatıldığında menü yeniden yayına
+        girer. İleride ücretli pakete geçilirse bu koşullar önceden güncellenir
+        ve işletmelere bildirilir.
       </p>
 
       <h2>5. Değişiklikler ve iletişim</h2>

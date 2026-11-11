@@ -242,9 +242,7 @@ export default async function HomePage() {
                   <h3 className="font-site-display text-2xl">
                     {plan.name}
                     <span className="mt-1 block font-site-body text-base text-site-muted">
-                      {plan.price > 0
-                        ? formatPrice(plan.price)
-                        : "Fiyat için bize yazın"}
+                      {plan.price > 0 ? formatPrice(plan.price) : "Ücretsiz"}
                     </span>
                   </h3>
                   <dl className="grid grid-cols-2 border-t border-site-line">
@@ -280,7 +278,7 @@ export default async function HomePage() {
                         <span className="mt-1 block font-site-body text-base text-site-muted">
                           {plan.price > 0
                             ? formatPrice(plan.price)
-                            : "Fiyat için bize yazın"}
+                            : "Ücretsiz"}
                         </span>
                       </th>
                     ))}
