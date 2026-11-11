@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/panel/page-header";
 import { db } from "@/lib/db";
 import { toDateInputValue } from "@/lib/format";
 import { hasPermission } from "@/lib/permissions";
-import { productImageSrc } from "@/lib/product-image";
+import { productImageOriginal } from "@/lib/product-image";
 import { requireSession } from "@/lib/session";
 import { readTranslations } from "@/lib/translations";
 import { CampaignForm } from "../campaign-form";
@@ -54,7 +54,9 @@ export default async function EditCampaignPage({
         title="Kampanya görseli"
         description="Yatay bir görsel seçin (2:1 oranında kırpılarak gösterilir). JPEG, PNG veya WebP; en fazla 10 MB."
         imageUrl={
-          campaign.imageUrl ? productImageSrc(campaign.imageUrl, 800) : null
+          campaign.imageUrl
+            ? productImageOriginal(campaign.imageUrl, 800)
+            : null
         }
         alt={campaign.title}
         wide

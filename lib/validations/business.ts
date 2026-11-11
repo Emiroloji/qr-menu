@@ -14,6 +14,7 @@ export const RESERVED_SLUGS = [
   "site", // özel alan adı rotası (app/(menu)/site)
   "demo", // örnek menü (Faz 3.4)
   "yardim", // yardım merkezi (Faz 3.4)
+  "img", // görsel aktarıcı (app/img)
 ];
 
 export const slug = z
