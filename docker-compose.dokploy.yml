@@ -97,6 +97,43 @@ services:
       qrmenu-db: { condition: service_healthy }
     mem_limit: 128m
 
+  # Dış yedek: "backups" volume'undaki yedekleri gizli bir R2 deposuna kopyalar;
+  # sunucu ya da diski giderse yedek de gitmesin diye. Volume salt okunur bağlanır,
+  # veritabanına bağlanmaz. Saatte bir çalışır; var olan dosyayı yeniden göndermez.
+  # R2_BACKUP_* tanımlı değilse hiçbir şey yapmaz. Depo herkese açık OLMAMALI
+  # (menü görsellerinin deposu açıktır, o yüzden ayrı depo). Geri yükleme: docs/YAYIN.md.
+  qrmenu-offsite:
+    image: rclone/rclone:1.69.1
+    restart: unless-stopped
+    environment:
+      RCLONE_CONFIG_R2_TYPE: s3
+      RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+      RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${R2_BACKUP_ACCESS_KEY_ID:-}
+      RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${R2_BACKUP_SECRET_ACCESS_KEY:-}
+      RCLONE_CONFIG_R2_ENDPOINT: https://${R2_ACCOUNT_ID:-}.r2.cloudflarestorage.com
+      # Anahtar yalnızca bu depoya yetkilidir; depo oluşturmayı ya da denetlemeyi deneme.
+      RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+      BUCKET: ${R2_BACKUP_BUCKET:-}
+      OFFSITE_KEEP_DAYS: ${OFFSITE_KEEP_DAYS:-90}
+    volumes:
+      - backups:/backups:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -z "$$BUCKET" ] || [ -z "$$RCLONE_CONFIG_R2_ACCESS_KEY_ID" ]; then
+          echo "R2_BACKUP_* tanımlı değil; dış yedek kapalı."
+          exec sleep infinity
+        fi
+        while true; do
+          # Yarım dosyalar (.tmp) ve yazılmakta olan yedek gönderilmez.
+          rclone copy /backups "r2:$$BUCKET/db" --include "qrmenu-*.sql.gz" --min-age 2m \
+            && rclone delete "r2:$$BUCKET/db" --min-age "$${OFFSITE_KEEP_DAYS}d" \
+            && echo "$$(date -u +%FT%TZ) Dış yedek güncel: $$(rclone lsf "r2:$$BUCKET/db" | wc -l) dosya" \
+            || echo "$$(date -u +%FT%TZ) Dış yedek BAŞARISIZ" >&2
+          sleep 3600
+        done
+    mem_limit: 128m
+
 volumes:
   db-data:
   backups:
