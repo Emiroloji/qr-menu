@@ -48,6 +48,33 @@ docker exec $(docker ps -qf name=qrmenu-backup) sh -c \
 Geri yüklemeden önce `qrmenu-app`'i durdurun ve veritabanını boşaltın
 (`psql -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"`).
 
+**Dış yedek:** `qrmenu-offsite` (rclone) aynı dosyaları saatte bir gizli R2 deposuna
+(`R2_BACKUP_BUCKET`, `db/` klasörü) kopyalar ve 90 gün saklar (`OFFSITE_KEEP_DAYS`).
+Depo herkese açık olmamalı; anahtar (`R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`)
+yalnızca o depoya yetkili olmalı. Durum ve listeleme:
+
+```bash
+docker logs --tail 5 $(docker ps -qf name=qrmenu-offsite)
+docker exec $(docker ps -qf name=qrmenu-offsite) sh -c 'rclone lsl r2:$BUCKET/db'
+# Sunucudaki yedeklerle karşılaştırma (0 fark beklenir):
+docker exec $(docker ps -qf name=qrmenu-offsite) sh -c \
+  'rclone check /backups r2:$BUCKET/db --include "qrmenu-*.sql.gz" --one-way'
+```
+
+Sunucu tamamen kaybedilirse: yeni sunucuda Dokploy ve bu compose kurulur (ortam
+değişkenleri dahil), yedek Cloudflare panelinden ya da rclone ile indirilir ve yukarıdaki
+geri yükleme adımıyla boş veritabanına yüklenir. Yedek tabloları ve migration kayıtlarını
+içerdiğinden ayrıca `prisma migrate` gerekmez; görseller R2'de durduğu için etkilenmez.
+
+Geri yükleme 12.11.2026'da denendi: R2'deki yedek boş bir PostgreSQL 17'ye hatasız
+yüklendi (23 tablo, 7 migration, 44 indeks). Yılda birkaç kez yinelenmelidir:
+
+```bash
+docker run -d --name deneme --network none -e POSTGRES_PASSWORD=x -e POSTGRES_DB=deneme postgres:17
+gzip -dc <dosya>.sql.gz | docker exec -i deneme psql -U postgres -d deneme -v ON_ERROR_STOP=1 -q
+docker rm -f deneme
+```
+
 **Hata izleme:** GlitchTip, Dokploy'un hazır şablonlarından ayrı bir proje olarak kurulur;
 DSN `SENTRY_DSN` olarak girilir.
 
