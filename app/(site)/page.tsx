@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import { HeroScene } from "@/components/site/hero-scene";
+import { LiveDemo } from "@/components/site/live-demo";
+import { ModuleEdge, QrArt } from "@/components/site/qr-art";
+import { Steps } from "@/components/site/steps";
 import { db } from "@/lib/db";
 import { formatPrice } from "@/lib/format";
 import { readPlanFeatures } from "@/lib/plan-features";
@@ -8,10 +12,16 @@ import { accountRequestMailto } from "@/lib/site";
 import { APPEARANCE_OPTIONS, STATS_OPTIONS } from "@/lib/validations/plan";
 
 export const metadata: Metadata = {
-  title: "QR Menü: kafe ve restoranlar için dijital menü",
+  title: "karefix: menü değişir, karekod aynı kalır",
   description:
-    "Menünüzü panelden yönetin, müşterileriniz masadaki QR kodu okutarak açsın. Alerjen tablosu, basılı menü ve çoklu dil hazır.",
+    "Kafe ve restoranlar için QR menü. Menünüzü panelden yönetin, müşterileriniz masadaki karekodu okutarak açsın. Alerjen tablosu, basılı menü ve çoklu dil hazır.",
 };
+
+// Ana ekrandaki karekod gerçektir: okutan örnek menüyü açar.
+const DEMO_URL = `${(process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "")}/demo`;
+
+const BUTTON =
+  "rounded-lg px-6 py-3 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2";
 
 const STEPS = [
   {
@@ -113,80 +123,114 @@ export default async function HomePage() {
 
   return (
     <main className="flex flex-col">
-      <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-5 pt-12 pb-16 md:grid-cols-[1fr_auto] md:gap-16 md:pt-20">
-        <div className="flex max-w-xl flex-col gap-6">
-          <h1 className="font-site-display text-4xl leading-tight text-balance sm:text-5xl lg:text-6xl">
-            Menünüz, masadaki QR kodda.
-          </h1>
-          <p className="text-lg leading-relaxed text-site-muted">
-            Kafe ve restoranlar için dijital menü. Fiyatı panelden
-            değiştirirsiniz, menü o an güncellenir; QR kodu yeniden bastırmanız
-            gerekmez.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href={accountRequestMailto}
-              className="rounded-full bg-site-green px-6 py-3 font-medium text-white hover:bg-site-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-green"
+      <section className="bg-site-lemon">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-5 pt-10 pb-14 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pt-16 lg:pb-20">
+          <div className="flex max-w-xl flex-col gap-6">
+            <h1 className="site-rise font-site-display text-5xl leading-[0.98] font-extrabold tracking-tight text-balance sm:text-6xl xl:text-7xl">
+              Menü değişir, karekod aynı kalır.
+            </h1>
+            <p
+              className="site-rise max-w-lg text-lg leading-relaxed text-site-ink/80"
+              style={{ animationDelay: "120ms" }}
             >
-              Hesap talep edin
-            </a>
-            <Link
-              href="/demo"
-              className="rounded-full border border-site-line px-6 py-3 font-medium hover:border-site-ink"
+              karefix, kafe ve restoranlar için QR menü. Fiyatı panelden
+              değiştirirsiniz, menü o an güncellenir; masadaki karekodu yeniden
+              bastırmazsınız.
+            </p>
+            <div
+              className="site-rise flex flex-wrap gap-3"
+              style={{ animationDelay: "240ms" }}
             >
-              Örnek menüyü açın
-            </Link>
+              <a
+                href={accountRequestMailto}
+                className={`${BUTTON} bg-site-ink text-white hover:bg-site-green focus-visible:outline-site-ink`}
+              >
+                Hesap talep edin
+              </a>
+              <Link
+                href="/demo"
+                className={`${BUTTON} border-2 border-site-ink hover:bg-site-ink hover:text-white focus-visible:outline-site-ink`}
+              >
+                Örnek menüyü açın
+              </Link>
+            </div>
+            <p
+              className="site-rise text-sm text-site-ink/70"
+              style={{ animationDelay: "360ms" }}
+            >
+              Müşterileriniz uygulama indirmez, üye olmaz.
+            </p>
           </div>
-          <p className="text-sm text-site-muted">
-            Müşterileriniz uygulama indirmez, üye olmaz.
-          </p>
-        </div>
 
-        {/* Gerçek örnek menü; dokunarak denenebilir. */}
-        <figure className="mx-auto flex flex-col items-center gap-3">
-          <div className="relative rounded-4xl bg-site-ink p-2.5 shadow-xl ring-1 ring-site-ink/10">
-            <iframe
-              src="/demo"
-              title="Örnek menü: kategorilere ve ürünlere dokunarak deneyin"
-              className="h-150 w-72 rounded-3xl bg-white sm:h-160 sm:w-80"
+          <figure className="flex flex-col items-center gap-5">
+            <HeroScene
+              qr={<QrArt value={DEMO_URL} animated className="w-full" />}
             />
-          </div>
-          <figcaption className="flex items-center gap-2 text-sm text-site-muted">
-            <span
-              aria-hidden
-              className="inline-block size-2 rounded-full bg-site-lemon ring-2 ring-site-lemon/40"
-            />
-            Canlı örnek: ürünlere dokunun
-          </figcaption>
-        </figure>
+            <figcaption className="max-w-sm text-center text-sm text-site-ink/75">
+              Üç değişiklik, tek karekod. Bu karekod gerçek: telefonunuzla
+              okutun, örnek menü açılsın.
+            </figcaption>
+          </figure>
+        </div>
       </section>
+      <ModuleEdge className="-mt-px text-site-lemon" />
 
       <section
         id="nasil"
         aria-labelledby="nasil-baslik"
-        className="scroll-mt-4 border-y border-site-line bg-site-mist"
+        className="mx-auto flex w-full max-w-6xl scroll-mt-4 flex-col gap-10 px-5 py-16"
       >
-        <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-16">
-          <h2
-            id="nasil-baslik"
-            className="font-site-display text-3xl sm:text-4xl"
-          >
-            Dört adımda yayında
-          </h2>
-          <ol className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map((step, i) => (
-              <li key={step.title} className="flex flex-col gap-3">
-                <span
-                  aria-hidden
-                  className="flex size-10 items-center justify-center rounded-full bg-site-green font-site-display text-lg text-white"
-                >
-                  {i + 1}
-                </span>
-                <h3 className="text-lg font-semibold">{step.title}</h3>
-                <p className="leading-relaxed text-site-muted">{step.text}</p>
-              </li>
-            ))}
-          </ol>
+        <h2
+          id="nasil-baslik"
+          className="font-site-display text-3xl font-bold tracking-tight sm:text-4xl"
+        >
+          Dört adımda yayında
+        </h2>
+        <Steps steps={STEPS} />
+      </section>
+
+      <section
+        aria-labelledby="deneyin-baslik"
+        className="border-y border-site-line bg-site-mist"
+      >
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-[1fr_auto] md:gap-16">
+          <div className="flex max-w-lg flex-col gap-5">
+            <h2
+              id="deneyin-baslik"
+              className="font-site-display text-3xl font-bold tracking-tight sm:text-4xl"
+            >
+              Müşterinizin göreceği menü
+            </h2>
+            <p className="text-lg leading-relaxed text-site-muted">
+              Yandaki telefon bir resim değil, çalışan bir menü. Kategorilere ve
+              ürünlere dokunun, arama ve alerjen filtresini deneyin.
+            </p>
+            <ul className="flex flex-col gap-2.5 text-site-muted">
+              {[
+                "Dört hazır tema, işletmenizin rengi ve logosu",
+                "Uygulama gerekmez; telefonun kamerası yeter",
+                "Yavaş internette de hızlı açılır",
+              ].map((item) => (
+                <li key={item} className="flex items-baseline gap-3">
+                  <span
+                    aria-hidden
+                    className="size-2.5 shrink-0 translate-y-[-1px] rounded-[3px] bg-site-green"
+                  />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/demo"
+              className="w-fit font-semibold text-site-green underline decoration-2 underline-offset-4 hover:text-site-ink"
+            >
+              Tam ekranda açın ve temaları deneyin
+            </Link>
+          </div>
+          {/* Gerçek örnek menü; dokunarak denenebilir. */}
+          <LiveDemo>
+            <QrArt value={DEMO_URL} className="w-full" />
+          </LiveDemo>
         </div>
       </section>
 
@@ -196,19 +240,25 @@ export default async function HomePage() {
       >
         <h2
           id="ozellik-baslik"
-          className="max-w-2xl font-site-display text-3xl sm:text-4xl"
+          className="max-w-2xl font-site-display text-3xl font-bold tracking-tight sm:text-4xl"
         >
           Kâğıt menünün yapamadıkları
         </h2>
         <div className="grid gap-10 md:grid-cols-3">
           {FEATURES.map((group) => (
             <div key={group.title} className="flex flex-col gap-4">
-              <h3 className="border-b-2 border-site-lemon pb-2 text-lg font-semibold">
+              <h3 className="w-fit bg-site-lemon px-2 py-1 font-site-display text-xl font-bold">
                 {group.title}
               </h3>
               <ul className="flex flex-col gap-3 leading-relaxed text-site-muted">
                 {group.items.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item} className="flex items-baseline gap-3">
+                    <span
+                      aria-hidden
+                      className="size-2 shrink-0 translate-y-[-2px] rounded-[2px] bg-site-ink"
+                    />
+                    {item}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -226,7 +276,7 @@ export default async function HomePage() {
             <div className="flex flex-col gap-3">
               <h2
                 id="paket-baslik"
-                className="font-site-display text-3xl sm:text-4xl"
+                className="font-site-display text-3xl font-bold tracking-tight sm:text-4xl"
               >
                 Paketler
               </h2>
@@ -239,9 +289,9 @@ export default async function HomePage() {
             <div className="flex flex-col gap-8 sm:hidden">
               {plans.map((plan) => (
                 <div key={plan.id} className="flex flex-col gap-3">
-                  <h3 className="font-site-display text-2xl">
+                  <h3 className="font-site-display text-2xl font-bold">
                     {plan.name}
-                    <span className="mt-1 block font-site-body text-base text-site-muted">
+                    <span className="mt-1 block font-site-body text-base font-normal text-site-muted">
                       {plan.price > 0 ? formatPrice(plan.price) : "Ücretsiz"}
                     </span>
                   </h3>
@@ -272,10 +322,10 @@ export default async function HomePage() {
                       <th
                         key={plan.id}
                         scope="col"
-                        className="px-4 pb-4 align-bottom font-site-display text-2xl font-normal"
+                        className="px-4 pb-4 align-bottom font-site-display text-2xl font-bold"
                       >
                         {plan.name}
-                        <span className="mt-1 block font-site-body text-base text-site-muted">
+                        <span className="mt-1 block font-site-body text-base font-normal text-site-muted">
                           {plan.price > 0
                             ? formatPrice(plan.price)
                             : "Ücretsiz"}
@@ -315,36 +365,55 @@ export default async function HomePage() {
           <div className="flex flex-col gap-3">
             <h2
               id="sss-baslik"
-              className="font-site-display text-3xl sm:text-4xl"
+              className="font-site-display text-3xl font-bold tracking-tight sm:text-4xl"
             >
               Sık sorulanlar
             </h2>
             <Link
               href="/yardim"
-              className="w-fit text-site-green underline underline-offset-4 hover:text-site-ink"
+              className="w-fit font-semibold text-site-green underline decoration-2 underline-offset-4 hover:text-site-ink"
             >
               Tüm yardım konuları
             </Link>
           </div>
-          <dl className="flex flex-col gap-6">
-            {FAQ.map((item) => (
-              <div key={item.q} className="flex flex-col gap-1.5">
-                <dt className="font-semibold">{item.q}</dt>
-                <dd className="leading-relaxed text-site-muted">{item.a}</dd>
-              </div>
+          <div className="flex flex-col border-t-2 border-site-ink">
+            {FAQ.map((item, i) => (
+              <details
+                key={item.q}
+                open={i === 0}
+                className="group border-b border-site-line"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-lg font-semibold marker:hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-green [&::-webkit-details-marker]:hidden">
+                  {item.q}
+                  <span
+                    aria-hidden
+                    className="relative size-6 shrink-0 rounded-md bg-site-ink transition-transform duration-300 group-open:rotate-45 group-open:bg-site-green"
+                  >
+                    <span className="absolute inset-x-1.5 top-1/2 h-0.5 -translate-y-1/2 bg-white" />
+                    <span className="absolute inset-y-1.5 left-1/2 w-0.5 -translate-x-1/2 bg-white" />
+                  </span>
+                </summary>
+                <p className="max-w-2xl pb-5 leading-relaxed text-site-muted">
+                  {item.a}
+                </p>
+              </details>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
 
-      <section className="bg-site-green text-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-16 sm:flex-row sm:items-center sm:justify-between">
-          <p className="max-w-xl font-site-display text-3xl leading-snug">
-            Menünüzü dijitale taşıyalım.
+      <section className="relative overflow-hidden bg-site-green text-white">
+        <QrArt
+          value={DEMO_URL}
+          className="pointer-events-none absolute -top-10 -right-10 w-72 text-site-lemon opacity-15 sm:w-96"
+        />
+        <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-20 sm:flex-row sm:items-center sm:justify-between">
+          <p className="max-w-xl font-site-display text-3xl leading-tight font-bold tracking-tight sm:text-4xl">
+            Menünüzü karekoda taşıyalım.
           </p>
           <a
             href={accountRequestMailto}
-            className="rounded-full bg-site-lemon px-6 py-3 font-medium text-site-ink hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className={`${BUTTON} bg-site-lemon text-site-ink hover:bg-white focus-visible:outline-white`}
           >
             Hesap talep edin
           </a>

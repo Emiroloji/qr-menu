@@ -5,7 +5,7 @@ import { COMPANY } from "@/lib/company";
 export const metadata: Metadata = {
   title: "Yardım merkezi",
   description:
-    "QR Menü panelini kullanma rehberi: menü, QR kodlar, alerjen belgesi, çeviriler, kampanyalar ve daha fazlası.",
+    "karefix panelini kullanma rehberi: menü, QR kodlar, alerjen belgesi, çeviriler, kampanyalar ve daha fazlası.",
 };
 
 type Topic = { q: string; a: React.ReactNode };
@@ -269,7 +269,9 @@ export default function HelpPage() {
   return (
     <main className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-12 md:grid-cols-[14rem_1fr] md:py-16">
       <div className="flex flex-col gap-6 md:sticky md:top-8 md:self-start">
-        <h1 className="font-site-display text-4xl">Yardım merkezi</h1>
+        <h1 className="font-site-display font-bold tracking-tight text-4xl">
+          Yardım merkezi
+        </h1>
         <nav aria-label="Konular">
           <ul className="flex flex-wrap gap-2 md:flex-col md:gap-1">
             {SECTIONS.map((s) => (
@@ -296,7 +298,7 @@ export default function HelpPage() {
           >
             <h2
               id={`${section.id}-baslik`}
-              className="border-b-2 border-site-lemon pb-2 font-site-display text-2xl"
+              className="border-b-2 border-site-lemon pb-2 font-site-display font-bold tracking-tight text-2xl"
             >
               {section.title}
             </h2>

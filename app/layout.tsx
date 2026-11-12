@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "QR Menü",
+  title: "karefix",
   description: "Restoran ve kafeler için dijital QR menü",
 };
 

@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Örnek menü",
   description:
-    "QR Menü ile hazırlanmış örnek bir kafe menüsü. Dört temayı deneyin.",
+    "karefix ile hazırlanmış örnek bir kafe menüsü. Dört temayı deneyin.",
 };
 
 /** Örnek menü (FAZLAR 3.4). Hayali işletme; kayıt tutulmaz. `?tema=luxury` */
