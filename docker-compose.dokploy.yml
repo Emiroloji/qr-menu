@@ -44,7 +44,7 @@ services:
     depends_on:
       qrmenu-migrate: { condition: service_completed_successfully }
     expose: ["3000"]
-    mem_limit: 512m
+    mem_limit: 1g
 
   # Saatte bir abonelik bitiş hatırlatmalarını tetikler (FAZLAR 2.5).
   qrmenu-cron:
