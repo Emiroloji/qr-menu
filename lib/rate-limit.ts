@@ -36,6 +36,12 @@ export const RATE_LIMITS = {
   resetEmail: { limit: 3, windowMs: 60 * MINUTE },
   /** Menüde ürün detayı açılışı kaydı (istatistikleri şişirmeye karşı) */
   productView: { limit: 60, windowMs: 10 * MINUTE },
+  /**
+   * Menü açılışı kaydı (IP ve şube başına). Kafede aynı Wi-Fi'ı kullanan müşteriler tek IP
+   * göründüğünden sınır geniştir; amaç gerçek açılışları kısmak değil, bir adresi art arda
+   * çağırarak istatistikleri ve veritabanını şişirmeyi önlemektir.
+   */
+  scan: { limit: 120, windowMs: 10 * MINUTE },
 } satisfies Record<string, RateLimitRule>;
 
 /** Ters vekil (Caddy) arkasında istemci IP'si; doğrudan erişimde "unknown". */

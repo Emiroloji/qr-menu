@@ -18,6 +18,7 @@ import {
   withToday,
 } from "@/lib/menu-data";
 import { getMenuMessages } from "@/lib/menu-messages";
+import { clientIp, consumeRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { recordScan } from "@/lib/scan-log";
 
 // Müşteri menüsünün ortak ekranı: /{işletme}/{şube} ve işletmenin kendi alan adı
@@ -96,7 +97,12 @@ export async function MenuScreen({
   // Tarama kaydı yanıttan sonra yazılır; menüyü yavaşlatmaz. Dil değiştirme (?lang) sayılmaz.
   if (!requested) {
     const userAgent = requestHeaders.get("user-agent") ?? "";
-    after(() => recordScan(lookup.branchId, lang, userAgent));
+    // IP yalnızca hız sınırı için bellekte kullanılır, saklanmaz (KURALLAR 7).
+    const allowed = consumeRateLimit(
+      `scan:${clientIp(requestHeaders)}:${lookup.branchId}`,
+      RATE_LIMITS.scan,
+    );
+    if (allowed) after(() => recordScan(lookup.branchId, lang, userAgent));
   }
 
   return (

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clientIp, consumeRateLimit } from "@/lib/rate-limit";
+import { clientIp, consumeRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 
 describe("consumeRateLimit", () => {
   const rule = { limit: 3, windowMs: 1000 };
@@ -23,6 +23,24 @@ describe("consumeRateLimit", () => {
     const b = `b-${Math.random()}`;
     [1, 2, 3].forEach(() => consumeRateLimit(a, rule, 0));
     expect(consumeRateLimit(b, rule, 0)).toBe(true);
+  });
+});
+
+describe("menü açılışı sınırı", () => {
+  it("aynı IP ve şubeden 120 açılışı sayar, fazlasını saymaz; başka şube etkilenmez", () => {
+    const ip = `ip-${Math.random()}`;
+    const results = Array.from({ length: 125 }, () =>
+      consumeRateLimit(`scan:${ip}:sube-1`, RATE_LIMITS.scan, 0),
+    );
+    expect(results.filter(Boolean)).toHaveLength(120);
+    expect(results.slice(120)).toEqual([false, false, false, false, false]);
+    expect(consumeRateLimit(`scan:${ip}:sube-2`, RATE_LIMITS.scan, 0)).toBe(
+      true,
+    );
+    // 10 dakika sonra yeniden sayılır.
+    expect(
+      consumeRateLimit(`scan:${ip}:sube-1`, RATE_LIMITS.scan, 10 * 60_000),
+    ).toBe(true);
   });
 });
 
