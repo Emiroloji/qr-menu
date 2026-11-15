@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  cleanCell,
   mapHeaders,
   parseSheetRows,
   type Reference,
@@ -141,5 +142,15 @@ describe("Excel dışa aktarma", () => {
     const { items, errors } = parse(values);
     expect(errors).toEqual([]);
     expect(items[0]).toMatchObject({ ...product, row: 2 });
+  });
+});
+
+describe("Hücre temizliği", () => {
+  it("görünmez denetim karakterlerini atar, satır sonunu korur", () => {
+    expect(cleanCell(" Latte\u0000 ")).toBe("Latte");
+    expect(cleanCell("Sütlü\u0000\u0007 kahve\nsıcak")).toBe(
+      "Sütlü kahve\nsıcak",
+    );
+    expect(cleanCell("Çay ₺ ığüşöç")).toBe("Çay ₺ ığüşöç");
   });
 });

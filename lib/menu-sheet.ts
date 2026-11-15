@@ -126,6 +126,17 @@ const list = (value: string | undefined) =>
     .map((v) => v.trim())
     .filter(Boolean);
 
+/**
+ * Hücre metnini temizler: Excel'in sakladığı görünmez denetim karakterlerini (ör. 0x00)
+ * atar. PostgreSQL bu karakteri kabul etmez; biri bile olsa bütün aktarım hata verir.
+ * Satır sonu ve sekme korunur.
+ */
+export function cleanCell(text: string) {
+  return text
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
+    .trim();
+}
+
 /** Başlık satırındaki sütun adlarını sütun anahtarlarına eşler. */
 export function mapHeaders(headers: string[]) {
   const byHeader = new Map(COLUMNS.map((c) => [key(c.header), c.key]));

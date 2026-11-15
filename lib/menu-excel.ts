@@ -2,6 +2,7 @@ import "server-only";
 import ExcelJS from "exceljs";
 import { db } from "@/lib/db";
 import {
+  cleanCell,
   COLUMNS,
   type ColumnKey,
   type ExportProduct,
@@ -165,7 +166,7 @@ export async function readMenuWorkbook(
   const headerRow = sheet.getRow(1);
   const headers: string[] = [];
   for (let c = 1; c <= headerRow.cellCount; c++)
-    headers.push(cellText(headerRow.getCell(c)));
+    headers.push(cleanCell(cellText(headerRow.getCell(c))));
   const { keys, missing } = mapHeaders(headers);
   if (missing.length)
     return {
@@ -178,7 +179,7 @@ export async function readMenuWorkbook(
     if (number === 1) return;
     const values: SheetRow = {};
     keys.forEach((key, i) => {
-      if (key) values[key] = cellText(excelRow.getCell(i + 1)).trim();
+      if (key) values[key] = cleanCell(cellText(excelRow.getCell(i + 1)));
     });
     rows.push({ row: number, values });
   });
