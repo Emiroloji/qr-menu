@@ -64,6 +64,8 @@ export function reminderMail(input: {
       `Aboneliğinizi uzatmak için bizimle iletişime geçin: ${COMPANY.supportEmail}`,
       "",
       `Panel: ${panelUrl}`,
+      "",
+      COMPANY.brand,
     ].join("\n"),
   };
 }

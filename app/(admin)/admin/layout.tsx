@@ -2,6 +2,7 @@ import { QrCodeIcon } from "lucide-react";
 import { signOut } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
+import { COMPANY } from "@/lib/company";
 import { requireRole } from "@/lib/session";
 import { AdminNav } from "./_components/admin-nav";
 
@@ -17,7 +18,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             <QrCodeIcon className="size-4" />
           </span>
           <span className="flex flex-col leading-tight">
-            <span className="text-sm font-semibold">QR Menü</span>
+            <span className="text-sm font-semibold">{COMPANY.brand}</span>
             <span className="text-xs text-muted-foreground">Süper admin</span>
           </span>
         </div>

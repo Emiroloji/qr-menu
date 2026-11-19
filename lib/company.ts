@@ -3,6 +3,8 @@
 // Metinler henüz bir hukukçuya onaylatılmadı.
 
 type Company = {
+  /** Platformun adı: yasal metinler, e-postalar ve paneller bunu kullanır. */
+  brand: string;
   /** true iken yasal sayfalarda "örnek bilgiler" uyarısı gösterilir. */
   isExample: boolean;
   legalName: string;
@@ -18,6 +20,7 @@ type Company = {
 };
 
 export const COMPANY: Company = {
+  brand: "karefix",
   isExample: false,
   legalName: "Emir Uysal",
   kvkkEmail: "emircanuysal6e@gmail.com",
@@ -25,5 +28,5 @@ export const COMPANY: Company = {
   hostingProvider:
     "Hosting Dünyam Bilgi İletişim Teknolojileri Ticaret Ltd. Şti. (Türkiye)",
   emailProvider: "Google (Gmail)",
-  updatedAt: "11 Kasım 2026",
+  updatedAt: "19 Kasım 2026",
 };

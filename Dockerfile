@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# QR Menü — canlı imaj (Next.js standalone). Ayrıntılar: docs/YAYIN.md
+# karefix — canlı imaj (Next.js standalone). Ayrıntılar: docs/YAYIN.md
 
 FROM node:22-bookworm-slim AS base
 ENV NEXT_TELEMETRY_DISABLED=1

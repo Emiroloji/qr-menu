@@ -1,5 +1,7 @@
 import "server-only";
 import nodemailer from "nodemailer";
+import { COMPANY } from "@/lib/company";
+import { senderAddress } from "@/lib/mail-from";
 
 const port = Number(process.env.SMTP_PORT ?? 587);
 
@@ -17,5 +19,8 @@ export async function sendMail(input: {
   subject: string;
   text: string;
 }) {
-  await transporter.sendMail({ from: process.env.SMTP_FROM, ...input });
+  await transporter.sendMail({
+    from: senderAddress(process.env.SMTP_FROM, COMPANY.brand),
+    ...input,
+  });
 }

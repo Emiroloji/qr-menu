@@ -12,7 +12,7 @@ export default function KvkkPage() {
       <p>
         Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”)
         uyarınca, veri sorumlusu sıfatıyla <strong>{COMPANY.legalName}</strong>{" "}
-        (“QR Menü”) tarafından hazırlanmıştır.
+        (“{COMPANY.brand}”) tarafından hazırlanmıştır.
       </p>
 
       <h2>1. Menüyü görüntüleyen ziyaretçiler</h2>

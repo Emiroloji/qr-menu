@@ -10,21 +10,22 @@ export default function TermsPage() {
   return (
     <LegalPage title="Kullanım Koşulları">
       <p>
-        Bu koşullar, {COMPANY.legalName} (“QR Menü”) tarafından sunulan dijital
-        menü hizmetinin işletmeler tarafından kullanımını düzenler.
+        Bu koşullar, {COMPANY.legalName} (“{COMPANY.brand}”) tarafından sunulan
+        dijital menü hizmetinin işletmeler tarafından kullanımını düzenler.
       </p>
 
       <h2>1. Hizmet</h2>
       <p>
-        QR Menü, işletmelerin menülerini dijital ortamda yayınlamasını sağlar.
-        Hizmet yalnızca menü görüntüleme içindir; sipariş ve ödeme alınmaz.
+        {COMPANY.brand}, işletmelerin menülerini dijital ortamda yayınlamasını
+        sağlar. Hizmet yalnızca menü görüntüleme içindir; sipariş ve ödeme
+        alınmaz.
       </p>
 
       <h2>2. Hesaplar</h2>
       <ul>
         <li>
-          Hesaplar QR Menü tarafından açılır; giriş bilgilerinin gizliliğinden
-          hesap sahibi sorumludur.
+          Hesaplar {COMPANY.brand} tarafından açılır; giriş bilgilerinin
+          gizliliğinden hesap sahibi sorumludur.
         </li>
         <li>
           İşletme sahibi, çalışanlarına verdiği yetkilerden ve onların
@@ -36,8 +37,9 @@ export default function TermsPage() {
       <ul>
         <li>
           Menüdeki ürün, fiyat, <strong>alerjen</strong>, besin değeri ve diğer
-          bilgilerin doğruluğu ve güncelliğinden işletme sorumludur. QR Menü bu
-          bilgileri yalnızca işletmenin girdiği şekliyle gösterir.
+          bilgilerin doğruluğu ve güncelliğinden işletme sorumludur.{" "}
+          {COMPANY.brand} bu bilgileri yalnızca işletmenin girdiği şekliyle
+          gösterir.
         </li>
         <li>
           Yüklenen görsel ve metinlerin telif ve diğer haklarının işletmeye ait
@@ -62,7 +64,7 @@ export default function TermsPage() {
 
       <h2>5. Değişiklikler ve iletişim</h2>
       <p>
-        QR Menü bu koşulları güncelleyebilir; güncel metin bu sayfada
+        {COMPANY.brand} bu koşulları güncelleyebilir; güncel metin bu sayfada
         yayınlanır. İletişim:{" "}
         <a
           href={`mailto:${COMPANY.supportEmail}`}

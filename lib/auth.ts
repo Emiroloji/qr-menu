@@ -2,6 +2,7 @@ import "server-only";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
+import { COMPANY } from "@/lib/company";
 import { db } from "@/lib/db";
 import { sendMail } from "@/lib/mail";
 
@@ -22,13 +23,13 @@ async function sendPasswordMail(
         "Şifrenizi sıfırlamak için aşağıdaki bağlantıyı açın.",
       ]
     : [
-        "QR Menü hesabınız oluşturuldu",
-        "İşletmeniz için QR Menü hesabı açıldı. Panele girebilmek için aşağıdaki bağlantıdan şifrenizi belirleyin.",
+        `${COMPANY.brand} hesabınız oluşturuldu`,
+        `İşletmeniz için ${COMPANY.brand} hesabı açıldı. Panele girebilmek için aşağıdaki bağlantıdan şifrenizi belirleyin.`,
       ];
   await sendMail({
     to: user.email,
     subject,
-    text: `Merhaba ${user.name},\n\n${intro} Bağlantı 24 saat geçerlidir.\n\n${url}\n\nBu isteği siz yapmadıysanız bu e-postayı yok sayabilirsiniz.`,
+    text: `Merhaba ${user.name},\n\n${intro} Bağlantı 24 saat geçerlidir.\n\n${url}\n\nBu isteği siz yapmadıysanız bu e-postayı yok sayabilirsiniz.\n\n${COMPANY.brand}`,
   });
 }
 

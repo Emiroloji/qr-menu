@@ -1,5 +1,6 @@
 import "server-only";
 import ExcelJS from "exceljs";
+import { COMPANY } from "@/lib/company";
 import { db } from "@/lib/db";
 import {
   cleanCell,
@@ -77,7 +78,7 @@ export async function writeMenuWorkbook(
   ref: Reference,
 ) {
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = "QR Menü";
+  workbook.creator = COMPANY.brand;
   const sheet = workbook.addWorksheet(SHEET_NAME, {
     views: [{ state: "frozen", ySplit: 1 }],
   });

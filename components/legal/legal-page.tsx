@@ -18,7 +18,7 @@ export function LegalPage({
         href="/"
         className="text-sm text-stone-600 underline-offset-4 hover:underline dark:text-stone-400"
       >
-        QR Menü
+        {COMPANY.brand}
       </Link>
       <header className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
