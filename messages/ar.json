@@ -75,6 +75,15 @@
     "campaignUntil": "حتى {date}",
     "dailySpecial": "اقتراح اليوم",
     "featured": "مميز",
-    "servedHours": "يُقدَّم {hours}"
+    "servedHours": "يُقدَّم {hours}",
+    "rateUs": "قيّمنا",
+    "ratingLabel": "تقييمك",
+    "stars": "{count, plural, one {نجمة واحدة} two {نجمتان} few {# نجوم} other {# نجمة}}",
+    "feedbackMessage": "رسالتك (اختياري)",
+    "feedbackNote": "تقييمك مجهول الهوية ولا يراه إلا المنشأة. يُرجى عدم كتابة معلومات شخصية.",
+    "send": "إرسال",
+    "feedbackThanks": "شكرًا! تم إرسال تقييمك.",
+    "feedbackLimited": "تم إرسال عدد كبير من التقييمات. يُرجى المحاولة لاحقًا.",
+    "feedbackError": "تعذّر إرسال التقييم. يُرجى المحاولة مرة أخرى."
   }
 }

@@ -5,6 +5,7 @@ const NONE: PlanFeatures = {
   appearance: "PRESET",
   stats: "NONE",
   customDomain: false,
+  feedback: false,
 };
 
 export function readPlanFeatures(value: unknown): PlanFeatures {
@@ -20,6 +21,8 @@ export const canUseBranding = (f: PlanFeatures) => f.appearance !== "PRESET";
 export const canUseCover = (f: PlanFeatures) => f.appearance === "FULL";
 /** Kendi alan adı (Faz 3.2): paket ayarındaki "Özel alan adı" */
 export const canUseCustomDomain = (f: PlanFeatures) => f.customDomain;
+/** Müşteri değerlendirmeleri: paket ayarındaki "Müşteri değerlendirmeleri" */
+export const canUseFeedback = (f: PlanFeatures) => f.feedback;
 
 export function assertFeature(allowed: boolean) {
   if (!allowed)

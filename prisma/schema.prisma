@@ -123,6 +123,7 @@ model Branch {
   categories    Category[]
   scanLogs      ScanLog[]
   productViews  ProductView[]
+  feedbacks     Feedback[]
   campaigns     Campaign[]
   dailySpecials DailySpecial[]
 
@@ -387,6 +388,20 @@ model ProductView {
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+
+  @@index([branchId, createdAt])
+}
+
+// Müşterinin menüden bıraktığı değerlendirme. Anonimdir: IP veya kişisel veri tutulmaz.
+model Feedback {
+  id        String    @id @default(cuid())
+  branchId  String
+  branch    Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  rating    Int // 1–5
+  message   String? // en fazla 500 karakter
+  language  String
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
 
   @@index([branchId, createdAt])
 }

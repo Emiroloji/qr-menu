@@ -183,5 +183,6 @@ export function demoMenu(theme: MenuThemeCode, now = new Date()): MenuData {
     ],
     dailyProductId: null,
     featuredIds: ["demo-latte", "demo-soguk-demleme", "demo-cheesecake"],
+    feedback: false,
   };
 }

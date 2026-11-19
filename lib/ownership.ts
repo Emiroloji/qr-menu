@@ -80,3 +80,15 @@ export async function assertCampaignBelongsToBusiness(
   if (!campaign) throw new ActionError("Kampanya bulunamadı.");
   return campaign;
 }
+
+export async function assertFeedbackBelongsToBusiness(
+  feedbackId: string,
+  businessId: string,
+) {
+  const feedback = await db.feedback.findFirst({
+    where: { id: feedbackId, branch: { businessId, deletedAt: null } },
+    select: { id: true, branchId: true },
+  });
+  if (!feedback) throw new ActionError("Değerlendirme bulunamadı.");
+  return feedback;
+}

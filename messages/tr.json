@@ -75,6 +75,15 @@
     "campaignUntil": "{date} tarihine kadar",
     "dailySpecial": "Günün önerisi",
     "featured": "Öne çıkanlar",
-    "servedHours": "{hours} arası servis edilir"
+    "servedHours": "{hours} arası servis edilir",
+    "rateUs": "Bizi değerlendirin",
+    "ratingLabel": "Puanınız",
+    "stars": "{count} yıldız",
+    "feedbackMessage": "Mesajınız (isteğe bağlı)",
+    "feedbackNote": "Değerlendirmeniz anonimdir ve yalnızca işletme tarafından görülür. Lütfen kişisel bilgi yazmayın.",
+    "send": "Gönder",
+    "feedbackThanks": "Teşekkürler! Değerlendirmeniz iletildi.",
+    "feedbackLimited": "Çok fazla değerlendirme gönderildi. Lütfen daha sonra tekrar deneyin.",
+    "feedbackError": "Değerlendirme gönderilemedi. Lütfen tekrar deneyin."
   }
 }

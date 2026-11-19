@@ -42,6 +42,8 @@ export const RATE_LIMITS = {
    * çağırarak istatistikleri ve veritabanını şişirmeyi önlemektir.
    */
   scan: { limit: 120, windowMs: 10 * MINUTE },
+  /** Menüden değerlendirme (IP ve şube başına). */
+  feedback: { limit: 5, windowMs: 60 * MINUTE },
 } satisfies Record<string, RateLimitRule>;
 
 /** Ters vekil (Caddy) arkasında istemci IP'si; doğrudan erişimde "unknown". */

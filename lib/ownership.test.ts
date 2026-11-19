@@ -102,3 +102,32 @@ describe("çalışan sahipliği (işletme izolasyonu)", () => {
     });
   });
 });
+
+describe("değerlendirme sahipliği (işletme izolasyonu)", () => {
+  it("değerlendirmeyi şube üzerinden işletmeye bağlı arar", async () => {
+    const { assertFeedbackBelongsToBusiness } = await import("@/lib/ownership");
+    const { db } = await import("@/lib/db");
+    const feedback = vi.fn().mockResolvedValue({ id: "f1", branchId: "br-1" });
+    (db as unknown as { feedback: { findFirst: typeof feedback } }).feedback = {
+      findFirst: feedback,
+    };
+    await expect(
+      assertFeedbackBelongsToBusiness("f1", "biz-1"),
+    ).resolves.toEqual({ id: "f1", branchId: "br-1" });
+    expect(feedback).toHaveBeenCalledWith({
+      where: { id: "f1", branch: { businessId: "biz-1", deletedAt: null } },
+      select: { id: true, branchId: true },
+    });
+  });
+
+  it("başka işletmenin değerlendirmesi için hata verir", async () => {
+    const { assertFeedbackBelongsToBusiness } = await import("@/lib/ownership");
+    const { db } = await import("@/lib/db");
+    (
+      db as unknown as { feedback: { findFirst: () => Promise<null> } }
+    ).feedback = { findFirst: vi.fn().mockResolvedValue(null) };
+    await expect(
+      assertFeedbackBelongsToBusiness("f-baska", "biz-1"),
+    ).rejects.toThrow("Değerlendirme bulunamadı.");
+  });
+});

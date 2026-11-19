@@ -52,3 +52,14 @@ describe("clientIp", () => {
     expect(clientIp(new Headers())).toBe("unknown");
   });
 });
+
+describe("değerlendirme sınırı", () => {
+  it("aynı IP ve şubeden saatte 5 değerlendirme", () => {
+    const key = `feedback:1.2.3.4:${Math.random()}`;
+    const results = Array.from({ length: 6 }, () =>
+      consumeRateLimit(key, RATE_LIMITS.feedback, 0),
+    );
+    expect(results).toEqual([true, true, true, true, true, false]);
+    expect(consumeRateLimit(key, RATE_LIMITS.feedback, 60 * 60_000)).toBe(true);
+  });
+});

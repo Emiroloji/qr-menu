@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { GlobeIcon, SearchIcon } from "lucide-react";
+import { GlobeIcon, SearchIcon, StarIcon } from "lucide-react";
 import { useMenu } from "./context";
 
 /** Ürün kartı: dokununca detay kartını açar. JavaScript yoksa ürüne kaydırır. */
@@ -169,5 +169,22 @@ export function CategoryNav({
         </a>
       ))}
     </nav>
+  );
+}
+
+/** "Bizi değerlendirin": paket içeriyorsa görünür, değerlendirme formunu açar. */
+export function FeedbackButton({ className }: { className: string }) {
+  const { open, data } = useMenu();
+  if (!data.feedbackBranchId) return null;
+  return (
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      className={className}
+      onClick={() => open({ type: "feedback" })}
+    >
+      <StarIcon className="size-5 shrink-0" aria-hidden />
+      {data.text.rateUs}
+    </button>
   );
 }

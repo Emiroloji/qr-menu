@@ -2,7 +2,7 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import type { MenuData } from "@/components/menu/types";
 import { getCurrentSubscription } from "@/lib/business-status";
-import { branchTag, MENU_LOOKUP_TAG } from "@/lib/cache";
+import { branchTag, cacheFound, MENU_LOOKUP_TAG } from "@/lib/cache";
 import {
   isCampaignLive,
   specialDateFromKey,
@@ -13,7 +13,7 @@ import { toDateInputValue } from "@/lib/format";
 import { isWithinServiceHours } from "@/lib/service-hours";
 import type { LanguageCode } from "@/lib/languages";
 import { effectiveAppearance } from "@/lib/menu-themes";
-import { readPlanFeatures } from "@/lib/plan-features";
+import { canUseFeedback, readPlanFeatures } from "@/lib/plan-features";
 import { readTranslations } from "@/lib/translations";
 import {
   DAYS,
@@ -193,6 +193,7 @@ export async function getMenuData(
     featuredIds: branch.categories.flatMap((c) =>
       c.products.filter((p) => p.isFeatured).map((p) => p.id),
     ),
+    feedback: canUseFeedback(readPlanFeatures(plan?.features)),
   };
 }
 
@@ -239,7 +240,7 @@ export function withToday(data: MenuData, now = new Date()): MenuData {
  */
 // Önbellekteki verinin yapısı (MenuData) değiştiğinde artırılır; yoksa yayına çıkıştan
 // sonra eski yapıdaki kayıtlar bir saate kadar okunur ve menü bozulur.
-const MENU_DATA_VERSION = 3;
+const MENU_DATA_VERSION = 4;
 
 export function getCachedMenuData(branchId: string, lang: LanguageCode) {
   return unstable_cache(
@@ -253,7 +254,7 @@ export function getCachedMenuData(branchId: string, lang: LanguageCode) {
 }
 
 /** Menü adresinden şube, işletme durumu ve diller. Abonelik tarihleri metin olarak saklanır. */
-export const getMenuLookup = unstable_cache(
+export const getMenuLookup = cacheFound(
   async (businessSlug: string, branchSlug: string) => {
     const branch = await db.branch.findFirst({
       where: {

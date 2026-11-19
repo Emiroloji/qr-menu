@@ -20,6 +20,7 @@ describe("effectiveAppearance (paket özellikleri)", () => {
         appearance: "PRESET",
         stats: "NONE",
         customDomain: false,
+        feedback: false,
       }),
     ).toEqual({
       theme: "warm",
@@ -34,6 +35,7 @@ describe("effectiveAppearance (paket özellikleri)", () => {
         appearance: "BRANDING",
         stats: "BASIC",
         customDomain: false,
+        feedback: false,
       }),
     ).toEqual({
       theme: "warm",
@@ -48,6 +50,7 @@ describe("effectiveAppearance (paket özellikleri)", () => {
         appearance: "FULL",
         stats: "DETAILED",
         customDomain: true,
+        feedback: false,
       }).coverUrl,
     ).toBe("cover");
   });
@@ -55,7 +58,12 @@ describe("effectiveAppearance (paket özellikleri)", () => {
     expect(
       effectiveAppearance(
         { ...business, theme: "yok" },
-        { appearance: "FULL", stats: "NONE", customDomain: false },
+        {
+          appearance: "FULL",
+          stats: "NONE",
+          customDomain: false,
+          feedback: false,
+        },
       ).theme,
     ).toBe("minimal");
   });

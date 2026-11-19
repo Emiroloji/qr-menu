@@ -2,6 +2,8 @@ import type { AllergenLevel, Badge } from "@/lib/generated/prisma/enums";
 import { formatPriceText, parsePrice } from "@/lib/format";
 import { BADGES } from "@/lib/validations/menu";
 
+export { cleanText as cleanCell } from "@/lib/clean-text";
+
 // Menünün Excel biçimi (Faz 3.3). Her satır bir üründür. Bu dosya Excel kütüphanesinden
 // bağımsızdır: dışa aktarma satırları üretir, içe aktarma satırları doğrular.
 
@@ -125,17 +127,6 @@ const list = (value: string | undefined) =>
     .split(/[,;]/)
     .map((v) => v.trim())
     .filter(Boolean);
-
-/**
- * Hücre metnini temizler: Excel'in sakladığı görünmez denetim karakterlerini (ör. 0x00)
- * atar. PostgreSQL bu karakteri kabul etmez; biri bile olsa bütün aktarım hata verir.
- * Satır sonu ve sekme korunur.
- */
-export function cleanCell(text: string) {
-  return text
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
-    .trim();
-}
 
 /** Başlık satırındaki sütun adlarını sütun anahtarlarına eşler. */
 export function mapHeaders(headers: string[]) {

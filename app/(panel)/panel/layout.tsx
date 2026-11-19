@@ -5,7 +5,9 @@ import { stopViewingBusiness } from "@/actions/admin/view-as";
 import { signOut } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
+import { countUnreadFeedback } from "@/lib/feedback";
 import { hasAnyMenuPermission, hasPermission } from "@/lib/permissions";
+import { canUseFeedback, readPlanFeatures } from "@/lib/plan-features";
 import { getBusinessContext, requireSession } from "@/lib/session";
 import {
   type NavItem,
@@ -20,6 +22,12 @@ export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
   const { user, businessId, viewOnly } = await requireSession();
   const { business, status, subscription } =
     await getBusinessContext(businessId);
+  // Değerlendirmeler yalnızca sahibe ve paketi içeriyorsa gösterilir.
+  const feedbackUnread =
+    user.role === "OWNER" &&
+    canUseFeedback(readPlanFeatures(subscription?.plan.features))
+      ? await countUnreadFeedback(businessId)
+      : null;
 
   // Menü: sahip veya menü yetkisi olan çalışan. Şube ve ayarlar yalnızca sahip (MIMARI §6).
   const items: NavItem[] = [
@@ -38,6 +46,16 @@ export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
       ? ([
           { href: "/panel/qr", label: "QR kodlar", icon: "qr" },
           { href: "/panel/stats", label: "İstatistikler", icon: "stats" },
+          ...(feedbackUnread !== null
+            ? ([
+                {
+                  href: "/panel/feedback",
+                  label: "Değerlendirmeler",
+                  icon: "feedback",
+                  badge: feedbackUnread,
+                },
+              ] satisfies NavItem[])
+            : []),
           { href: "/panel/branches", label: "Şubeler", icon: "branches" },
           { href: "/panel/appearance", label: "Görünüm", icon: "appearance" },
           { href: "/panel/staff", label: "Çalışanlar", icon: "staff" },

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { DAYS } from "@/lib/branch-info";
 import type { MenuClientData } from "../client-data";
+import { FeedbackButton } from "./islands";
 
 const SOCIAL_NAMES: Record<string, string> = {
   instagram: "Instagram",
@@ -123,6 +124,8 @@ export function InfoPanel({ data }: { data: MenuClientData }) {
           {text.allergenTable} (PDF)
         </a>
       )}
+
+      <FeedbackButton className="flex min-h-11 items-center gap-3 text-start font-semibold text-menu-accent-text underline-offset-4 hover:underline" />
 
       {socials.length > 0 && (
         <section className="flex flex-col gap-2">

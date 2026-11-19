@@ -75,6 +75,15 @@
     "campaignUntil": "До {date}",
     "dailySpecial": "Блюдо дня",
     "featured": "Рекомендуем",
-    "servedHours": "Подаётся {hours}"
+    "servedHours": "Подаётся {hours}",
+    "rateUs": "Оцените нас",
+    "ratingLabel": "Ваша оценка",
+    "stars": "{count, plural, one {# звезда} few {# звезды} other {# звёзд}}",
+    "feedbackMessage": "Ваше сообщение (необязательно)",
+    "feedbackNote": "Ваш отзыв анонимен и виден только заведению. Пожалуйста, не указывайте личные данные.",
+    "send": "Отправить",
+    "feedbackThanks": "Спасибо! Ваш отзыв отправлен.",
+    "feedbackLimited": "Слишком много отзывов. Попробуйте позже.",
+    "feedbackError": "Не удалось отправить отзыв. Попробуйте ещё раз."
   }
 }

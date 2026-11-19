@@ -11,6 +11,7 @@ import { ProductDetail } from "./product-detail";
 import { Sheet } from "./sheet";
 
 const SearchDialog = dynamic(() => import("./search-dialog"), { ssr: false });
+const FeedbackForm = dynamic(() => import("./feedback-form"), { ssr: false });
 
 /** Menünün etkileşimli parçaları: ürün detayı, bilgiler, dil ve arama. */
 export function MenuProvider({
@@ -24,6 +25,7 @@ export function MenuProvider({
   // Kapanma animasyonu sürerken içerik kaybolmasın diye son açılan ürün saklanır.
   const [productId, setProductId] = useState<string | null>(null);
   const [searchLoaded, setSearchLoaded] = useState(false);
+  const [feedbackLoaded, setFeedbackLoaded] = useState(false);
   const products = useMemo(
     () => new Map(data.products.map((p) => [p.id, p])),
     [data.products],
@@ -45,6 +47,7 @@ export function MenuProvider({
           }
         }
         if (next.type === "search") setSearchLoaded(true);
+        if (next.type === "feedback") setFeedbackLoaded(true);
         setPanel(next);
       },
     }),
@@ -79,6 +82,16 @@ export function MenuProvider({
       >
         <LanguagePanel data={data} />
       </Sheet>
+      {feedbackLoaded && data.feedbackBranchId && (
+        <Sheet
+          open={panel?.type === "feedback"}
+          onClose={close}
+          label={data.text.rateUs}
+          closeLabel={data.text.close}
+        >
+          <FeedbackForm data={data} branchId={data.feedbackBranchId} />
+        </Sheet>
+      )}
       {searchLoaded && (
         <SearchDialog
           data={data}

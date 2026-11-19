@@ -161,6 +161,14 @@ export function PlanForm({ plan }: { plan?: PlanFormValues }) {
           </div>
           <div className="flex items-center gap-2">
             <Checkbox
+              id="feedback"
+              name="feedback"
+              defaultChecked={plan?.features.feedback ?? false}
+            />
+            <Label htmlFor="feedback">Müşteri değerlendirmeleri</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox
               id="isActive"
               name="isActive"
               defaultChecked={plan?.isActive ?? true}

@@ -1,8 +1,7 @@
 import "server-only";
 import { resolve4 } from "node:dns/promises";
-import { unstable_cache } from "next/cache";
 import { getCurrentSubscription } from "@/lib/business-status";
-import { MENU_LOOKUP_TAG } from "@/lib/cache";
+import { cacheFound, MENU_LOOKUP_TAG } from "@/lib/cache";
 import { platformHost } from "@/lib/custom-domain";
 import { db } from "@/lib/db";
 import { canUseCustomDomain, readPlanFeatures } from "@/lib/plan-features";
@@ -52,7 +51,7 @@ export async function checkDomainDns(
  * Doğrulanmış alan adının işletmesi ve şubeleri. `allowed` false ise paket artık
  * alan adını içermiyor; ziyaretçi platformdaki menüye yönlendirilir (basılı QR'lar bozulmaz).
  */
-export const getDomainSite = unstable_cache(
+export const getDomainSite = cacheFound(
   async (host: string) => {
     const business = await db.business.findFirst({
       where: {

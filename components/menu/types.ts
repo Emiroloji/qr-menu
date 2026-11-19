@@ -75,4 +75,6 @@ export type MenuData = {
   dailyProductId: string | null;
   /** "Öne çıkanlar" alanındaki ürünler, menü sırasıyla. */
   featuredIds: string[];
+  /** Paket müşteri değerlendirmesini içeriyorsa "Bizi değerlendirin" gösterilir. */
+  feedback: boolean;
 };

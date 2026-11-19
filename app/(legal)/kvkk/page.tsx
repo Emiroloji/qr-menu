@@ -24,6 +24,14 @@ export default function KvkkPage() {
         dil ve cihaz türü: telefon, tablet veya bilgisayar) kaydedilir. Bu
         bilgiler bir kişiyle ilişkilendirilemez.
       </p>
+      <p>
+        İşletmenin paketi içeriyorsa ziyaretçi menüden isteğe bağlı olarak{" "}
+        <strong>anonim bir değerlendirme</strong> (1–5 puan ve kısa bir mesaj)
+        bırakabilir. Ad, telefon veya e-posta istenmez ve IP adresi saklanmaz.
+        Mesaj serbest metindir; kişisel bilgi yazılmaması istenir.
+        Değerlendirmeyi yalnızca ilgili işletme görür ve silebilir; şube
+        silindiğinde değerlendirmeleri de silinir.
+      </p>
 
       <h2>2. Panel kullanıcıları (işletme sahipleri ve çalışanlar)</h2>
       <ul>

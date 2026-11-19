@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import type { FormState } from "@/lib/action";
+import { expireBusinessMenus } from "@/lib/cache";
 import { db, isUniqueConstraintError } from "@/lib/db";
 import { requireRole } from "@/lib/session";
 import { firstError, id } from "@/lib/validations/common";
@@ -21,6 +22,12 @@ export async function savePlan(
     const plan = planId
       ? await db.plan.update({ where: { id: planId }, data: parsed.data })
       : await db.plan.create({ data: parsed.data });
+    // Paket özellikleri menüde de kullanılır (görünüm, değerlendirme butonu).
+    const businesses = await db.business.findMany({
+      where: { subscriptions: { some: { planId: plan.id } } },
+      select: { id: true },
+    });
+    for (const business of businesses) await expireBusinessMenus(business.id);
     refresh();
     return { ok: true, data: { id: plan.id } };
   } catch (error) {

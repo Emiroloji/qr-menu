@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getLanguage } from "@/lib/languages";
 import type { MenuThemeCode } from "@/lib/menu-themes";
 import type { MenuClientData } from "../client-data";
+import { FeedbackButton } from "../client/islands";
 import { MenuProvider } from "../client/provider";
 import { menuFontVariables } from "../fonts";
 import type { MenuLabels } from "../labels";
@@ -54,6 +55,11 @@ export function ThemedMenu({
       />
       <MenuProvider data={client}>
         <Theme data={data} labels={labels} />
+        {client.feedbackBranchId && (
+          <div className="flex justify-center bg-menu-bg pt-8">
+            <FeedbackButton className="flex h-11 items-center gap-2 rounded-full border border-menu-line px-5 text-sm font-semibold" />
+          </div>
+        )}
       </MenuProvider>
       <footer className="flex flex-wrap justify-center gap-x-2 bg-menu-bg pt-2 pb-8">
         {client.allergenPdfUrl && (

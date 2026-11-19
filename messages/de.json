@@ -75,6 +75,15 @@
     "campaignUntil": "Bis {date}",
     "dailySpecial": "Empfehlung des Tages",
     "featured": "Empfehlungen",
-    "servedHours": "Serviert {hours}"
+    "servedHours": "Serviert {hours}",
+    "rateUs": "Bewerten Sie uns",
+    "ratingLabel": "Ihre Bewertung",
+    "stars": "{count, plural, one {# Stern} other {# Sterne}}",
+    "feedbackMessage": "Ihre Nachricht (optional)",
+    "feedbackNote": "Ihre Bewertung ist anonym und nur für den Betrieb sichtbar. Bitte geben Sie keine persönlichen Daten an.",
+    "send": "Senden",
+    "feedbackThanks": "Danke! Ihre Bewertung wurde gesendet.",
+    "feedbackLimited": "Zu viele Bewertungen. Bitte versuchen Sie es später erneut.",
+    "feedbackError": "Die Bewertung konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
   }
 }

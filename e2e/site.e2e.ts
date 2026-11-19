@@ -9,7 +9,7 @@ test("ana sayfa hesap talebi e-postasını ve paketleri gösterir", async ({
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: "Menünüz, masadaki QR kodda.",
+      name: "Menü değişir, karekod aynı kalır.",
     }),
   ).toBeVisible();
   await expect(
@@ -17,7 +17,10 @@ test("ana sayfa hesap talebi e-postasını ve paketleri gösterir", async ({
   ).toHaveAttribute("href", /^mailto:.+subject=Hesap%20talebi/);
   await expect(page.getByRole("heading", { name: "Paketler" })).toBeVisible();
 
-  // Hero'daki örnek menü gerçek menüdür; ürün detayı açılır.
+  // Örnek menü gerçek menüdür; ürün detayı açılır. Çerçeve göründüğünde yüklenir.
+  await page
+    .getByRole("heading", { name: "Müşterinizin göreceği menü" })
+    .scrollIntoViewIfNeeded();
   const demo = page.frameLocator('iframe[title^="Örnek menü"]');
   await demo.getByText("Latte", { exact: true }).first().click();
   await expect(demo.getByRole("dialog", { name: "Latte" })).toBeVisible();

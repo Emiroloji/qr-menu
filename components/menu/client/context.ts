@@ -7,7 +7,8 @@ export type Panel =
   | { type: "product"; id: string }
   | { type: "info" }
   | { type: "language" }
-  | { type: "search" };
+  | { type: "search" }
+  | { type: "feedback" };
 
 export const MenuContext = createContext<{
   data: MenuClientData;

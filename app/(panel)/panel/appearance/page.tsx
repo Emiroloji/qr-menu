@@ -75,6 +75,7 @@ export default async function AppearancePage() {
     dailySpecials: [],
     dailyProductId: null,
     featuredIds: [],
+    feedback: false,
   };
 
   // Önizleme saate bağlı kategorileri de gösterir; tema her kategoride denenebilsin.

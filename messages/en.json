@@ -75,6 +75,15 @@
     "campaignUntil": "Until {date}",
     "dailySpecial": "Today's pick",
     "featured": "Featured",
-    "servedHours": "Served {hours}"
+    "servedHours": "Served {hours}",
+    "rateUs": "Rate us",
+    "ratingLabel": "Your rating",
+    "stars": "{count, plural, one {# star} other {# stars}}",
+    "feedbackMessage": "Your message (optional)",
+    "feedbackNote": "Your feedback is anonymous and only the venue can see it. Please don’t include personal details.",
+    "send": "Send",
+    "feedbackThanks": "Thank you! Your feedback has been sent.",
+    "feedbackLimited": "Too many submissions. Please try again later.",
+    "feedbackError": "Your feedback could not be sent. Please try again."
   }
 }

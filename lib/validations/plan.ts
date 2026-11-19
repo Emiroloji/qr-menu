@@ -20,6 +20,7 @@ export const planFeaturesSchema = z.object({
   ),
   stats: z.enum(Object.keys(STATS_OPTIONS) as [keyof typeof STATS_OPTIONS]),
   customDomain: z.boolean().default(false),
+  feedback: z.boolean().default(false),
 });
 export type PlanFeatures = z.infer<typeof planFeaturesSchema>;
 
@@ -34,9 +35,15 @@ export const planSchema = z
     appearance: planFeaturesSchema.shape.appearance,
     stats: planFeaturesSchema.shape.stats,
     customDomain: checkbox,
+    feedback: checkbox,
     isActive: checkbox,
   })
-  .transform(({ appearance, stats, customDomain, ...plan }) => ({
+  .transform(({ appearance, stats, customDomain, feedback, ...plan }) => ({
     ...plan,
-    features: { appearance, stats, customDomain } satisfies PlanFeatures,
+    features: {
+      appearance,
+      stats,
+      customDomain,
+      feedback,
+    } satisfies PlanFeatures,
   }));

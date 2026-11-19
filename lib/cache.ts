@@ -1,5 +1,5 @@
 import "server-only";
-import { revalidateTag } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 
 // Müşteri menüsü `branch:{id}` etiketiyle önbelleğe alınır (MIMARI §8, Faz 1.10).
@@ -26,4 +26,37 @@ export async function expireBusinessMenus(businessId: string) {
   branches.forEach((branch) => expireBranchMenu(branch.id));
   // İşletmenin durumu, aboneliği ve dilleri adres sorgusunda da tutulur.
   expireMenuLookup();
+}
+
+class NotFoundResult extends Error {}
+
+/**
+ * `unstable_cache` gibi, ama `null` sonucu saklamaz. Adresle aranan kayıtlar (menü adresi,
+ * özel alan adı) için: botların denediği her uydurma adres önbellekte (bellek ve disk) yeni
+ * bir "bulunamadı" kaydı açıyordu ve bunlar hiç temizlenmiyordu. Bulunamayan adres her
+ * seferinde veritabanına sorulur (dizinli, hızlı bir sorgu); bulunanlar eskisi gibi saklanır.
+ */
+export function cacheFound<A extends unknown[], R>(
+  fn: (...args: A) => Promise<R | null>,
+  keyParts: string[],
+  options: { tags: string[]; revalidate: number },
+) {
+  const cached = unstable_cache(
+    async (...args: A) => {
+      const result = await fn(...args);
+      // unstable_cache hata veren çağrıyı saklamaz.
+      if (result === null) throw new NotFoundResult();
+      return result;
+    },
+    keyParts,
+    options,
+  );
+  return async (...args: A): Promise<R | null> => {
+    try {
+      return await cached(...args);
+    } catch (error) {
+      if (error instanceof NotFoundResult) return null;
+      throw error;
+    }
+  };
 }
