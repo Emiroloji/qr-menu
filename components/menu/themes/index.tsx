@@ -57,7 +57,7 @@ export function ThemedMenu({
         <Theme data={data} labels={labels} />
         {client.feedbackBranchId && (
           <div className="flex justify-center bg-menu-bg pt-8">
-            <FeedbackButton className="flex h-11 items-center gap-2 rounded-full border border-menu-line px-5 text-sm font-semibold" />
+            <FeedbackButton className="flex h-11 items-center gap-2 rounded-full border border-menu-line bg-menu-surface px-5 text-sm font-semibold text-menu-ink" />
           </div>
         )}
       </MenuProvider>
