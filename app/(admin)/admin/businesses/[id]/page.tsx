@@ -35,6 +35,7 @@ import {
   StartSubscriptionForm,
   SubscriptionStatusButton,
 } from "./business-actions";
+import { requireRole } from "@/lib/session";
 
 export const metadata: Metadata = { title: "İşletme" };
 
@@ -47,6 +48,8 @@ const SUBSCRIPTION_STATUS_LABELS = {
 export default async function BusinessPage({
   params,
 }: PageProps<"/admin/businesses/[id]">) {
+  // Yetki her sayfada ayrıca denetlenir: layout istemci gezintisinde atlanabilir.
+  await requireRole("SUPER_ADMIN");
   const { id } = await params;
   const [business, plans] = await Promise.all([
     db.business.findUnique({

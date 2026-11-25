@@ -18,6 +18,7 @@ import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "../_components/status-badge";
+import { requireRole } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Abonelikler" };
 
@@ -32,6 +33,8 @@ const FILTERS: BusinessStatus[] = [
 export default async function SubscriptionsPage({
   searchParams,
 }: PageProps<"/admin/subscriptions">) {
+  // Yetki her sayfada ayrıca denetlenir: layout istemci gezintisinde atlanabilir.
+  await requireRole("SUPER_ADMIN");
   const params = await searchParams;
   const filter = FILTERS.find((f) => f === params.status) ?? "EXPIRING";
 

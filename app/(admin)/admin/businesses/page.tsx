@@ -22,6 +22,7 @@ import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "../_components/status-badge";
+import { requireRole } from "@/lib/session";
 
 export const metadata: Metadata = { title: "İşletmeler" };
 
@@ -37,6 +38,8 @@ const FILTERS: ("ALL" | BusinessStatus)[] = [
 export default async function BusinessesPage({
   searchParams,
 }: PageProps<"/admin/businesses">) {
+  // Yetki her sayfada ayrıca denetlenir: layout istemci gezintisinde atlanabilir.
+  await requireRole("SUPER_ADMIN");
   const params = await searchParams;
   const q = typeof params.q === "string" ? params.q.trim() : "";
   const filter = FILTERS.find((f) => f === params.status) ?? "ALL";

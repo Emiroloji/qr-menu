@@ -4,12 +4,15 @@ import { PageHeader } from "@/components/panel/page-header";
 import { db } from "@/lib/db";
 import { planFeaturesSchema } from "@/lib/validations/plan";
 import { PlanForm } from "../plan-form";
+import { requireRole } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Paketi düzenle" };
 
 export default async function EditPlanPage({
   params,
 }: PageProps<"/admin/plans/[id]">) {
+  // Yetki her sayfada ayrıca denetlenir: layout istemci gezintisinde atlanabilir.
+  await requireRole("SUPER_ADMIN");
   const { id } = await params;
   const plan = await db.plan.findUnique({ where: { id } });
   if (!plan) notFound();

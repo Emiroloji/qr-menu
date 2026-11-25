@@ -19,12 +19,15 @@ import {
   STATS_OPTIONS,
   planFeaturesSchema,
 } from "@/lib/validations/plan";
+import { requireRole } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Paketler" };
 
 const limit = (n: number | null) => n ?? "Sınırsız";
 
 export default async function PlansPage() {
+  // Yetki her sayfada ayrıca denetlenir: layout istemci gezintisinde atlanabilir.
+  await requireRole("SUPER_ADMIN");
   const plans = await db.plan.findMany({
     orderBy: { createdAt: "asc" },
     include: { _count: { select: { subscriptions: true } } },

@@ -3,10 +3,13 @@ import { PageHeader } from "@/components/panel/page-header";
 import { db } from "@/lib/db";
 import { toDateInputValue } from "@/lib/format";
 import { BusinessForm } from "./business-form";
+import { requireRole } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Yeni işletme" };
 
 export default async function NewBusinessPage() {
+  // Yetki her sayfada ayrıca denetlenir: layout istemci gezintisinde atlanabilir.
+  await requireRole("SUPER_ADMIN");
   const plans = await db.plan.findMany({
     where: { isActive: true },
     select: { id: true, name: true },
